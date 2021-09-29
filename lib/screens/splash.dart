@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:roccabox_admin/screens/homenave.dart';
 import 'package:roccabox_admin/screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +39,7 @@ class _SplashState extends State<Splash> {
     Future.delayed(Duration(seconds: 2), () {
       id.toString() == "" || id.toString() == "null" || id == null
           ? Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Login()))
+              context, MaterialPageRoute(builder: (context) => HomeNav()))
           : Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => HomePage()));
     });

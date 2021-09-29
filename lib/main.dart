@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:roccabox_admin/screens/splash.dart';
+import 'package:sizer/sizer.dart';
+
+
+int langCount = 0;
 
 void main() {
-  runApp(MyApp());
+  runApp(RoccoBoxAdminApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
+class RoccoBoxAdminApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+    return Sizer(
+      builder: (context, orientation, deviceType) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'RoccoBox Admin',
+          theme: ThemeData(
           // This is the theme of your application.
           //
           // Try running your application with "flutter run". You'll see the
@@ -23,7 +30,9 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
           fontFamily: "Poppins"),
-      home: Splash(),
+          home:  Splash(),
+        );
+      },
     );
   }
 }

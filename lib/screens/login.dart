@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:sizer/sizer.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -132,9 +132,9 @@ class _LoginState extends State<Login> {
                       child: CircularProgressIndicator())
                   : GestureDetector(
                       onTap: () {
-                        if (formkey.currentState!.validate()) {
-                          adminlogin(email.toString(), password.toString());
-                        }
+                        // if (formkey.currentState!.validate()) {
+                        //   adminlogin(email.toString(), password.toString());
+                        // }
                       },
                       child: Container(
                         margin:
