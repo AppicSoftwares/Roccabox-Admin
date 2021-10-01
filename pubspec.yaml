@@ -34,6 +34,8 @@ dependencies:
   email_validator: ^2.0.1
   carousel_slider: ^4.0.0
   sizer: ^2.0.15
+  flutter_switch: ^0.3.2
+  image_picker: ^0.8.0+3
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52">
+  <g id="edit" transform="translate(-323 -220)">
+    <rect id="Rectangle_12" data-name="Rectangle 12" width="52" height="52" rx="3" transform="translate(323 220)" fill="#1de151"/>
+    <path id="Icon_material-call" data-name="Icon material-call" d="M4.259,9.165a17.823,17.823,0,0,0,7.753,7.753L14.6,14.33a1.17,1.17,0,0,1,1.2-.282,13.421,13.421,0,0,0,4.2.671A1.18,1.18,0,0,1,21.178,15.9V20A1.18,1.18,0,0,1,20,21.178a20,20,0,0,1-20-20A1.18,1.18,0,0,1,1.177,0H5.294A1.18,1.18,0,0,1,6.471,1.177a13.366,13.366,0,0,0,.671,4.2,1.181,1.181,0,0,1-.294,1.2L4.259,9.165Z" transform="translate(340.764 233) rotate(13)" fill="#fff"/>
+  </g>
+</svg>

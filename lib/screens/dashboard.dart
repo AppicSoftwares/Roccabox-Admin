@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:roccabox_admin/screens/totalAgentList.dart';
+import 'package:roccabox_admin/screens/totalUserList.dart';
 
 import 'package:roccabox_admin/theme/constant.dart';
 import 'package:sizer/sizer.dart';
@@ -67,7 +69,9 @@ class _DashboardState extends State<Dashboard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList()));
+                    },
                     child: Container(
                     
                     height: 20.h,
@@ -113,7 +117,10 @@ class _DashboardState extends State<Dashboard> {
                  SizedBox(height: 2.h,),
 
                  TextButton(
-                   onPressed: () {},
+                   onPressed: () {
+
+                     Navigator.push(context, MaterialPageRoute(builder: (context) => TotalAgentList()));
+                   },
                    child: Container(
                     
                     height: 20.h,

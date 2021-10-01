@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 const kPrimaryColor = Color(0xffFFBA00);
 const kUnselectedColor = Color(0xff8E8E8E);
 const kPrimaryLightColor = Color(0xFFFFECDF);
+const kGreenColor = Color(0xFF3FE226);
+const kRedColor = Color(0xFFEC4941);
 const kPrimaryGradientColor = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
   colors: [Color(0xFFFFA53E), Color(0xFFFF7643)],
 );
 const kSecondaryColor = Color(0xFF979797);
-const kCyanColor = Colors.cyan;
+
 const kThirdcolor = Colors.white;
-const kTextColor = Color(0xFF757575);
+const kTextColor = Colors.black;
 
 const kAnimationDuration = Duration(milliseconds: 200);
 
@@ -38,7 +40,7 @@ OutlineInputBorder outlineInputBorder() {
 //   height: 1.5,
 // );
 
-const defaultDuration = Duration(milliseconds: 250);
+//const defaultDuration = Duration(milliseconds: 250);
 
 // // Form Error
 // final RegExp emailValidatorRegExp =
