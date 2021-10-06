@@ -21,13 +21,16 @@ class _TotalState extends State<Banners> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            "Banners",
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14.sp),
+        title: Padding(
+          padding: EdgeInsets.only(left: 8.w),
+          child: Center(
+            child: Text(
+              "Banners",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp),
+            ),
           ),
         ),
         actions: [
@@ -99,6 +102,7 @@ class _TotalState extends State<Banners> {
                       itemCount: 10,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
+                          height: 12.h,
                           child: Column(
                             children: [
                               ListTile(
@@ -134,6 +138,7 @@ class _TotalState extends State<Banners> {
                                   ],
                                 ),
                                 trailing: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -166,7 +171,9 @@ class _TotalState extends State<Banners> {
                                         ),
                                       ],
                                     ),
-                                    //customSwitch()
+
+                                    SizedBox(height: 0.5.h,),
+                                    customSwitch()
                                   ],
                                 ),
                               ),
@@ -198,24 +205,35 @@ class _TotalState extends State<Banners> {
     );
   }
 
-  customSwitch() {
+ customSwitch() {
     return Container(
-      child: FlutterSwitch(
-        width: 125.0,
-        height: 50.0,
-        valueFontSize: 25.0,
-        activeColor: Colors.green,
-        inactiveColor: Colors.grey,
-        toggleSize: 35.0,
-        value: status,
-        borderRadius: 20.0,
-        showOnOff: true,
-        onToggle: (val) {
-          setState(() {
-            status = val;
-          });
-        },
-      ),
-    );
+      height: 3.2.h,
+      width: 28.w,
+      
+          child: FlutterSwitch(
+             width: 125
+             ,
+            // height: 50.0,
+            valueFontSize: 10.0,
+            activeColor: kGreenColor,
+            inactiveColor: Colors.grey.shade300,
+            toggleSize: 20.0,
+            value: status,
+            borderRadius: 2.0,
+            activeText: "Active",
+            inactiveText: "Deactive",
+            inactiveTextColor: Colors.black,
+
+            
+            
+            
+            showOnOff: true,
+            onToggle: (val) {
+              setState(() {
+                status = val;
+              });
+            },
+          ),
+        );
   }
 }

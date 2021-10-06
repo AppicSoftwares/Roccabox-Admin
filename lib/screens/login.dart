@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:roccabox_admin/screens/homenave.dart';
 import 'package:sizer/sizer.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +133,7 @@ class _LoginState extends State<Login> {
                       child: CircularProgressIndicator())
                   : GestureDetector(
                       onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (Context) => HomeNav()));
                         // if (formkey.currentState!.validate()) {
                         //   adminlogin(email.toString(), password.toString());
                         // }
@@ -147,7 +149,7 @@ class _LoginState extends State<Login> {
                             child: Text(
                           'Login',
                           style:
-                              TextStyle(fontSize: 15, color: Color(0xff000000)),
+                              TextStyle(fontSize: 15, color: Colors.white),
                         )),
                       ),
                     ),

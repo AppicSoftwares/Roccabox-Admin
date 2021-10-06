@@ -4,6 +4,7 @@ import 'package:roccabox_admin/screens/changePassword.dart';
 import 'package:roccabox_admin/screens/dashboard.dart';
 import 'package:roccabox_admin/screens/editProfile.dart';
 import 'package:roccabox_admin/screens/login.dart';
+import 'package:roccabox_admin/screens/mortgagesDetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
@@ -95,14 +96,17 @@ class _SettingState extends State<Menu> {
               ),
             ),
             ListTile(
-              onTap: () {},
-              //  Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //           builder: (context) => ListOfProperties()
-              //           // PropertyList()
+              onTap: () {
 
-              //           )),
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MortgagesDetails()
+                        // PropertyList()
+
+                        ));
+              },
+               
                 //tileColor: Color(0xffF3F3F3),
                 title: Text(
                   // 'Property Listing ',
@@ -182,7 +186,7 @@ class _SettingState extends State<Menu> {
                 pref.commit();
                 Navigator.pushAndRemoveUntil(
                     context,
-                    new MaterialPageRoute(builder: (context) => Dashboard()),
+                    new MaterialPageRoute(builder: (context) => Login()),
                         (route) => false);
               },
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addUser.dart';
+import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editUser.dart';
 
 import 'package:roccabox_admin/theme/constant.dart';
@@ -20,13 +21,16 @@ ScrollController _controller = new ScrollController();
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            "Users List",
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14.sp),
+        title: Padding(
+          padding: EdgeInsets.only(left: 8.w),
+          child: Center(
+            child: Text(
+              "Users List",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp),
+            ),
           ),
         ),
         actions: [
@@ -97,9 +101,10 @@ ScrollController _controller = new ScrollController();
                   ListView.builder(
                     shrinkWrap: true,
                      controller: _controller,
-                    itemCount: 10,
+                    itemCount: 12,
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
+                        height: 12.h,
                         child: Column(
                           children: [
                             ListTile(
@@ -138,7 +143,9 @@ ScrollController _controller = new ScrollController();
                                
                                 children: [
                                    InkWell(
-                                     onTap: () {},
+                                     onTap: () {
+                                       Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatDemo()));
+                                     },
 
                                     child: Image.asset("assets/comment.png",
                                     width: 6.w,
@@ -183,7 +190,9 @@ ScrollController _controller = new ScrollController();
                                    SizedBox(width: 1.w,),
                                 ],
                               ),
-                             //customSwitch()
+
+                              SizedBox(height: 0.5.h,),
+                             customSwitch()
                             ],
                     ),
                   ),
@@ -220,16 +229,25 @@ ScrollController _controller = new ScrollController();
 
   customSwitch() {
     return Container(
+      height: 3.2.h,
+      width: 28.w,
       
           child: FlutterSwitch(
-            width: 125.0,
-            height: 50.0,
-            valueFontSize: 25.0,
-            activeColor: Colors.green,
-            inactiveColor: Colors.grey,
-            toggleSize: 35.0,
+             width: 125
+             ,
+            // height: 50.0,
+            valueFontSize: 10.0,
+            activeColor: kGreenColor,
+            inactiveColor: Colors.grey.shade300,
+            toggleSize: 20.0,
             value: status,
-            borderRadius: 20.0,
+            borderRadius: 2.0,
+            activeText: "Active",
+            inactiveText: "Deactive",
+            inactiveTextColor: Colors.black,
+
+            
+            
             
             showOnOff: true,
             onToggle: (val) {

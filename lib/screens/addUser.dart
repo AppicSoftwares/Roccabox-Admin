@@ -28,13 +28,16 @@ class _AddUserState extends State<AddUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            "Add User",
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14.sp),
+        title: Padding(
+          padding: EdgeInsets.only(right: 8.w),
+          child: Center(
+            child: Text(
+              "Add User",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp),
+            ),
           ),
         ),
       ),

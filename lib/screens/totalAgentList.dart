@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addAgent.dart';
 import 'package:roccabox_admin/screens/addUser.dart';
+import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editAgent.dart';
 
 import 'package:roccabox_admin/theme/constant.dart';
@@ -16,6 +17,7 @@ class TotalAgentList extends StatefulWidget {
 }
 
 class _TotalState extends State<TotalAgentList> {
+ 
   String selected = "first";
 
   ScrollController _controller = new ScrollController();
@@ -25,12 +27,15 @@ class _TotalState extends State<TotalAgentList> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text(
-            "Agent List",
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14.sp),
+          child: Padding(
+            padding: EdgeInsets.only(left: 8.w),
+            child: Text(
+              "Agent List",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp),
+            ),
           ),
         ),
         actions: [
@@ -254,7 +259,7 @@ class _NewRequestState extends State<NewRequest> {
                   children: [
                     Container(
                       
-                      height: 3.h,
+                      height: 2.5.h,
                       width: 20.w,
                       decoration: BoxDecoration(
                           color: kGreenColor,
@@ -272,7 +277,7 @@ class _NewRequestState extends State<NewRequest> {
 
                     Container(
                       
-                      height: 3.h,
+                      height: 2.5.h,
                       width: 20.w,
                       decoration: BoxDecoration(
                           color: kRedColor,
@@ -315,6 +320,7 @@ class AgentList extends StatefulWidget {
 }
 
 class _AgentListState extends State<AgentList> {
+  bool status = false;
   ScrollController _controller = new ScrollController();
   @override
   Widget build(BuildContext context) {
@@ -324,6 +330,7 @@ class _AgentListState extends State<AgentList> {
       itemCount: 10,
       itemBuilder: (BuildContext context, int index) {
         return Container(
+          height: 12.h,
           child: Column(
             children: [
               ListTile(
@@ -356,7 +363,9 @@ class _AgentListState extends State<AgentList> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatDemo()));
+                          },
                           child: Image.asset(
                             "assets/comment.png",
                             width: 6.w,
@@ -399,7 +408,8 @@ class _AgentListState extends State<AgentList> {
                         ),
                       ],
                     ),
-                    //customSwitch()
+                    SizedBox(height: 0.5.h,),
+                    customSwitch()
                   ],
                 ),
               ),
@@ -419,6 +429,38 @@ class _AgentListState extends State<AgentList> {
         );
       },
     );
+  }
+
+   customSwitch() {
+    return Container(
+      height: 3.1.h,
+      width: 28.w,
+      
+          child: FlutterSwitch(
+             width: 125
+             ,
+            // height: 50.0,
+            valueFontSize: 10.0,
+            activeColor: kGreenColor,
+            inactiveColor: Colors.grey.shade300,
+            toggleSize: 20.0,
+            value: status,
+            borderRadius: 2.0,
+            activeText: "Active",
+            inactiveText: "Deactive",
+            inactiveTextColor: Colors.black,
+
+            
+            
+            
+            showOnOff: true,
+            onToggle: (val) {
+              setState(() {
+                status = val;
+              });
+            },
+          ),
+        );
   }
 }
 

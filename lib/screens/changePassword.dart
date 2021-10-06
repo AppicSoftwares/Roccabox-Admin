@@ -40,14 +40,17 @@ class _EditProfileState extends State<ChangePaasword> {
         backgroundColor: Color(0xffFFFFFF),
         elevation: 1,
         centerTitle: true,
-        title: Text(
-          //Update Password
-          languageChange.PASSWORDUPDATE[langCount]
-          ,
-          style: TextStyle(
-              fontSize: 14.sp,
-              color: Color(0xff000000),
-              fontWeight: FontWeight.w600),
+        title: Padding(
+          padding: EdgeInsets.only(left: 8.w),
+          child: Text(
+            //Update Password
+            languageChange.PASSWORDUPDATE[langCount]
+            ,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Color(0xff000000),
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       body: SingleChildScrollView(

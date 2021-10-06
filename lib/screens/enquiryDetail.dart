@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:sizer/sizer.dart';
 
 import 'dart:io';
 
@@ -13,7 +13,7 @@ import 'dart:convert';
 
 class EnquiryDetails extends StatefulWidget {
 
-var P_Agency_FilterId;
+// var P_Agency_FilterId;
 
   
 
@@ -26,16 +26,16 @@ var P_Agency_FilterId;
 }
 
 class _NotificationDetailsState extends State<EnquiryDetails> {
- bool isloading = false;
- late ModelSearchProperty modelSearch = ModelSearchProperty();
+//  bool isloading = false;
+//  late ModelSearchProperty modelSearch = ModelSearchProperty();
 
- @override
-  void initState() {
-    print("jhuh"+widget.P_Agency_FilterId+"^^");
-    super.initState();
-  isloading = true;
-   // getData();
-  }
+//  @override
+//   void initState() {
+//     print("jhuh"+widget.P_Agency_FilterId+"^^");
+//     super.initState();
+//   isloading = true;
+//    // getData();
+//   }
 
  
   @override
@@ -43,7 +43,7 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffFFFFFF),
-        elevation: 0,
+        elevation: 1,
         leading: BackButton(
           color: Colors.black,
         ),
@@ -51,13 +51,14 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
         title: Text(
           "Enquiry Details",
           style: TextStyle(
-              fontSize: 16,
-              color: Color(0xff000000),
-              fontWeight: FontWeight.w600),
+             color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 14.sp),
         ),
       ),
-      body: isloading == true? Center(child: CircularProgressIndicator(),):
-      modelSearch == null ? Center(child: CircularProgressIndicator(),):
+      body: 
+      // isloading == true? Center(child: CircularProgressIndicator(),):
+      // modelSearch == null ? Center(child: CircularProgressIndicator(),):
       SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,17 +66,17 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
             ListTile(
               isThreeLine: true,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
               leading: Image.asset(
-                'assets/avatar.png',
-                height: 60,
-                width: 60,
+                'assets/Avatar.png',
+                
+                width: 8.h,
               ),
               title: Text(
                 "Client Name",
                 //widget.totalUserList.name,
                 style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12.5.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.w600),
               ),
@@ -91,17 +92,21 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
               )
             ),
             Container(
+              height: 22.h,
+              width: double.infinity,
               margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: modelSearch.pictureList!=null?modelSearch.pictureList.length==0?Image.asset(
-                "assets/blank.png",
-                filterQuality: FilterQuality.high,
-                fit: BoxFit.fill,
-              ): Image.network(
-                modelSearch.pictureList[0].PictureURL.toString(),
-                filterQuality: FilterQuality.high,
-                fit: BoxFit.fill,
-              ):Image.asset(
-                "assets/hut.jpeg",
+              child: 
+              // modelSearch.pictureList!=null?modelSearch.pictureList.length==0?Image.asset(
+              //   "assets/blank.png",
+              //   filterQuality: FilterQuality.high,
+              //   fit: BoxFit.fill,
+              // ): Image.network(
+              //   modelSearch.pictureList[0].PictureURL.toString(),
+              //   filterQuality: FilterQuality.high,
+              //   fit: BoxFit.fill,
+              // ):
+              Image.asset(
+                "assets/property.jpeg",
                 filterQuality: FilterQuality.high,
                 fit: BoxFit.fill,
               ),
@@ -111,37 +116,40 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
               child: Text(
                 'Urban Picific Real Estate',
                 style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 15.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.bold),
               ),
             ),
             Container(
               margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child:isloading
-                    ? Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                            margin: EdgeInsets.only(top: 20),
-                            child: Platform.isAndroid
-                                ? CircularProgressIndicator()
-                                : CupertinoActivityIndicator())) : Text(
-                  widget.P_Agency_FilterId=="1"
-                        ? modelSearch.price == null
-                            ? ""
-                            : '\€' + modelSearch.price
-                        : widget.P_Agency_FilterId=="5"
-                            ? modelSearch.price == null
-                                ? ""
-                                : 'From \€' + modelSearch.price
-                            : modelSearch.RentalPrice1 != null
-                                ? 'From \€' +
-                                    modelSearch.RentalPrice1 +
-                                    " per " +
-                                    modelSearch.RentalPeriod
-                                : "",
+              child:
+              //isloading
+                  //   ? Align(
+                  //       alignment: Alignment.center,
+                  //       child: Container(
+                  //           margin: EdgeInsets.only(top: 20),
+                  //           child: Platform.isAndroid
+                  //               ? CircularProgressIndicator()
+                  //               : CupertinoActivityIndicator())) : Text(
+                  // widget.P_Agency_FilterId=="1"
+                  //       ? modelSearch.price == null
+                  //           ? ""
+                  //           : '\€' + modelSearch.price
+                  //       : widget.P_Agency_FilterId=="5"
+                  //           ? modelSearch.price == null
+                  //               ? ""
+                  //               : 'From \€' + modelSearch.price
+                  //           : modelSearch.RentalPrice1 != null
+                  //               ? 'From \€' +
+                  //                   modelSearch.RentalPrice1 +
+                  //                   " per " +
+                  //                   modelSearch.RentalPeriod
+                  //               : "",
+
+                  Text(r"$0000000",
                 style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 15.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.bold),
               ),
@@ -149,9 +157,10 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
             Container(
               margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
               child: Text(
-                modelSearch.pool != null ? modelSearch.pool : "0",
+                'Rajveer Place',
+               // modelSearch.pool != null ? modelSearch.pool : "0",
                 style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.w500),
               ),
@@ -159,23 +168,68 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
             Container(
               margin: EdgeInsets.fromLTRB(10, 8, 10, 10),
               child: Text(
-                modelSearch.Type +
-                  " in " +
-                  modelSearch.location +
-                  " , " +
-                  modelSearch.Area,
+
+                "New York",
+
+
+                // modelSearch.Type +
+                //   " in " +
+                //   modelSearch.location +
+                //   " , " +
+                //   modelSearch.Area,
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.w300),
               ),
             ),
+
+
             Container(
               margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
               child: Text(
-                'Description',
+                'Enquiry Message',
                 style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16.sp,
+                    color: Color(0xff000000),
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+
+             Container(
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Text(
+
+                """Lorem ipsum is simply dummy text of the  
+printing and typecasting industry.""",
+
+                // modelSearch.description == null
+                //   ? ""
+                //   : modelSearch.description,
+              softWrap: true,
+              overflow: TextOverflow.fade,
+                style: TextStyle(
+                    fontSize: 11.sp,
+                    color: Color(0xff706C6C),
+                    
+                    ),
+              ),
+            ),
+
+
+
+
+
+
+
+
+
+            Container(
+              margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+              child: Text(
+                'Property Description',
+                style: TextStyle(
+                    fontSize: 16.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.w500),
               ),
@@ -183,70 +237,122 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
             Container(
               margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Text(
-                modelSearch.description == null
-                  ? ""
-                  : modelSearch.description,
+                
+                """Lorem ipsum is simply dummy text of the  
+printing and typecasting industry.
+Lorem ipsum is simply dummy text of the  
+printing and typecasting industry.
+Lorem ipsum is simply dummy text of the  
+printing and typecasting industry.
+Lorem ipsum is simply dummy text of the  
+printing and typecasting industry.""",
+                // modelSearch.description == null
+                //   ? ""
+                //   : modelSearch.description,
               softWrap: true,
               overflow: TextOverflow.fade,
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 11.sp,
                     color: Color(0xff706C6C),
                     height: 1.5,
                     wordSpacing: 2),
               ),
             ),
-            Container(
-              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-              child: Text(
-                'Features',
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Color(0xff000000),
-                    fontWeight: FontWeight.w500),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: modelSearch.features != null
-                    ? modelSearch.features.length
-                    : 0,
-                itemBuilder: (BuildContext context, int i) {
-                  String s = modelSearch.features[i].Value.join(",");
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
+
+
+
+            SizedBox(height: 2.h,),
+
+
+
+             GestureDetector(
+                        onTap: () {
+
+                          customDialog();
+
+                          
+
+                          
+                          
+                        },
+                        child: Container(
+                          height: 7.h,
+                          // width: 122,
+                          // height: 30,
+                         margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 2.w, ),
+                          decoration: BoxDecoration(
+                            color: Color(0xffFFBA00),
+                            borderRadius: BorderRadius.circular(3.w),
+                          ),
+                          child: Center(
                             child: Text(
-                              modelSearch.features[i].Type,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              'Assign Agent',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
                             ),
                           ),
                         ),
-                        Expanded(
-                            flex: 1,
-                            child: Text(
-                              s,
-                              textAlign: TextAlign.start,
-                            ))
-                      ],
-                    ),
-                  );
-                }),
-          ),
-            SizedBox(
-              height: 30,
-            ),
+                      ),
+
+                      SizedBox(height: 2.h,)
+
+            // Container(
+            //   margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            //   child: Text(
+            //     'Features',
+            //     style: TextStyle(
+            //         fontSize: 20,
+            //         color: Color(0xff000000),
+            //         fontWeight: FontWeight.w500),
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 10,
+            // ),
+          //   Padding(
+          //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+          //   child: ListView.builder(
+          //       shrinkWrap: true,
+          //       physics: NeverScrollableScrollPhysics(),
+          //       itemCount: modelSearch.features != null
+          //           ? modelSearch.features.length
+          //           : 0,
+          //       itemBuilder: (BuildContext context, int i) {
+          //         String s = modelSearch.features[i].Value.join(",");
+          //         return Padding(
+          //           padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          //           child: Row(
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Expanded(
+          //                 flex: 1,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.only(bottom: 10.0),
+          //                   child: Text(
+          //                     modelSearch.features[i].Type,
+          //                     style: TextStyle(fontWeight: FontWeight.bold),
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                   flex: 1,
+          //                   child: Text(
+          //                     s,
+          //                     textAlign: TextAlign.start,
+          //                   ))
+          //             ],
+          //           ),
+          //         );
+          //       }),
+          // ),
+          //   SizedBox(
+          //     height: 30,
+          //   ),
           ],
         ),
       ),
@@ -379,46 +485,219 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
   //     });
   //   }
   // }
+
+   customDialog() {
+    showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3.w)),
+                      title: SingleChildScrollView(
+                        child: Container(
+                          //width: MediaQuery.of(context).size.width*.60,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                
+                                
+                                children: [
+                                  Text(
+                                    'Assign Lead',
+                                    style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+
+                                  SizedBox(width: 20.w,),
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        size: 7.w,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      }),
+                                ],
+                              ),
+
+                              Container(
+                                color: Colors.grey,
+                                height: 0.1.h,
+                                width: double.infinity,
+                              ),
+
+                              SizedBox(height:1.h),
+                                      Text(
+                                        'Name',
+                                        style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 11.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xff000000)),
+                                      ),
+                              Container(height: 5.h,
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    suffixIcon: Icon(
+                              Icons.arrow_drop_down,
+                              size: 8.w,
+                            ),
+                                      hintText:
+                                        "Agent's Name",
+                                        hintStyle: TextStyle(
+                                          fontSize: 9.sp
+                                        ),
+                                      border: OutlineInputBorder(
+                                        
+                                          borderRadius:
+                                              BorderRadius.circular(10))),
+                                              
+                                ),
+                              ),
+
+                              SizedBox(height: 1.h,),
+                              Text(
+                                'Email Address',
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff000000)
+
+                                ),
+                              ),
+                              Container(
+                                height: 5.h,
+                                child: TextField(
+                                  enabled: false,
+                                  
+                                  decoration: InputDecoration(
+                                     hintText:
+                                        'agent@gmail.com',
+                                        hintStyle: TextStyle(
+                                          fontSize: 9.sp
+                                        ),
+
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10))),
+                                ),
+                              ),
+
+                              SizedBox(height: 1.h,),
+                              Text(
+                                'Mobile Number',
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff000000)),
+                              ),
+                              Container(
+                                height: 5.h,
+                                child: TextField(
+                                  enabled: false,
+                                  decoration: InputDecoration(
+                                      hintText:
+                                        '+91 9876543210',
+                                        hintStyle: TextStyle(
+                                          fontSize: 9.sp
+                                        ),
+
+                                      border: OutlineInputBorder(
+                                        
+                                          borderRadius:
+                                              BorderRadius.circular(3.w))),
+                                ),
+                              ),
+                    
+
+                             SizedBox(height: 2.h,),
+                              
+                              GestureDetector(
+                                onTap: () {
+                                  
+
+                                },
+                                child: Container(
+                                  height: 5.h,
+                                  
+                                  
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffFFBA00),
+                                    borderRadius: BorderRadius.circular(3.w),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Assign Agent',
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 11.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+  }
+
+
+  
+
+
 }
 
-class ModelSearchProperty{
+// class ModelSearchProperty{
 
-  String referanceId = "";
-  String priceStart = "";
-  String priceTill = "";
-  String propertyType = "";
-  String location = "";
-  String Area = "";
-  String province = "";
-  String Type = "";
-  String nameType = "";
-  String bedrooms = "";
-  String pool = "";
-  String mainImage = "";
-  String bathrooms = "";
-  String currency = "";
-  String price = "";
-  String originalPrice = "";
-  String RentalPrice1 = "";
-  String RentalPrice2 = "";
-  String RentalPeriod = "";
-  String description = "";
-  String country = "";
-  String Subtype1 = "";
-  String SubtypeId1 = "";
-  List<Pictures> pictureList = [];
-  List<Features> features = [];
- }
+//   String referanceId = "";
+//   String priceStart = "";
+//   String priceTill = "";
+//   String propertyType = "";
+//   String location = "";
+//   String Area = "";
+//   String province = "";
+//   String Type = "";
+//   String nameType = "";
+//   String bedrooms = "";
+//   String pool = "";
+//   String mainImage = "";
+//   String bathrooms = "";
+//   String currency = "";
+//   String price = "";
+//   String originalPrice = "";
+//   String RentalPrice1 = "";
+//   String RentalPrice2 = "";
+//   String RentalPeriod = "";
+//   String description = "";
+//   String country = "";
+//   String Subtype1 = "";
+//   String SubtypeId1 = "";
+//   List<Pictures> pictureList = [];
+//   List<Features> features = [];
+//  }
 
- class Pictures{
+//  class Pictures{
 
-  String PictureURL = "";
+//   String PictureURL = "";
 
-}
+// }
 
-class Features{
+// class Features{
 
-  String Type = "";
-  var Value = [];
+//   String Type = "";
+//   var Value = [];
 
-}
+// }
