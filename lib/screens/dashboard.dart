@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:roccabox_admin/screens/totalAgentList.dart';
 import 'package:roccabox_admin/screens/totalUserList.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:roccabox_admin/theme/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class Dashboard extends StatefulWidget {
@@ -16,6 +20,21 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+
+  bool isloading = false;
+  var customers = "";
+  var agents = "";
+
+  @override
+  void initState() {
+   
+    super.initState();
+    dashBoardApi();
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +89,9 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList(
+                        customers: customers,
+                      )));
                     },
                     child: Container(
                     
@@ -101,7 +122,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text("3914",
+                          child: Text(customers.toString(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: 'Poppins',
@@ -119,7 +140,9 @@ class _DashboardState extends State<Dashboard> {
                  TextButton(
                    onPressed: () {
 
-                     Navigator.push(context, MaterialPageRoute(builder: (context) => TotalAgentList()));
+                     Navigator.push(context, MaterialPageRoute(builder: (context) => TotalAgentList(
+                       agents: agents,
+                     )));
                    },
                    child: Container(
                     
@@ -150,7 +173,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text("2958",
+                          child: Text(agents.toString(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: 'Poppins',
@@ -211,7 +234,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text("3914",
+                          child: Text(customers.toString(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: 'Poppins',
@@ -257,7 +280,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text("2958",
+                          child: Text(agents.toString(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: 'Poppins',
@@ -278,4 +301,67 @@ class _DashboardState extends State<Dashboard> {
       )),
     );
   }
+
+
+    Future<dynamic> dashBoardApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print(id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+
+      customers = jsonRes["data"]["customers"].toString();
+      print(customers.toString());
+
+      agents = jsonRes["data"]["agents"].toString();
+      print(agents.toString());
+      
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => HomeNav()),
+          //  (route) => false);
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+
+
 }

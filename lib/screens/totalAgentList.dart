@@ -12,6 +12,13 @@ import 'package:sizer/sizer.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 
 class TotalAgentList extends StatefulWidget {
+
+
+  var agents;
+  TotalAgentList({required this.agents});
+
+
+
   @override
   _TotalState createState() => _TotalState();
 }
@@ -166,7 +173,7 @@ class _TotalState extends State<TotalAgentList> {
                       height: 3.h,
                     ),
                     Text(
-                      "Total Agents: 2244",
+                      "Total Agents: " + widget.agents,
                       style: TextStyle(
                           fontSize: 15.sp, fontWeight: FontWeight.bold),
                     ),
@@ -209,7 +216,11 @@ class _TotalState extends State<TotalAgentList> {
 }
 
 class NewRequest extends StatefulWidget {
-  const NewRequest({Key? key}) : super(key: key);
+
+
+  
+
+  
 
   @override
   _NewRequestState createState() => _NewRequestState();

@@ -36,6 +36,7 @@ dependencies:
   sizer: ^2.0.15
   flutter_switch: ^0.3.2
   image_picker: ^0.8.0+3
+  country_code_picker: ^2.0.2
 
 dev_dependencies:
   flutter_test:

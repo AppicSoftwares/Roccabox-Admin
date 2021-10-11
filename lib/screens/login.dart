@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:roccabox_admin/screens/homenave.dart';
+import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:sizer/sizer.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
-import 'package:roccabox_admin/screens/Home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -133,10 +133,33 @@ class _LoginState extends State<Login> {
                       child: CircularProgressIndicator())
                   : GestureDetector(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (Context) => HomeNav()));
-                        // if (formkey.currentState!.validate()) {
-                        //   adminlogin(email.toString(), password.toString());
+                        //Navigator.push(context, MaterialPageRoute(builder: (Context) => HomeNav()));
+                        if (formkey.currentState!.validate()) {
+                          adminlogin(email.toString(), password.toString());
+                         }
+
+                        //    if (formkey.currentState!.validate()) {
+                        //   if (EmailValidator.validate(email.toString())) {
+                        //     setState(() {
+                        //       isloading = true;
+                        //     });
+                        //     adminlogin(email.toString(), password.toString(), );
+                        //   } else {
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //          SnackBar(
+                        //             content:
+                        //                 Text('Please enter a valid email')));
+                        //   }
                         // }
+                      
+
+                      
+
+
+
+
+
+
                       },
                       child: Container(
                         margin:
@@ -160,7 +183,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<dynamic> adminlogin(String email, String password) async {
+  Future<dynamic> adminlogin(String email, String password, ) async {
     setState(() {
       isloading = true;
     });
@@ -171,7 +194,9 @@ class _LoginState extends State<Login> {
     http.Response? res;
     var request = http.post(
         Uri.parse(
-          'https://appicsoftwares.in/development/roccabox/api/Login',
+
+          RestDatasource.LOGIN_URL,
+          //'https://appicsoftwares.in/development/roccabox/api/Login',
         ),
         body: {
           "email": email.toString().trim(),
@@ -201,7 +226,7 @@ class _LoginState extends State<Login> {
 
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => HomeNav()),
             (route) => false);
 
         setState(() {

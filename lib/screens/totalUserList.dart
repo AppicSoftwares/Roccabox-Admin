@@ -1,20 +1,52 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addUser.dart';
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editUser.dart';
-
+import 'package:roccabox_admin/services/apiClient.dart';
+import 'package:http/http.dart' as http;
 import 'package:roccabox_admin/theme/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 
 class TotalUserList extends StatefulWidget {
+
+  var customers;
+  TotalUserList({required this.customers});
+
+
   @override
   _TotalState createState() => _TotalState();
 }
 
 class _TotalState extends State<TotalUserList> {
+
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+
+  bool isloading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    userListApi();
+    
+  }
+  
+
+  List <TotalUserListApi> apiList = [];
+
+
+
+
 ScrollController _controller = new ScrollController();
   bool status = false;
   @override
@@ -88,7 +120,7 @@ ScrollController _controller = new ScrollController();
                     height: 3.h,
                   ),
                   Text(
-                    "Total User: 2244",
+                    "Total User: " + widget.customers,
                     style: TextStyle(
                         fontSize: 15.sp, fontWeight: FontWeight.bold),
                   ),
@@ -108,27 +140,33 @@ ScrollController _controller = new ScrollController();
                         child: Column(
                           children: [
                             ListTile(
-                    leading: CircleAvatar(
-                              maxRadius: 9.w,
-                              child: Image.asset("assets/Avatar.png")),
+                    leading: image == null
+                                    ? Image.asset(
+                                        'assets/Avatar.png',
+                                      )
+                                    : CircleAvatar(
+                                      radius: 30,
+                                        backgroundImage: NetworkImage(apiList[index].image.toString()),
+                                      ),
                     title: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Testing User",
+                                apiList[index].name.toString(),
                                 style: TextStyle(
                                     fontSize: 11.sp,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                "test@gmail.com",
+                               apiList[index].email.toString(),
+                               overflow: TextOverflow.ellipsis,
                                 style:
                                     TextStyle(fontSize: 8.sp, color: Colors.grey),
                               ),
                               Text(
-                                "9876543210",
+                                apiList[index].phone.toString(),
                                 style:
                                     TextStyle(fontSize: 8.sp, color: Colors.grey),
                               ),
@@ -258,5 +296,95 @@ ScrollController _controller = new ScrollController();
           ),
         );
   }
+
+
+    Future<dynamic> userListApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print(id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.TOTALUSERLIST_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+
+      name = jsonRes["data"][0]["name"].toString();
+      print(name.toString());
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        TotalUserListApi modelSearch = new TotalUserListApi();
+        modelSearch.name = jsonArray[i]["name"];
+        modelSearch.email = jsonArray[i]["email"].toString();
+        modelSearch.phone = jsonArray[i]["phone"].toString();
+        modelSearch.image = jsonArray[i]["image"].toString();
+
+        print(modelSearch.name.toString());
+
+        apiList.add(modelSearch);
+        
+      }
+
+      // for (var i = 0; i < apiList.length; i++) {
+
+      //   print(apiList[1].toString());
+        
+      // }
+
+      // agents = jsonRes["data"]["agents"].toString();
+      // print(agents.toString());
+      
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => HomeNav()),
+          //  (route) => false);
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
 }
 
+
+class TotalUserListApi {
+
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  
+}
