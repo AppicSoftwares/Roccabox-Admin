@@ -6,12 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:roccabox_admin/screens/totalUserList.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class AddUser extends StatefulWidget {
-  const AddUser({Key? key}) : super(key: key);
+  var customers;
+  AddUser({required this.customers});
 
   @override
   _AddUserState createState() => _AddUserState();
@@ -184,7 +186,7 @@ class _AddUserState extends State<AddUser> {
                               alignLeft: false,
                             ),
                             counterText: "",
-                            hintText: "Enter Name",
+                            hintText: "Enter Phone Number",
 
                         
                             border: OutlineInputBorder(
@@ -347,9 +349,10 @@ class _AddUserState extends State<AddUser> {
         setState(() {
           isloading = false;
         });
-        Navigator.pop(context);
+        
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList(customers: widget.customers)));
         
       } else {
         setState(() {

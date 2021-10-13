@@ -206,34 +206,36 @@ class _TotalState extends State<Banners> {
   }
 
  customSwitch() {
-    return Container(
-      height: 3.2.h,
-      width: 28.w,
-      
-          child: FlutterSwitch(
-             width: 125
-             ,
-            // height: 50.0,
-            valueFontSize: 10.0,
-            activeColor: kGreenColor,
-            inactiveColor: Colors.grey.shade300,
-            toggleSize: 20.0,
-            value: status,
-            borderRadius: 2.0,
-            activeText: "Active",
-            inactiveText: "Deactive",
-            inactiveTextColor: Colors.black,
-
-            
-            
-            
-            showOnOff: true,
-            onToggle: (val) {
-              setState(() {
-                status = val;
-              });
-            },
+    return Expanded(
+      child: Container(
+        height: 3.2.h,
+        width: 28.w,
+        
+            child: FlutterSwitch(
+               width: 125
+               ,
+              // height: 50.0,
+              valueFontSize: 10.0,
+              activeColor: kGreenColor,
+              inactiveColor: Colors.grey.shade300,
+              toggleSize: 20.0,
+              value: status,
+              borderRadius: 2.0,
+              activeText: "Active",
+              inactiveText: "Deactive",
+              inactiveTextColor: Colors.black,
+    
+              
+              
+              
+              showOnOff: true,
+              onToggle: (val) {
+                setState(() {
+                  status = val;
+                });
+              },
+            ),
           ),
-        );
+    );
   }
 }

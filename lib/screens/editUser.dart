@@ -1,20 +1,49 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:roccabox_admin/screens/totalUserList.dart';
+import 'package:roccabox_admin/services/apiClient.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class EditUser extends StatefulWidget {
-  const EditUser({Key? key}) : super(key: key);
+  var  name, phone, email, country_code, id, customers;
+  EditUser({required this.name,  required this.phone,  
+  required this.email, required this.country_code, required this.id, required this.customers});
+
+ 
 
   @override
   _AddUserState createState() => _AddUserState();
 }
 
 class _AddUserState extends State<EditUser> {
+
+
+   var name, email, phone, id;
+  TextEditingController nameController = new TextEditingController();
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController phoneController = new TextEditingController();
+  
+
+
+
+
+
+  String? uptname;
+  String? uptemail;
+  String? uptoPhone;
+
+  String? code = "44";
+  bool isloading = false;
   String image = "";
     String base64Image = "";
   String fileName = "";
@@ -27,6 +56,9 @@ class _AddUserState extends State<EditUser> {
 
   @override
   Widget build(BuildContext context) {
+
+    print("phone: "+widget.phone.toString());
+    print("id: "+widget.id.toString());
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -64,13 +96,15 @@ class _AddUserState extends State<EditUser> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          FittedBox(
+                           FittedBox(
 
-                            child: CircleAvatar(
-                             
-                                        backgroundImage: AssetImage("assets/image.jpeg"),
-                                        
-                                      )
+                            child: file == null
+                            ? 
+                            Image.asset("assets/Avatar.png")
+                            : CircleAvatar(
+                              backgroundImage: 
+                              FileImage(File(file!.path)),
+                            ),
                                 
                           ),
                           Positioned(
@@ -90,9 +124,14 @@ class _AddUserState extends State<EditUser> {
                 Padding(
                   padding: EdgeInsets.only(top: 10.h, bottom: 1.h),
                   child: TextFormField(
+                    controller: nameController,
+                    
+                    
                     
                     decoration: InputDecoration(
-                      hintText: "Jitendra",
+
+                      //name
+                      hintText: widget.name.toString(),
                       hintStyle: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold
@@ -105,11 +144,16 @@ class _AddUserState extends State<EditUser> {
                 Padding(
                   padding:  EdgeInsets.only(top: 1.h, ),
                   child: TextFormField(
+
+                     controller: emailController,
+                   
+                    inputFormatters: [FilteringTextInputFormatter.deny(" ")],
                     
+                    //email
                     
                     // controller: uptemail,
                     decoration: InputDecoration(
-                      hintText: "Jitendra@gmail.com",
+                      hintText: widget.email.toString(),
                       hintStyle: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold
@@ -119,24 +163,91 @@ class _AddUserState extends State<EditUser> {
                   ),
                 ),
                 
+              
                 Padding(
-                  padding: EdgeInsets.only(top: 2.h),
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 20),
                   child: TextField(
-                    
+                    controller: phoneController,
+                    enabled: false,
                     decoration: InputDecoration(
-                      hintText: "9876543210",
+
+                       hintText: widget.phone.toString(),
                       hintStyle: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold
                       ),
-                      
-                        border: OutlineInputBorder(
 
-                            borderRadius: BorderRadius.circular(3.w))),
+
+
+
+
+
+                        prefixIcon: CountryCodePicker(
+                          // showFlag: false,
+                          onChanged: print,
+                          // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
+                          initialSelection: 'gb',
+                          // favorite: ['+91', 'FR'],
+                          // optional. Shows only country name and flag
+                          showCountryOnly: false,
+                          // optional. Shows only country name and flag when popup is closed.
+                          showOnlyCountryWhenClosed: false,
+                          // optional. aligns the flag and the Text left
+                          alignLeft: false,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10))),
                   ),
                 ),
+                 
+                 isloading
+                 ? Align(
+                   alignment: Alignment.center,
+                   child: CircularProgressIndicator(),
+                 )
+                 :
+                 
                  GestureDetector(
                         onTap: () {
+
+                          if (formkey.currentState!.validate()) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                       
+                        uptname = nameController.text.toString();
+                         if (uptname == null){
+                          uptname = widget.name.toString();
+                          
+                          } 
+                          print("name: "+uptname.toString());
+
+                          uptemail= emailController.text.toString();
+
+
+                          if (uptemail == null) {
+
+                          uptemail=  widget.email.toString();
+
+                            
+                          }
+                        
+                            
+                              
+                              print("email : " +uptemail.toString());
+                            
+
+                            if(uptoPhone==null){
+                              uptoPhone = phoneController.text.toString();
+                              print("phone Number: " +phoneController.text.toString());
+                            }
+
+                          
+                            uploadData(uptname.toString(), uptemail.toString(), widget.phone.toString(), );
+
+                            // userRegister(email.toString(), phone.toString(),
+                            //     firstname.toString() + ' ' + lastname.toString());
+                          }
                           
                         },
                         child: Container(
@@ -191,4 +302,108 @@ class _AddUserState extends State<EditUser> {
     print("Image: " + base64Image.toString() + "_");
     setState(() {});
   }
+
+
+  
+   Future<dynamic> uploadData( String name, String email, String phone) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+    
+        print("name update: " +name.toString());
+        print("admin id update: " +id.toString());
+        print("user id update: " +widget.id.toString());
+        print("email update: " +email.toString());
+
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse(
+        RestDatasource.EDITUSER_URL,
+      ),
+    );
+    if(name.toString() != "null" || name.toString()!="") {
+      request.fields["name"] = name;
+      print("Name: " +name.toString());
+    }
+    
+    if(email.toString() != "null" || email.toString()!="") {
+      request.fields["email"] = email;
+      print("email: " +email.toString());
+    }
+    
+    if(phone.toString() != "null" || phone.toString()!="") {
+      request.fields["phone"] = phone.toString();
+      print("phone number 1 : " +phone.toString());
+    }
+
+     if(code.toString() != "null" || code.toString()!="") {
+      request.fields["country_code"] = code.toString();
+    }
+
+    request.fields["admin_id"] = id.toString();
+    request.fields["user_id"] = widget.id.toString();
+    //request.files.add(await http.MultipartFile.fromPath(base64Image, fileName));
+    if (file != null) {
+      request.files.add(http.MultipartFile(
+          'image',
+          File(file!.path).readAsBytes().asStream(),
+          File(file!.path).lengthSync(),
+          filename: fileName));
+          print("image: " + fileName.toString());
+    }
+    var jsonRes;
+    var res = await request.send();
+ // print("ResponseJSON: " + respone.toString() + "_");
+    // print("status: " + jsonRes["success"].toString() + "_");
+    // print("message: " + jsonRes["message"].toString() + "_");
+
+    if (res.statusCode == 200) {
+      var respone = await res.stream.bytesToString();
+      final JsonDecoder _decoder = new JsonDecoder();
+     
+      jsonRes = _decoder.convert(respone.toString());
+      print("Response: " + jsonRes.toString() + "_");
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+       
+
+        
+
+
+        // prefs.setString('phone', jsonRes["data"]["phone"].toString());
+        prefs.commit();
+        setState(() {
+          isloading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalUserList(customers: widget.customers)));
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
 }

@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addAgent.dart';
 import 'package:roccabox_admin/screens/addUser.dart';
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editAgent.dart';
-
+import 'package:roccabox_admin/services/apiClient.dart';
+import 'package:http/http.dart' as http;
 import 'package:roccabox_admin/theme/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 
@@ -25,7 +30,7 @@ class TotalAgentList extends StatefulWidget {
 
 class _TotalState extends State<TotalAgentList> {
  
-  String selected = "first";
+  String selected = "second";
 
   ScrollController _controller = new ScrollController();
   bool status = false;
@@ -49,7 +54,7 @@ class _TotalState extends State<TotalAgentList> {
           TextButton(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AddAgent()));
+                  context, MaterialPageRoute(builder: (context) => AddAgent(agents: widget.agents,)));
             },
             child: Container(
               margin: EdgeInsets.only(top: .5.h, right: 1.h, bottom: .5.h),
@@ -172,15 +177,8 @@ class _TotalState extends State<TotalAgentList> {
                     SizedBox(
                       height: 3.h,
                     ),
-                    Text(
-                      "Total Agents: " + widget.agents,
-                      style: TextStyle(
-                          fontSize: 15.sp, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    selected == "first" ? NewRequest() : AgentList()
+                    
+                    selected == "second" ? AgentList(agents: widget.agents) : NewRequest() 
                   ],
                 ),
               ],
@@ -227,15 +225,51 @@ class NewRequest extends StatefulWidget {
 }
 
 class _NewRequestState extends State<NewRequest> {
+
+   var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  var country_code = "";
+
+  bool isloading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+newAgentListApi();
+    
+    
+  }
+  
+
+  List <NewRequestAgentList> apiAgentList = [];
+
+
+
   ScrollController _controller = new ScrollController();
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return  isloading
+        ? Align(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(
+            
+          ),
+        )
+        :
+    
+    ListView.builder(
       shrinkWrap: true,
       controller: _controller,
-      itemCount: 10,
+      itemCount: apiAgentList.length,
       itemBuilder: (BuildContext context, int index) {
-        return Container(
+        return 
+
+       
+        
+        Container(
           child: Column(
             children: [
               
@@ -249,20 +283,36 @@ class _NewRequestState extends State<NewRequest> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Testing User",
+                      //"Testing User",
+                      apiAgentList[index].name.toString(),
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 11.sp,
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "test@gmail.com",
+                     // "test@gmail.com",
+                     apiAgentList[index].email.toString(),
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 8.sp, color: Colors.grey),
                     ),
-                    Text(
-                      "9876543210",
-                      style: TextStyle(fontSize: 8.sp, color: Colors.grey),
-                    ),
+                      Row(
+                                  children: [
+                                     Text(
+                                      apiAgentList[index].country_code.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                    ),
+                                    Text(
+                                      apiAgentList[index].phone.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
                   ],
                 ),
                 trailing: Column(
@@ -320,25 +370,147 @@ class _NewRequestState extends State<NewRequest> {
     );
   }
 
+   Future<dynamic> newAgentListApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print(id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.NEWREQUESTAGENTLIST_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+          apiAgentList.clear();
+    
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        NewRequestAgentList modelAgentSearch = new NewRequestAgentList();
+        modelAgentSearch.name = jsonArray[i]["name"];
+        modelAgentSearch.id = jsonArray[i]["id"].toString();
+        modelAgentSearch.email = jsonArray[i]["email"].toString();
+        modelAgentSearch.phone = jsonArray[i]["phone"].toString();
+        modelAgentSearch.image = jsonArray[i]["image"].toString();
+        modelAgentSearch.country_code = jsonArray[i]["country_code"].toString();
+
+        print("id: "+modelAgentSearch.id.toString());
+
+        apiAgentList.add(modelAgentSearch);
+        
+      }
+
+     
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
   
 }
 
 class AgentList extends StatefulWidget {
-  const AgentList({Key? key}) : super(key: key);
+  var agents;
+  AgentList({required this.agents});
 
   @override
   _AgentListState createState() => _AgentListState();
 }
 
 class _AgentListState extends State<AgentList> {
+
+
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  var country_code = "";
+
+  bool isloading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    agentListApi();
+    
+  }
+  
+
+  List <TotalAgentListApi> apiList = [];
+
+
+
+
   bool status = false;
   ScrollController _controller = new ScrollController();
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    print("Main:" + widget.agents.toString());
+    return isloading
+    ?
+    Align(
+      alignment: Alignment.center,
+      child: CircularProgressIndicator()
+    )
+    :
+    
+    ListView(
+      shrinkWrap: true,
+            controller: _controller,
+
+            children: [
+              Column(
+                children: [
+
+                  Text(
+                    "Total User: " + widget.agents,
+                    style: TextStyle(
+                        fontSize: 15.sp, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+
+                  ListView.builder(
       shrinkWrap: true,
       controller: _controller,
-      itemCount: 10,
+      itemCount: apiList.length,
       itemBuilder: (BuildContext context, int index) {
         return Container(
           height: 12.h,
@@ -352,20 +524,36 @@ class _AgentListState extends State<AgentList> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Testing User",
+                      //"Testing User",
+                      apiList[index].name.toString(),
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 11.sp,
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "test@gmail.com",
+                     // "test@gmail.com",
+                     apiList[index].email.toString(),
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 8.sp, color: Colors.grey),
                     ),
-                    Text(
-                      "9876543210",
-                      style: TextStyle(fontSize: 8.sp, color: Colors.grey),
-                    ),
+                      Row(
+                                  children: [
+                                     Text(
+                                      apiList[index].country_code.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                    ),
+                                    Text(
+                                      apiList[index].phone.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
                   ],
                 ),
                 trailing: Column(
@@ -397,7 +585,16 @@ class _AgentListState extends State<AgentList> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder:  (context) => EditAgent()));
+                            Navigator.push(context, MaterialPageRoute(builder:  (context) => EditAgent(
+                              name: apiList[index].name.toString(),
+                                            phone: apiList[index].phone.toString(),
+                                            email: apiList[index].email.toString(),
+                                            country_code: apiList[index].country_code.toString(),
+                                            id: apiList[index].id.toString(),
+                                           
+                                            agents: widget.agents,
+
+                            )));
                           },
                           child: Image.asset(
                             "assets/edit.png",
@@ -408,7 +605,12 @@ class _AgentListState extends State<AgentList> {
                           width: 1.w,
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+
+
+
+                            customDialog(index);
+                          },
                           child: Image.asset(
                             "assets/delete.png",
                             width: 6.w,
@@ -439,70 +641,290 @@ class _AgentListState extends State<AgentList> {
           ),
         );
       },
+    ),
+
+                ],
+              )
+            ],
     );
+
+   
+    
+    
+    
   }
 
    customSwitch() {
-    return Container(
-      height: 3.1.h,
-      width: 28.w,
-      
-          child: FlutterSwitch(
-             width: 125
-             ,
-            // height: 50.0,
-            valueFontSize: 10.0,
-            activeColor: kGreenColor,
-            inactiveColor: Colors.grey.shade300,
-            toggleSize: 20.0,
-            value: status,
-            borderRadius: 2.0,
-            activeText: "Active",
-            inactiveText: "Deactive",
-            inactiveTextColor: Colors.black,
+    return Expanded(
+      child: Container(
+        height: 3.1.h,
+        width: 28.w,
+        
+            child: FlutterSwitch(
+               width: 125
+               ,
+              // height: 50.0,
+              valueFontSize: 10.0,
+              activeColor: kGreenColor,
+              inactiveColor: Colors.grey.shade300,
+              toggleSize: 20.0,
+              value: status,
+              borderRadius: 2.0,
+              activeText: "Active",
+              inactiveText: "Deactive",
+              inactiveTextColor: Colors.black,
+    
+              
+              
+              
+              showOnOff: true,
+              onToggle: (val) {
+                setState(() {
+                  status = val;
+                });
+              },
+            ),
+          ),
+    );
+  }
 
-            
-            
-            
-            showOnOff: true,
-            onToggle: (val) {
-              setState(() {
-                status = val;
-              });
-            },
+   Future<dynamic> agentListApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print(id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+          apiList.clear();
+    
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        TotalAgentListApi modelSearch = new TotalAgentListApi();
+        modelSearch.name = jsonArray[i]["name"];
+        modelSearch.id = jsonArray[i]["id"].toString();
+        modelSearch.email = jsonArray[i]["email"].toString();
+        modelSearch.phone = jsonArray[i]["phone"].toString();
+        modelSearch.image = jsonArray[i]["image"].toString();
+        modelSearch.country_code = jsonArray[i]["country_code"].toString();
+
+        print("id: "+modelSearch.id.toString());
+
+        apiList.add(modelSearch);
+        
+      }
+
+     
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+
+   customDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+          title: SingleChildScrollView(
+            child: Container(
+              //width: MediaQuery.of(context).size.width*.60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                 Text(
+                          
+                          
+                          'Are you Sure you want \n'
+                          "to delete this user",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold),
+                        ),
+                  
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  
+                  isloading 
+                  ?
+                   Align(
+                     alignment: Alignment.center,
+                     child: CircularProgressIndicator(),
+                   )
+                  :
+                  GestureDetector(
+                    onTap: () {
+                      deleteData(index);
+                     
+                    },
+                    child: Container(
+                      width: 40.w,
+                      height: 5.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFFBA00),
+                        borderRadius: BorderRadius.circular(3.w),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
+      },
+    );
   }
+
+
+
+   Future<dynamic> deleteData( int index) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.post(
+      Uri.parse(
+        RestDatasource.DELETEUSER_URL,
+      ),
+      body: {
+        "admin_id":id.toString(),
+        "user_id":apiList[index].id.toString()
+      }
+    );
+   
+  
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+    
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+            agentListApi();
+        
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+
+
+}
+
+
+class TotalAgentListApi {
+  var id = "";
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  var country_code = "";
+  
+}
+
+class NewRequestAgentList {
+
+  var id = "";
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  var country_code = "";
+
 }
 
 
 
-// Container(
-//                child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.center,
-//                  children: [
-//                    Container(
-//                      height: 0.1.h,
-//                      width: 40.w,
-//                      color: Colors.grey[400],
-//                    ),
-//                    SizedBox(width: 1.w,),
 
-//                    Text("Today",
-//                    style: TextStyle(
-//                      color: Colors.grey,
-//                      fontSize: 8.sp,
-
-//                    ),
-//                    ),
-
-//                     SizedBox(width: 1.w,),
-
-//                    Container(
-//                      height: 0.1.h,
-//                      width: 40.w,
-//                      color: Colors.grey[400],
-//                    ),
-//                  ],
-//                ),
-//               ),
