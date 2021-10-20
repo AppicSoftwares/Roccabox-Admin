@@ -6,6 +6,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addAgent.dart';
+import 'package:roccabox_admin/screens/agentSearchBar.dart';
 
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editAgent.dart';
@@ -29,6 +30,31 @@ class TotalAgentList extends StatefulWidget {
 }
 
 class _TotalState extends State<TotalAgentList> {
+
+
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  var country_code = "";
+
+  bool isloading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+   // agentListApi();
+    
+  }
+  
+
+  List <TotalAgentListApi> apiList = [];
+
+
+
+  
  
   String selected = "second";
 
@@ -83,22 +109,63 @@ class _TotalState extends State<TotalAgentList> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Container(
-                        width: double.infinity,
-                        height: 7.h,
-                        child: TextFormField(
-                          validator: (val) {},
-                          decoration: InputDecoration(
-                              suffixIcon: Icon(
-                                Icons.search,
-                                size: 8.w,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar(agents: widget.agents,)));
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 7.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(3.w),
+                            border: Border.all(
+                              color: Colors.grey
+                            )
+                          ),
+
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 3.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text('Search',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14.sp
                               ),
-                              hintText: 'Search',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(3.w),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              labelStyle: TextStyle(
-                                  fontSize: 15, color: Color(0xff000000))),
+                              ),
+
+                              Icon(
+                                    Icons.search,
+                                    size: 8.w,
+                                    color: Colors.grey
+                                  ),
+
+                            ],),
+                          )
+                           
+
+                          
+                          // TextFormField(
+                          //    onChanged: (value){
+                          //   searchData(value.toString());
+                          // },
+                          // validator: (val) {
+                            
+                          // },
+                            
+                          //   decoration: InputDecoration(
+                          //       suffixIcon: Icon(
+                          //         Icons.search,
+                          //         size: 8.w,
+                          //       ),
+                          //       hintText: 'Search',
+                          //       border: OutlineInputBorder(
+                          //           borderRadius: BorderRadius.circular(3.w),
+                          //           borderSide: BorderSide(color: Colors.grey)),
+                          //       labelStyle: TextStyle(
+                          //           fontSize: 15, color: Color(0xff000000))),
+                          // ),
                         ),
                       ),
                     ),
@@ -211,6 +278,89 @@ class _TotalState extends State<TotalAgentList> {
       ),
     );
   }
+
+   Future<dynamic> searchData(String key ) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+       print("key Print: " +key.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.get(
+      Uri.parse(
+        RestDatasource.SEARCHUSER_URL + "admin_id=" + id.toString() + "&key=" + key.toString()
+        
+      ),
+      
+    );
+   
+    var jsonArray;
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      jsonArray = jsonRes['data'];
+    });
+
+     if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+          apiList.clear();
+    
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        TotalAgentListApi modelSearch = new TotalAgentListApi();
+        modelSearch.name = jsonArray[i]["name"];
+        modelSearch.id = jsonArray[i]["id"].toString();
+        modelSearch.email = jsonArray[i]["email"].toString();
+        modelSearch.phone = jsonArray[i]["phone"].toString();
+        modelSearch.image = jsonArray[i]["image"].toString();
+        modelSearch.country_code = jsonArray[i]["country_code"].toString();
+
+        print("id: "+modelSearch.id.toString());
+
+        apiList.add(modelSearch);
+        
+      }
+
+     
+
+        setState(() {
+          isloading = false;
+        });
+      } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
 }
 
 class NewRequest extends StatefulWidget {
@@ -784,7 +934,7 @@ class _AgentListState extends State<AgentList> {
                 children: [
 
                   Text(
-                    "Total User: " + apiList.length.toString(),
+                    "Total Agent: " + apiList.length.toString(),
                     style: TextStyle(
                         fontSize: 15.sp, fontWeight: FontWeight.bold),
                   ),

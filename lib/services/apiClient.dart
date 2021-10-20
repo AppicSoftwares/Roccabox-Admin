@@ -15,6 +15,7 @@ class RestDatasource {
   static final TOTALAGENTLIST_URL = BASE_URL + "agent/all?";
   static final ADDAGENT_URL = BASE_URL + "agent/add";
   static final EDITAGENT_URL = BASE_URL + "agent/edit";
+  static final SEARCHAGENT_URL = BASE_URL + "agent/search?";
   static final SEARCHUSER_URL = BASE_URL + "user/search?";
   static final NEWREQUESTAGENTLIST_URL = BASE_URL + "agent/newRequest?";
   static final GETENQUIRYLIST_URL =BASE_URL + "enquiry/all?";
