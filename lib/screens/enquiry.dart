@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:roccabox_admin/screens/enquiryDetail.dart';
+import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:roccabox_admin/theme/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
 
 class Enquiry extends StatefulWidget {
   const Enquiry({Key? key}) : super(key: key);
@@ -14,6 +19,34 @@ class Enquiry extends StatefulWidget {
 }
 
 class _EnquiryState extends State<Enquiry> {
+
+  var name = "";
+  var email = "";
+  var phone = "";
+  var image = "";
+  var country_code = "";
+  var user_image = "";
+  var property_Rid = "";
+  var message = "";
+
+  bool isloading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+   getEnquiryApi();
+    
+  }
+  
+
+  List <GetEnquiry> apiList = [];
+
+
+
+
+
   bool remember = false;
   @override
   Widget build(BuildContext context) {
@@ -41,8 +74,19 @@ class _EnquiryState extends State<Enquiry> {
           ],
         ),
         body: SafeArea(
-          child: ListView.builder(
-            itemCount: 6,
+          child:
+
+           isloading
+        ? Align(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(
+            
+          ),
+        )
+        :
+          
+           ListView.builder(
+            itemCount: apiList.length,
             itemBuilder: (BuildContext context, int index) {
               return Column(
             children: [
@@ -61,24 +105,47 @@ class _EnquiryState extends State<Enquiry> {
                     side: BorderSide(color: Colors.white70, width: 1),
                     borderRadius: BorderRadius.circular(6.w),
                   ),
-                  child: Container(
+                  child: 
+                  
+                  
+                  Container(
                       height: 34.h,
                       width: double.infinity,
                       child: Stack(
                         children: [
                           Column(
                             children: <Widget>[
+
+                              image == null
+                               ?
                               Container(
                                 height: 19.h,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(6.w),
                                         topRight: Radius.circular(6.w)),
-                                    image: DecorationImage(
+                                    image: 
+                                    
+                                     DecorationImage(
                                         image:
                                             AssetImage("assets/property.jpeg"),
                                         fit: BoxFit.fill)),
-                              ),
+                              )
+                              :
+
+                               Container(
+                                height: 19.h,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(6.w),
+                                        topRight: Radius.circular(6.w)),
+                                    image: 
+                                    
+                                     DecorationImage(
+                                        image:
+                                            NetworkImage(apiList[index].image),
+                                        fit: BoxFit.fill)),
+                              )
                             ],
                           ),
                           Positioned(
@@ -91,58 +158,94 @@ class _EnquiryState extends State<Enquiry> {
                               ),
                               height: 10.h,
                               width: 10.h,
-                              child: CircleAvatar(
+                              child: user_image != null 
+                              ?
+                              //user image
+
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(apiList[index].user_image.toString())
+                              )
+                             
+
+                             :
+                              
+                              CircleAvatar(
                                 backgroundImage:
                                     AssetImage("assets/image.jpeg"),
                               ),
                             )),
                           ),
-                          Positioned(
-                              left: 30.w,
-                              bottom: 15.5.h,
-                              child: Text(
-                                "Urbn Pacific Real Estate...",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 9.sp),
-                              )),
+                          // Positioned(
+                          //     left: 30.w,
+                          //     bottom: 15.5.h,
+                          //     child: Text(
+                          //       "Urbn Pacific Real Estate...",
+                          //       style: TextStyle(
+                          //           color: Colors.white,
+                          //           fontWeight: FontWeight.w500,
+                          //           fontSize: 9.sp),
+                          //     )),
                           Positioned(
                               left: 29.w,
-                              bottom: 8.5.h,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Client Name",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp),
-                                  ),
-                                  Text(
-                                    "user@gmail.com",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 11.sp),
-                                  ),
-                                ],
-                              )),
-                          Positioned(
-                              right: 2.w,
-                              bottom: 8.5.h,
-                              child: Text(
-                                "+91 9876543210",
+                              bottom: 6.5.h,
+                              child: Container(
+                                width: 60.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                     // "Client Name",
+                                     apiList[index].name.toString(),
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14.sp),
+                                    ),
+                                    Text(
+
+                                      //email
+                                      
+                                      apiList[index].email.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 11.sp),
+                                    ),
+
+                                   // SizedBox(width: 10.w,),
+
+                                     Text(
+
+                                //phone no
+                               apiList[index].phone.toString(),
+                               overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 11.sp),
+                              ),
+                                  ],
+                                ),
                               )),
+                          // Positioned(
+                          //     right: 2.w,
+                          //     bottom: 8.5.h,
+                          //     child: Text(
+
+                          //       //phone no
+                          //      apiList[index].phone.toString(),
+                          //       style: TextStyle(
+                          //           color: Colors.black,
+                          //           fontWeight: FontWeight.w500,
+                          //           fontSize: 11.sp),
+                          //     )),
                           Positioned(
                               left: 6.w,
                               bottom: 1.h,
                               child: Text(
-                                """Lorem ipsum is simply dummy text of the  
-printing and typecasting industry.""",
+//                                 """Lorem ipsum is simply dummy text of the  
+// printing and typecasting industry.""",     
+                                  apiList[index].message.toString(),
+
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w500,
@@ -166,7 +269,7 @@ printing and typecasting industry.""",
                                               Border.all(color: kPrimaryColor)),
                                       child: Center(
                                         child: Text(
-                                          "Ref. 776622",
+                                          "Ref. " + apiList[index].property_Rid.toString(),
                                           style: TextStyle(
                                               fontSize: 10.sp,
                                               color: Colors.white),
@@ -460,4 +563,115 @@ printing and typecasting industry.""",
           );
         });
   }
+    Future<dynamic> getEnquiryApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print(id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.GETENQUIRYLIST_URL + "admin_id=" + id.toString() + "&status=Assign" 
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+         // apiAgentList.clear();
+    
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        GetEnquiry modelAgentSearch = new GetEnquiry();
+        modelAgentSearch.name = jsonArray[i]["name"];
+        modelAgentSearch.id = jsonArray[i]["id"].toString();
+        modelAgentSearch.email = jsonArray[i]["email"].toString();
+        modelAgentSearch.phone = jsonArray[i]["phone"].toString();
+        modelAgentSearch.image = jsonArray[i]["image"].toString();
+        modelAgentSearch.country_code = jsonArray[i]["country_code"].toString();
+        modelAgentSearch.user_image = jsonArray[i]["user_image"].toString();
+        modelAgentSearch.message = jsonArray[i]["message"].toString();
+        modelAgentSearch.property_Rid = jsonArray[i]["property_Rid"].toString();
+
+
+        print("id: "+modelAgentSearch.id.toString());
+
+        apiList.add(modelAgentSearch);
+        
+      }
+
+     
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+ 
+
+
+
+  
+
+
+
+
+
+
+
+}
+
+
+
+class GetEnquiry {
+ var user_id = "";
+ var user_image = "";
+ var id = "";
+ var role_id = "";
+ var name = "";
+ var email = "";
+ var country_code = "";
+ var phone = "";
+ var image = "";
+ var email_verified_at = "";
+ var password = "";
+ var firebase_token = "";
+ var status = "";
+ var created_at = "";
+ var updated_at = "";
+ var property_Rid = "";
+ var filter_id = "";
+ var message = "";
+ var q_status = "";
 }

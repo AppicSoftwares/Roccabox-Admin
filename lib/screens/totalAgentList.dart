@@ -6,7 +6,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addAgent.dart';
-import 'package:roccabox_admin/screens/addUser.dart';
+
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editAgent.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
@@ -226,7 +226,7 @@ class NewRequest extends StatefulWidget {
 
 class _NewRequestState extends State<NewRequest> {
 
-   var name = "";
+  var name = "";
   var email = "";
   var phone = "";
   var image = "";
@@ -318,17 +318,22 @@ newAgentListApi();
                 trailing: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      
-                      height: 2.5.h,
-                      width: 20.w,
-                      decoration: BoxDecoration(
-                          color: kGreenColor,
-                          borderRadius: BorderRadius.circular(2.w)),
-                      child: Center(
-                        child: Text("Approve",
-                            style: TextStyle(
-                                fontSize: 8.sp, color: Colors.white)),
+                    InkWell(
+                      onTap: () {
+                        approveDialog(index);
+                      },
+                      child: Container(
+                        
+                        height: 2.5.h,
+                        width: 20.w,
+                        decoration: BoxDecoration(
+                            color: kGreenColor,
+                            borderRadius: BorderRadius.circular(2.w)),
+                        child: Center(
+                          child: Text("Approve",
+                              style: TextStyle(
+                                  fontSize: 8.sp, color: Colors.white)),
+                        ),
                       ),
                     ),
 
@@ -336,17 +341,22 @@ newAgentListApi();
                       height:0.5.h
                     ),
 
-                    Container(
-                      
-                      height: 2.5.h,
-                      width: 20.w,
-                      decoration: BoxDecoration(
-                          color: kRedColor,
-                          borderRadius: BorderRadius.circular(2.w)),
-                      child: Center(
-                        child: Text("Reject",
-                            style: TextStyle(
-                                fontSize: 8.sp, color: Colors.white)),
+                    InkWell(
+                      onTap: () {
+                        rejectDialog(index);
+                      },
+                      child: Container(
+                        
+                        height: 2.5.h,
+                        width: 20.w,
+                        decoration: BoxDecoration(
+                            color: kRedColor,
+                            borderRadius: BorderRadius.circular(2.w)),
+                        child: Center(
+                          child: Text("Reject",
+                              style: TextStyle(
+                                  fontSize: 8.sp, color: Colors.white)),
+                        ),
                       ),
                     ),
                   ],
@@ -440,6 +450,281 @@ newAgentListApi();
     }
   }
 
+
+
+
+
+
+
+
+  approveDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          title: SingleChildScrollView(
+            child: Container(
+              //width: MediaQuery.of(context).size.width*.60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+               
+
+
+                  Text("Are you sure\n"
+                  "You want to approve this agent?",
+                  style: TextStyle(
+                    fontSize: 10.sp
+                  ),
+                  textAlign: TextAlign.center,
+                  ),
+
+                  SizedBox(height: 20,),
+                 
+                 
+                  GestureDetector(
+                    onTap: () {
+                      approveData(index);
+                      
+                    },
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: kGreenColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Approve',
+                          style: TextStyle(
+                              
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    }
+
+
+     Future<dynamic> approveData(int index) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.post(
+      Uri.parse(
+        RestDatasource.APPROVEAGENTLIST_URL,
+      ),
+      body: {
+        "admin_id":id.toString(),
+        "user_id":apiAgentList[index].id.toString()
+      }
+    );
+   
+  
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+    
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+            newAgentListApi();
+        
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+  rejectDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          title: SingleChildScrollView(
+            child: Container(
+              //width: MediaQuery.of(context).size.width*.60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+               
+
+
+                  Text("Are you sure\n"
+                  "You want to reject this agent?",
+                  style: TextStyle(
+                    fontSize: 10.sp
+                  ),
+                  textAlign: TextAlign.center,
+                  ),
+
+                  SizedBox(height: 20,),
+                 
+                 
+                  GestureDetector(
+                    onTap: () {
+                      rejectData(index);
+                      
+                    },
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: kRedColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Reject',
+                          style: TextStyle(
+                              
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    }
+
+
+ Future<dynamic> rejectData(int index) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.post(
+      Uri.parse(
+        RestDatasource.REJECTAGENTLIST_URL,
+      ),
+      body: {
+        "admin_id":id.toString(),
+        "user_id":apiAgentList[index].id.toString()
+      }
+    );
+   
+  
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+    
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+            newAgentListApi();
+        
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 }
 
@@ -499,7 +784,7 @@ class _AgentListState extends State<AgentList> {
                 children: [
 
                   Text(
-                    "Total User: " + widget.agents,
+                    "Total User: " + apiList.length.toString(),
                     style: TextStyle(
                         fontSize: 15.sp, fontWeight: FontWeight.bold),
                   ),
@@ -778,7 +1063,7 @@ class _AgentListState extends State<AgentList> {
                           
                           
                           'Are you Sure you want \n'
-                          "to delete this user",
+                          "to delete this agent",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 12.sp,
