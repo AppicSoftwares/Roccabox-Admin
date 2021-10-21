@@ -21,6 +21,7 @@ class RestDatasource {
   static final GETENQUIRYLIST_URL =BASE_URL + "enquiry/all?";
   static final APPROVEAGENTLIST_URL = BASE_URL + "agent/approve";
   static final REJECTAGENTLIST_URL = BASE_URL + "agent/reject";
+  static final SEARCHNEWAGENTLIST_URL = BASE_URL + "agent/searchNewRequest?";
 
 
   

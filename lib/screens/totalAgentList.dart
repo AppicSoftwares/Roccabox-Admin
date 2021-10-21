@@ -20,8 +20,6 @@ import 'package:flutter_switch/flutter_switch.dart';
 class TotalAgentList extends StatefulWidget {
 
 
-  var agents;
-  TotalAgentList({required this.agents});
 
 
 
@@ -80,7 +78,7 @@ class _TotalState extends State<TotalAgentList> {
           TextButton(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AddAgent(agents: widget.agents,)));
+                  context, MaterialPageRoute(builder: (context) => AddAgent()));
             },
             child: Container(
               margin: EdgeInsets.only(top: .5.h, right: 1.h, bottom: .5.h),
@@ -111,7 +109,7 @@ class _TotalState extends State<TotalAgentList> {
                       padding: const EdgeInsets.all(10.0),
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar(agents: widget.agents,)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar()));
                         },
                         child: Container(
                           width: double.infinity,
@@ -245,7 +243,7 @@ class _TotalState extends State<TotalAgentList> {
                       height: 3.h,
                     ),
                     
-                    selected == "second" ? AgentList(agents: widget.agents) : NewRequest() 
+                    selected == "second" ? AgentList() : NewRequest() 
                   ],
                 ),
               ],
@@ -879,8 +877,7 @@ newAgentListApi();
 }
 
 class AgentList extends StatefulWidget {
-  var agents;
-  AgentList({required this.agents});
+  
 
   @override
   _AgentListState createState() => _AgentListState();
@@ -916,7 +913,7 @@ class _AgentListState extends State<AgentList> {
   ScrollController _controller = new ScrollController();
   @override
   Widget build(BuildContext context) {
-    print("Main:" + widget.agents.toString());
+   // print("Main:" + widget.agents.toString());
     return isloading
     ?
     Align(
@@ -1027,7 +1024,7 @@ class _AgentListState extends State<AgentList> {
                                             country_code: apiList[index].country_code.toString(),
                                             id: apiList[index].id.toString(),
                                            
-                                            agents: widget.agents,
+                                           
 
                             )));
                           },

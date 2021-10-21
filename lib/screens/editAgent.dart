@@ -12,10 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class EditAgent extends StatefulWidget {
-var  name, phone, email, country_code, id, agents;
+var  name, phone, email, country_code, id;
 
   EditAgent({required this.name,  required this.phone,  
-  required this.email, required this.country_code, required this.id, required this.agents});
+  required this.email, required this.country_code, required this.id, });
 
   @override
   _AddUserState createState() => _AddUserState();
@@ -26,6 +26,16 @@ class _AddUserState extends State<EditAgent> {
   TextEditingController nameController = new TextEditingController();
   TextEditingController emailController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
+
+
+
+
+@override
+void initState() {
+  super.initState();
+  nameController.text=widget.name;
+  emailController.text = widget.email;
+}
   
 
 
@@ -133,21 +143,25 @@ class _AddUserState extends State<EditAgent> {
                
                 Padding(
                   padding:  EdgeInsets.only(top: 1.h, ),
-                  child: TextFormField(
-                    controller: emailController,
-                    
-                    
-                    // controller: uptemail,
-                    decoration: InputDecoration(
-
-                      //email
-                      hintText: widget.email.toString(),
-                      hintStyle: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold
-                      ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(3.w))),
+                  child: Container(
+                    child: TextFormField(
+                      controller: emailController,
+                      
+                      
+                      // controller: uptemail,
+                      decoration: InputDecoration(
+                  
+                        //email
+                        hintText: widget.email.toString(),
+                        hintStyle: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold
+                        ),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(3.w))),
+                  
+                              
+                    ),
                   ),
                 ),
                 
@@ -367,7 +381,7 @@ class _AddUserState extends State<EditAgent> {
         
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalAgentList(agents: widget.agents)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalAgentList()));
       } else {
         setState(() {
           isloading = false;

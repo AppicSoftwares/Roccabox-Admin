@@ -15,9 +15,7 @@ import 'package:sizer/sizer.dart';
 
 class AddAgent extends StatefulWidget {
 
-  var agents;
-
-  AddAgent({required this.agents});
+  
   
 
   @override
@@ -66,7 +64,7 @@ class _AddUserState extends State<AddAgent> {
           padding: EdgeInsets.only(right: 10.w),
           child: Center(
             child: Text(
-              "Edit Agent",
+              "Add Agent",
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -380,7 +378,7 @@ class _AddUserState extends State<AddAgent> {
         
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalAgentList(agents: widget.agents,)));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalAgentList()));
         
       } else {
         setState(() {

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:roccabox_admin/screens/agentSearchBar.dart';
+import 'package:roccabox_admin/screens/newRequestAgent.dart';
 import 'package:roccabox_admin/screens/totalAgentList.dart';
 import 'package:roccabox_admin/screens/totalUserList.dart';
 import 'package:http/http.dart' as http;
@@ -50,12 +52,17 @@ class _DashboardState extends State<Dashboard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Dashboard",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold),
+                    InkWell(
+                      onTap: () {
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => NewRequestScreen() ));
+                      },
+                      child: Text(
+                        "Dashboard",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28.sp,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
 
                     Text(
@@ -140,8 +147,8 @@ class _DashboardState extends State<Dashboard> {
                  TextButton(
                    onPressed: () {
 
-                     Navigator.push(context, MaterialPageRoute(builder: (context) => TotalAgentList(
-                       agents: agents,
+                     Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar(
+                     
                      )));
                    },
                    child: Container(

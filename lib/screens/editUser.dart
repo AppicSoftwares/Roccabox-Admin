@@ -30,12 +30,18 @@ class _AddUserState extends State<EditUser> {
 
    var name, email, phone, id;
   TextEditingController nameController = new TextEditingController();
+  
   TextEditingController emailController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
   
 
 
-
+@override
+void initState() {
+  super.initState();
+  nameController.text=widget.name;
+  emailController.text = widget.email;
+}
 
 
   String? uptname;
@@ -124,7 +130,12 @@ class _AddUserState extends State<EditUser> {
                 Padding(
                   padding: EdgeInsets.only(top: 10.h, bottom: 1.h),
                   child: TextFormField(
+                    
                     controller: nameController,
+
+                    onChanged: (val) {
+                      uptname = val;
+                    },
                     
                     
                     
@@ -138,6 +149,8 @@ class _AddUserState extends State<EditUser> {
                       ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(3.w))),
+
+                        
                   ),
                 ),
                
