@@ -191,8 +191,10 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                       children: [
                         ListTile(
                           leading: CircleAvatar(
+                            backgroundImage: NetworkImage(apiList[index].image.toString()),
                               maxRadius: 9.w,
-                              child: Image.asset("assets/Avatar.png")),
+                             // child: Image.network(apiList[index].image.toString())
+                              ),
                           title: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
