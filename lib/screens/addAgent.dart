@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:roccabox_admin/screens/totalAgentList.dart';
-import 'package:roccabox_admin/screens/totalUserList.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -44,10 +43,8 @@ class _AddUserState extends State<AddAgent> {
 
 
   String? code = "44";
-
-  
   String image = "";
-    String base64Image = "";
+  String base64Image = "";
   String fileName = "";
   File? file;
   bool isloading = false;

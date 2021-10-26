@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/addBannerImage.dart';
-import 'package:roccabox_admin/screens/addUser.dart';
 import 'package:roccabox_admin/screens/editBannerImage.dart';
 import 'package:http/http.dart' as http;
 import 'package:roccabox_admin/services/apiClient.dart';
@@ -107,7 +106,12 @@ class _TotalState extends State<Banners> {
                         width: double.infinity,
                         height: 7.h,
                         child: TextFormField(
-                          validator: (val) {},
+                          onChanged: (value){
+                          searchData(value.toString());
+                        },
+                        validator: (val) {
+                          
+                        },
                           decoration: InputDecoration(
                               suffixIcon: Icon(
                                 Icons.search,
@@ -206,7 +210,9 @@ class _TotalState extends State<Banners> {
                                           width: 1.w,
                                         ),
                                         InkWell(
-                                          onTap: () {},
+                                          onTap: () {
+                                            customDialog(index);
+                                          },
                                           child: Image.asset(
                                             "assets/delete.png",
                                             width: 6.w,
@@ -324,6 +330,225 @@ class _TotalState extends State<Banners> {
         isloading = false;
       });
     }
+  }
+
+
+   Future<dynamic> searchData(String key ) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+       print("key Print: " +key.toString());
+
+
+
+
+    var request = http.get(
+      Uri.parse(
+        RestDatasource.SEARCHSLIDER_URL + "admin_id=" + id.toString() + "&key=" + key.toString()
+        
+      ),
+      
+    );
+   
+    var jsonArray;
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      jsonArray = jsonRes['data'];
+    });
+
+     if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+          bannerList.clear();
+    
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        BannerProperties modelSearch = new BannerProperties();
+        modelSearch.id = jsonArray[i]["id"].toString();
+        modelSearch.name = jsonArray[i]["name"];
+        modelSearch.url = jsonArray[i]["url"].toString();
+        modelSearch.created_at = jsonArray[i]["created_at"].toString();
+       
+
+        print("id: "+modelSearch.id.toString());
+
+        bannerList.add(modelSearch);
+        
+      }
+
+     
+
+        setState(() {
+          isloading = false;
+        });
+      } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   Future<dynamic> deleteData( int index) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.post(
+      Uri.parse(
+        RestDatasource.DELETESLIDER_URL,
+      ),
+      body: {
+        "admin_id":id.toString(),
+        "slider_id":bannerList[index].id.toString()
+      }
+    );
+   
+  
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+    
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+            sliderBannerApi();
+        
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+   customDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+          title: SingleChildScrollView(
+            child: Container(
+              //width: MediaQuery.of(context).size.width*.60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                 Text(
+                          
+                          
+                          'Are you Sure you want \n'
+                          "to delete this slider",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold),
+                        ),
+                  
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  
+                  isloading 
+                  ?
+                   Align(
+                     alignment: Alignment.center,
+                     child: CircularProgressIndicator(),
+                   )
+                  :
+                  GestureDetector(
+                    onTap: () {
+                      deleteData(index);
+                     
+                    },
+                    child: Container(
+                      width: 40.w,
+                      height: 5.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFFBA00),
+                        borderRadius: BorderRadius.circular(3.w),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
 

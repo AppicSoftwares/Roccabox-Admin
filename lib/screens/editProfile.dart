@@ -4,6 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:roccabox_admin/services/apiClient.dart';
 
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _EditProfileState extends State<EditProfile> {
   var name, email, phone, id, image;
   TextEditingController nameController = new TextEditingController();
   TextEditingController emailController = new TextEditingController();
-  TextEditingController numberController = new TextEditingController();
+  //TextEditingController numberController = new TextEditingController();
   @override
   void initState() {
     getData();
@@ -32,8 +33,8 @@ class _EditProfileState extends State<EditProfile> {
 
   String? uptname;
   String? uptemail;
-  // TextEditingController uptname = TextEditingController();
-  // TextEditingController uptemail = TextEditingController();
+  TextEditingController uptnameController = TextEditingController();
+  TextEditingController uptemailController = TextEditingController();
   // TextEditingController uptname = TextEditingController();
 
   String base64Image = "";
@@ -59,100 +60,100 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {});
   }
 
-//   Future<dynamic> uploadImage(
-//     String firstName,
-//     String email,
-//   ) async {
-//     print("Id "+id+"");
-//     var request = http.MultipartRequest(
-//       "POST",
-//       Uri.parse(
-//         RestDatasource.BASE_URL + "updateProfile",
-//       ),
-//     );
-//     if(email.toString() != "null" || email.toString()!="") {
-//       request.fields["email"] = email;
-//     }
-//     if(firstName.toString() != "null" || firstName.toString()!="") {
-//       request.fields["name"] = firstName;
-//     }
+  Future<dynamic> uploadImage(
+    String firstName,
+    String email,
+  ) async {
+    print("Id "+id+"");
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse(
+        RestDatasource.BASE_URL + "updateProfile",
+      ),
+    );
+    if(email.toString() != "null" || email.toString()!="") {
+      request.fields["email"] = email;
+    }
+    if(firstName.toString() != "null" || firstName.toString()!="") {
+      request.fields["name"] = firstName;
+    }
 
-//     request.fields["id"] = id;
-//     //request.files.add(await http.MultipartFile.fromPath(base64Image, fileName));
-//     if (file != null) {
-//       request.files.add(http.MultipartFile(
-//           'image',
-//           File(file!.path).readAsBytes().asStream(),
-//           File(file!.path).lengthSync(),
-//           filename: fileName));
-//     }
-//     var jsonRes;
-//     var res = await request.send();
-//  // print("ResponseJSON: " + respone.toString() + "_");
-//     // print("status: " + jsonRes["success"].toString() + "_");
-//     // print("message: " + jsonRes["message"].toString() + "_");
+    request.fields["id"] = id;
+    //request.files.add(await http.MultipartFile.fromPath(base64Image, fileName));
+    if (file != null) {
+      request.files.add(http.MultipartFile(
+          'image',
+          File(file!.path).readAsBytes().asStream(),
+          File(file!.path).lengthSync(),
+          filename: fileName));
+    }
+    var jsonRes;
+    var res = await request.send();
+ // print("ResponseJSON: " + respone.toString() + "_");
+    // print("status: " + jsonRes["success"].toString() + "_");
+    // print("message: " + jsonRes["message"].toString() + "_");
 
-//     if (res.statusCode == 200) {
-//       var respone = await res.stream.bytesToString();
-//       final JsonDecoder _decoder = new JsonDecoder();
-//       jsonRes = _decoder.convert(respone.toString());
-//       print("Response: " + jsonRes.toString() + "_");
-//       print(jsonRes["status"]);
-//       if (jsonRes["status"].toString() == "true") {
+    if (res.statusCode == 200) {
+      var respone = await res.stream.bytesToString();
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(respone.toString());
+      print("Response: " + jsonRes.toString() + "_");
+      print(jsonRes["status"]);
+      if (jsonRes["status"].toString() == "true") {
 
-//         SharedPreferences prefs = await SharedPreferences.getInstance();
-//         // prefs.setString('id', jsonRes["data"]["id"].toString());
-//         prefs.setString('email', jsonRes["data"]["email"].toString());
-//         prefs.setString('image', jsonRes["data"]["image"].toString());
-//         prefs.setString('name', jsonRes["data"]["name"].toString());
-//         // prefs.setString('phone', jsonRes["data"]["phone"].toString());
-//         prefs.commit();
-//         setState(() {
-//           isLoading = false;
-//         });
-//         Navigator.pop(context);
-//         ScaffoldMessenger.of(context).showSnackBar(
-//             SnackBar(content: Text(jsonRes["message"].toString())));
-//         // Fluttertoast.showToast(
-//         //     msg: jsonRes["message"].toString(),
-//         //     toastLength: Toast.LENGTH_SHORT,
-//         //     gravity: ToastGravity.CENTER,
-//         //     timeInSecForIosWeb: 2,
-//         //     backgroundColor: Colors.green,
-//         //     textColor: Colors.white,
-//         //     fontSize: 16.0);
-//         // print("Data " + jsonRes['data']['token'] + "*");
-//       } else {
-//         setState(() {
-//           isLoading = false;
-//           ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(content: Text(jsonRes["message"].toString())));
-//           // Fluttertoast.showToast(
-//           //     msg: "Exception: " + jsonRes["message"].toString(),
-//           //     toastLength: Toast.LENGTH_SHORT,
-//           //     gravity: ToastGravity.CENTER,
-//           //     timeInSecForIosWeb: 2,
-//           //     backgroundColor: Colors.red,
-//           //     textColor: Colors.white,
-//           //     fontSize: 16.0);
-//         });
-//       }
-//     } else {
-//       setState(() {
-//         isLoading = false;
-//         ScaffoldMessenger.of(context).showSnackBar(
-//             SnackBar(content: Text("Please try leter")));
-//         // Fluttertoast.showToast(
-//         //     msg: "Exception: " + jsonRes["message"].toString(),
-//         //     toastLength: Toast.LENGTH_SHORT,
-//         //     gravity: ToastGravity.CENTER,
-//         //     timeInSecForIosWeb: 2,
-//         //     backgroundColor: Colors.red,
-//         //     textColor: Colors.white,
-//         //     fontSize: 16.0);
-//       });
-//     }
-//   }
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        // prefs.setString('id', jsonRes["data"]["id"].toString());
+        prefs.setString('email', jsonRes["data"]["email"].toString());
+        prefs.setString('image', jsonRes["data"]["image"].toString());
+        prefs.setString('name', jsonRes["data"]["name"].toString());
+        // prefs.setString('phone', jsonRes["data"]["phone"].toString());
+        prefs.commit();
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+        // Fluttertoast.showToast(
+        //     msg: jsonRes["message"].toString(),
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.CENTER,
+        //     timeInSecForIosWeb: 2,
+        //     backgroundColor: Colors.green,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0);
+        // print("Data " + jsonRes['data']['token'] + "*");
+      } else {
+        setState(() {
+          isLoading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+          // Fluttertoast.showToast(
+          //     msg: "Exception: " + jsonRes["message"].toString(),
+          //     toastLength: Toast.LENGTH_SHORT,
+          //     gravity: ToastGravity.CENTER,
+          //     timeInSecForIosWeb: 2,
+          //     backgroundColor: Colors.red,
+          //     textColor: Colors.white,
+          //     fontSize: 16.0);
+        });
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+        // Fluttertoast.showToast(
+        //     msg: "Exception: " + jsonRes["message"].toString(),
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.CENTER,
+        //     timeInSecForIosWeb: 2,
+        //     backgroundColor: Colors.red,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0);
+      });
+    }
+  }
 
   final formkey = GlobalKey<FormState>();
   @override
@@ -239,18 +240,18 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: EdgeInsets.only(top: 1.h, bottom: 2.h),
                   child: TextFormField(
-                    // controller: nameController,
-                    // validator: (val) {
-                    //   if (val == null || val.isEmpty) {
-                    //     return 'Please Enter Your Name';
-                    //   }
+                    controller: nameController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return 'Please Enter Your Name';
+                      }
 
-                    //   return null;
-                    // },
-                    // onChanged: (val) {
-                    //   uptname = val;
-                    // },
-                    // controller: uptname,
+                      return null;
+                    },
+                    onChanged: (val) {
+                      uptname = val;
+                    },
+                    //controller: uptname,
                     decoration: InputDecoration(
                       hintText: "Test User Name",
                         border: OutlineInputBorder(
@@ -272,20 +273,20 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: EdgeInsets.only(top: 1.h, bottom: 2.h),
                   child: TextFormField(
-                    // controller: emailController,
-                    // validator: (val) {
-                    //   if (val == null || val.isEmpty) {
-                    //     return 'Please Enter Your Email Id';
-                    //   }
-                    //   if (!EmailValidator.validate(emailController.text.toString().trim())) {
-                    //     return 'Please Enter valid Email Id';
-                    //   }
-                    //   return null;
-                    // },
-                    // inputFormatters: [FilteringTextInputFormatter.deny(" ")],
-                    // onChanged: (val) {
-                    //   uptemail = val;
-                    // },
+                    controller: emailController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return 'Please Enter Your Email Id';
+                      }
+                      if (!EmailValidator.validate(emailController.text.toString().trim())) {
+                        return 'Please Enter valid Email Id';
+                      }
+                      return null;
+                    },
+                    inputFormatters: [FilteringTextInputFormatter.deny(" ")],
+                    onChanged: (val) {
+                      uptemail = val;
+                    },
                     // controller: uptemail,
                     decoration: InputDecoration(
                       hintText: "admin@gmail.com",
@@ -305,23 +306,23 @@ class _EditProfileState extends State<EditProfile> {
                                 : CupertinoActivityIndicator()))
                     : GestureDetector(
                         onTap: () {
-                        //   if (formkey.currentState!.validate()) {
-                        //     setState(() {
-                        //       isLoading = true;
-                        //     });
-                        // print("UpdateName "+uptname.toString()+"^^");
-                        // print("UpdateEmail "+uptemail.toString()+"^^");
-                        // if(uptname==null){
-                        //   uptname = nameController.text.toString();
-                        // }
-                        //     if(uptemail==null){
-                        //       uptemail = emailController.text.toString();
-                        //     }
-                        //     uploadImage(uptname.toString(), uptemail.toString());
+                          if (formkey.currentState!.validate()) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                        print("UpdateName "+uptname.toString()+"^^");
+                        print("UpdateEmail "+uptemail.toString()+"^^");
+                        if(uptname==null){
+                          uptname = nameController.text.toString();
+                        }
+                            if(uptemail==null){
+                              uptemail = emailController.text.toString();
+                            }
+                            uploadImage(uptname.toString(), uptemail.toString());
 
-                        //     // userRegister(email.toString(), phone.toString(),
-                        //     //     firstname.toString() + ' ' + lastname.toString());
-                        //   }
+                            // userRegister(email.toString(), phone.toString(),
+                            //     firstname.toString() + ' ' + lastname.toString());
+                          }
                         },
                         child: Container(
                           height: 7.h,
@@ -361,7 +362,7 @@ class _EditProfileState extends State<EditProfile> {
     email = pref.getString("email");
     emailController.text = pref.getString("email").toString();
     phone = pref.getString("phone");
-    numberController.text = pref.getString("phone").toString();
+   // numberController.text = pref.getString("phone").toString();
     image = pref.getString("image");
     id = pref.getString("id").toString();
     print("name " + name + "");

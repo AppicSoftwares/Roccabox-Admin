@@ -24,7 +24,7 @@ class _SettingState extends State<Menu> {
   var name, email, image;
   @override
   void initState() {
-   // getData();
+    getData();
     super.initState();
   }
 
@@ -65,13 +65,13 @@ class _SettingState extends State<Menu> {
                                         backgroundImage: NetworkImage(image),
                                       ),
               title: Text(
-                name == null ? "Admin" : name,
+                name == null ? "Admin" : name.toString(),
                 style: TextStyle(
                     fontSize: 16,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.w600),
               ),
-              subtitle: Text(email == null ? "admin@gmail.com" : email),
+              subtitle: Text(email == null ? "admin@gmail.com" : email.toString()),
               trailing: TextButton(
                   onPressed: () {
                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile()));
@@ -89,7 +89,7 @@ class _SettingState extends State<Menu> {
               tileColor: Color(0xffF3F3F3),
               title: Text(
                 // settings
-                "Settings",
+                "Menu",
                 style: TextStyle(
                     fontSize: 16,
                     color: Color(0xff000000),
@@ -200,13 +200,13 @@ class _SettingState extends State<Menu> {
     );
   }
 
-  // void getData() async {
-  //   var pref = await SharedPreferences.getInstance();
-  //   name = pref.getString("name");
-  //   email = pref.getString("email");
-  //   image = pref.getString("image");
-  //   print("name " + name + "");
-  //   print("email " + email + "");
-  //   setState(() {});
-  // }
+  void getData() async {
+    var pref = await SharedPreferences.getInstance();
+    name = pref.getString("name");
+    email = pref.getString("email");
+    image = pref.getString("image");
+    print("name " + name + "");
+    print("email " + email + "");
+    setState(() {});
+  }
 }

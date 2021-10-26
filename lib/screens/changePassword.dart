@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:roccabox_admin/main.dart';
 import 'package:roccabox_admin/screens/languageCheck.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class ChangePaasword extends StatefulWidget {
   const ChangePaasword({Key? key}) : super(key: key);
@@ -179,25 +182,25 @@ class _EditProfileState extends State<ChangePaasword> {
                                 : CupertinoActivityIndicator()))
                     : GestureDetector(
                         onTap: () {
-                        //   print("hhyy"+oldPasswordController.text.toString().trim());
-                        //   if (newPasswordController.text.toString().trim() !=
-                        //       confirmPasswordController.text
-                        //           .toString()
-                        //           .trim()) {
-                        //    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        //         content: Text('Confirm Password and new Password should be same')));
+                          print("hhyy"+oldPasswordController.text.toString().trim());
+                          if (newPasswordController.text.toString().trim() !=
+                              confirmPasswordController.text
+                                  .toString()
+                                  .trim()) {
+                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Confirm Password and new Password should be same')));
                          
-                        //   } else if (oldPasswordController.text.toString().trim().isEmpty) {
+                          } else if (oldPasswordController.text.toString().trim().isEmpty) {
                             
 
-                        //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        //         content: Text('Please enter old password')));
-                        //   }else{
-                        //          changePassword(
-                        //       oldPasswordController.text.toString().trim(),
-                        //       newPasswordController.text.toString().trim(),
-                        //     );
-                        //  }
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Please enter old password')));
+                          }else{
+                                 changePassword(
+                              oldPasswordController.text.toString().trim(),
+                              newPasswordController.text.toString().trim(),
+                            );
+                         }
                         },
                         child: Container(
                           height: 7.h,
@@ -232,68 +235,69 @@ class _EditProfileState extends State<ChangePaasword> {
     );
   }
 
-  // Future<dynamic> changePassword(String oldPassword, String newPassword) async {
-  //   SharedPreferences pref = await SharedPreferences.getInstance();
-  //   var id = pref.getString("id").toString();
-  //   setState(() {
-  //     isloading = true;
-  //   });
-  //   print(id.toString);
-  //   print(oldPassword);
-  //   print(newPassword);
-  //   String msg = "";
-  //   var jsonRes;
-  //   http.Response? res;
-  //   var request = http.post(
-  //       Uri.parse(RestDatasource.CHANGEPASSWORD_URL
-  //           // RestDatasource.SEND_OTP,
-  //           ),
-  //       body: {
-  //         "user_id": id,
-  //         "oldPassword": oldPassword,
-  //         "newPassword": newPassword,
-  //       });
+  Future<dynamic> changePassword(String oldPassword, String newPassword) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+      isloading = true;
+    });
+    print(id.toString);
+    print(oldPassword);
+    print(newPassword);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var request = http.post(
+        Uri.parse(RestDatasource.CHANGEPASSWORD_URL
+            // RestDatasource.SEND_OTP,
+            ),
+        body: {
+          "user_id": id.toString(),
+          "oldPassword": oldPassword.toString(),
+          "newPassword": newPassword.toString(),
+        });
 
-  //   await request.then((http.Response response) {
-  //     res = response;
-  //     // msg = jsonRes["message"].toString();
-  //     // getotp = jsonRes["otp"];
-  //     // print(getotp.toString() + '123');
-  //   });
-  //   if (res!.statusCode == 200) {
-  //     final JsonDecoder _decoder = new JsonDecoder();
-  //     jsonRes = _decoder.convert(res!.body.toString());
-  //     print("Response: " + res!.body.toString() + "_");
-  //     print("ResponseJSON: " + jsonRes.toString() + "_");
-  //     print("status: " + jsonRes["status"].toString() + "_");
+    await request.then((http.Response response) {
+      res = response;
+      // msg = jsonRes["message"].toString();
+      // getotp = jsonRes["otp"];
+      // print(getotp.toString() + '123');
+    });
+    if (res!.statusCode == 200) {
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(res!.body.toString());
+      print("Response: " + res!.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
 
-  //     if (jsonRes["status"] == true) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(jsonRes["message"].toString())),
-  //       );
+      if (jsonRes["status"] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(jsonRes["message"].toString())),
+        );
 
-  //       // print('getotp1: ' + getotp.toString());
-  //       Navigator.pop(context);
+        // print('getotp1: ' + getotp.toString());
+        Navigator.pop(context);
 
-  //       setState(() {
-  //         isloading = false;
-  //       });
-  //     }
-  //     if (jsonRes["status"] == false) {
-  //       setState(() {
-  //         isloading = false;
-  //       });
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(jsonRes["message"].toString())),
-  //       );
-  //     }
-  //   } else {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+        setState(() {
+          isloading = false;
+        });
+      }
+      if (jsonRes["status"] == false) {
+        setState(() {
+          isloading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(jsonRes["message"].toString())),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
 
-  //     setState(() {
-  //       isloading = false;
-  //     });
-  //   }
-  // }
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
 }
