@@ -250,7 +250,19 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => EnquiryDetails()));
+                                    builder: (context) => EnquiryDetails(
+
+                                         name: apiList[index].name.toString(),
+                                      email: apiList[index].email.toString(),
+                                      phone: apiList[index].phone.toString(),
+                                      country_code: apiList[index].country_code.toString(),
+                                      image: apiList[index].image.toString(),
+                                      message: apiList[index].message.toString(),
+                                      property_Rid: apiList[index].property_Rid.toString(),
+                                      user_image: apiList[index].user_image.toString(),
+
+
+                                    )));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -357,7 +369,7 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
 
                                               Text(
                                                 //phone no
-                                                apiList[index].phone.toString(),
+                                                apiList[index].country_code.toString()+apiList[index].phone.toString(),
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
                                                     color: Colors.black,
@@ -618,7 +630,16 @@ class _PendingRequestState extends State<PendingRequest> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => EnquiryDetails()));
+                                    builder: (context) => EnquiryDetails(
+                                      name: pendingApiList[index].name.toString(),
+                                      email: pendingApiList[index].email.toString(),
+                                      phone: pendingApiList[index].phone.toString(),
+                                      country_code: pendingApiList[index].country_code.toString(),
+                                      image: pendingApiList[index].image.toString(),
+                                      message: pendingApiList[index].message.toString(),
+                                      property_Rid: pendingApiList[index].property_Rid.toString(),
+                                      user_image: pendingApiList[index].user_image.toString(),
+                                    )));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -728,7 +749,7 @@ class _PendingRequestState extends State<PendingRequest> {
 
                                               Text(
                                                 //phone no
-                                                pendingApiList[index]
+                                                pendingApiList[index].country_code.toString()+pendingApiList[index]
                                                     .phone
                                                     .toString(),
                                                 overflow: TextOverflow.ellipsis,
@@ -1373,7 +1394,22 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => EnquiryDetails()));
+                                    builder: (context) => EnquiryDetails(
+
+                                         name: allApiList[index].name.toString(),
+                                      email: allApiList[index].email.toString(),
+                                      phone: allApiList[index].phone.toString(),
+                                      country_code: allApiList[index].country_code.toString(),
+                                      image: allApiList[index].image.toString(),
+                                      message: allApiList[index].message.toString(),
+                                      property_Rid: allApiList[index].property_Rid.toString(),
+                                      user_image: allApiList[index].user_image.toString(),
+
+
+
+
+
+                                    )));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -1471,7 +1507,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
                                               Text(
                                                 //phone no
-                                                allApiList[index].phone.toString(),
+                                                allApiList[index].country_code.toString()+allApiList[index].phone.toString(),
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
                                                     color: Colors.black,

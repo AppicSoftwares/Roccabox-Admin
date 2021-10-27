@@ -199,7 +199,13 @@ class _TotalState extends State<Banners> {
                                         InkWell(
                                           onTap: () {
 
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditBannerImage()));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditBannerImage(
+                                              name: bannerList[index].name.toString(), 
+                                              url: bannerList[index].url.toString(), 
+                                              redirect: bannerList[index].redirect.toString(),
+                                              id:  bannerList[index].id.toString(),
+
+                                              )));
                                           },
                                           child: Image.asset(
                                             "assets/edit.png",
@@ -585,6 +591,14 @@ class _TotalState extends State<Banners> {
               showOnOff: true,
               onToggle: (val) {
                 setState(() {
+
+                  bannerList[index].status = val.toString();
+                  if (bannerList[index].status == "1") {
+                    true;
+                    
+                  } else {
+                    false;
+                  }
                  // status1 = val;
                 });
               },

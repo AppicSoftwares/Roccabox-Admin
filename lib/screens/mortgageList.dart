@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roccabox_admin/screens/mortgagesDetails.dart';
+import 'package:roccabox_admin/services/apiClient.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -13,6 +18,26 @@ class MortgageList extends StatefulWidget {
 }
 
 class _MortgageListState extends State<MortgageList> {
+
+
+
+  bool isloading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    //userListApi();
+    
+  }
+  
+
+  List <String> mortgageList = [];
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,4 +136,84 @@ class _MortgageListState extends State<MortgageList> {
       
     );
   }
+
+
+    Future<dynamic> userListApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print(id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.TOTALUSERLIST_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+          mortgageList.clear();
+    
+
+
+      for (var i = 0; i < jsonArray.length; i++) {
+        MortgageProperties modelSearch = new MortgageProperties();
+        // modelSearch.name = jsonArray[i]["name"];
+        // modelSearch.id = jsonArray[i]["id"].toString();
+        // modelSearch.email = jsonArray[i]["email"].toString();
+        // modelSearch.phone = jsonArray[i]["phone"].toString();
+        // modelSearch.image = jsonArray[i]["image"].toString();
+        // modelSearch.country_code = jsonArray[i]["country_code"].toString();
+
+        // print("id: "+modelSearch.id.toString());
+
+        // mortgageList.add(modelSearch);
+        
+      }
+
+     
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+
+
+}
+
+
+class MortgageProperties {
+
 }

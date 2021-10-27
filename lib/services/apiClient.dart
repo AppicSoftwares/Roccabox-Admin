@@ -28,6 +28,7 @@ class RestDatasource {
   static final ADDBANNER_URL = BASE_URL + "agent/add-slider";
   static final DELETESLIDER_URL = BASE_URL + "agent/deleteSlider";
   static final CHANGEPASSWORD_URL = BASE_URL + "changePassword";
+  static final EDITBANNER_URL = BASE_URL + "agent/edit-slider";
 
 
   

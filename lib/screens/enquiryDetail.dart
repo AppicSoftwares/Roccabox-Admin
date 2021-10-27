@@ -13,29 +13,19 @@ import 'dart:convert';
 
 class EnquiryDetails extends StatefulWidget {
 
-// var P_Agency_FilterId;
-
+  var name,email,phone, image, country_code,user_image,property_Rid, message;
   
 
- // TotalUserList totalUserList ;
+  EnquiryDetails({required this.name, required this.email, required this.phone,
+  required this.image, required this.country_code, required this.user_image, required this.property_Rid,
+  required this.message});
 
-  // UserDetails({Key? key,  required this.totalUserList , required this.P_Agency_FilterId})
-  //     : super(key: key);
   @override
   _NotificationDetailsState createState() => _NotificationDetailsState();
 }
 
 class _NotificationDetailsState extends State<EnquiryDetails> {
-//  bool isloading = false;
-//  late ModelSearchProperty modelSearch = ModelSearchProperty();
 
-//  @override
-//   void initState() {
-//     print("jhuh"+widget.P_Agency_FilterId+"^^");
-//     super.initState();
-//   isloading = true;
-//    // getData();
-//   }
 
  
   @override
@@ -57,8 +47,7 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
         ),
       ),
       body: 
-      // isloading == true? Center(child: CircularProgressIndicator(),):
-      // modelSearch == null ? Center(child: CircularProgressIndicator(),):
+     
       SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,15 +56,20 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
               isThreeLine: true,
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
-              leading: Image.asset(
-                'assets/Avatar.png',
-                
-                width: 8.h,
-              ),
+              leading: CircleAvatar(
+                radius: 10.w,
+                                                backgroundImage:
+                                                    NetworkImage(widget.user_image.toString()),
+                                              ),
+              
+              
+             
               title: Text(
-                "Client Name",
+                widget.name.toString(),
+                //"Client Name",
                 //widget.totalUserList.name,
                 style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                     fontSize: 12.5.sp,
                     color: Color(0xff000000),
                     fontWeight: FontWeight.w600),
@@ -84,8 +78,14 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("user@gmail.com"),
-                  Text("+91 9876543321")
+                  //"user@gmail.com"
+                  Text(widget.email.toString(),
+                  overflow: TextOverflow.ellipsis,
+                  ),
+                  //"+91 9876543321"
+                  Text(widget.country_code.toString()+widget.phone.toString(),
+                  overflow: TextOverflow.ellipsis,
+                  )
                   // Text(widget.totalUserList.email.toString()),
                   // Text(widget.totalUserList.phone.toString()),
                 ],
@@ -105,8 +105,9 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
               //   filterQuality: FilterQuality.high,
               //   fit: BoxFit.fill,
               // ):
-              Image.asset(
-                "assets/property.jpeg",
+              Image.network(
+               // "assets/property.jpeg",
+               widget.image.toString(),
                 filterQuality: FilterQuality.high,
                 fit: BoxFit.fill,
               ),
@@ -200,12 +201,12 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
               margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Text(
 
-                """Lorem ipsum is simply dummy text of the  
-printing and typecasting industry.""",
+                // """Lorem ipsum is simply dummy text of the  
 
-                // modelSearch.description == null
-                //   ? ""
-                //   : modelSearch.description,
+                widget.message.toString(),
+
+
+                
               softWrap: true,
               overflow: TextOverflow.fade,
                 style: TextStyle(
