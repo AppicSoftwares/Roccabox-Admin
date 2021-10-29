@@ -29,6 +29,8 @@ class RestDatasource {
   static final DELETESLIDER_URL = BASE_URL + "agent/deleteSlider";
   static final CHANGEPASSWORD_URL = BASE_URL + "changePassword";
   static final EDITBANNER_URL = BASE_URL + "agent/edit-slider";
+  static final MORTGAGELIST_URL = BASE_URL + "mortgage/all?";
+  static final PROPERTYLIST_URL = BASE_URL + "property/all?";
 
 
   

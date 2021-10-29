@@ -1,22 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:roccabox_admin/screens/mortgageList.dart';
 import 'package:roccabox_admin/theme/constant.dart';
 
 import 'package:sizer/sizer.dart';
 
 class MortgagesDetails extends StatefulWidget {
-  const MortgagesDetails({Key? key}) : super(key: key);
+  MortgageProperties properties;
+
+  MortgagesDetails({required this.properties});
 
   @override
   _MortgagesDetailsState createState() => _MortgagesDetailsState();
 }
 
 class _MortgagesDetailsState extends State<MortgagesDetails> {
+
+  bool isloading = false;
+  ScrollController _controller = new ScrollController();
   @override
   Widget build(BuildContext context) {
+    print("Cloan:" + widget.properties.c_loan.length.toString());
     return Scaffold(
       body: SafeArea(
-          child: ListView(
+          child:
+
+           isloading 
+                  ? Align(
+                    alignment: Alignment.center,
+                     child: CircularProgressIndicator(),
+                    
+                  )
+                  :
+          
+          
+          
+          
+           ListView(
+        shrinkWrap: true,
+        controller: _controller,
         children: [
           Column(
             children: [
@@ -50,7 +72,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "John Doe",
+                                  // "John Doe",
+                                  widget.properties.client1_name.toString(),
+
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -60,7 +84,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                                   height: 1.h,
                                 ),
                                 Text(
-                                  "john@gmail.com",
+                                  // "john@gmail.com",
+
+                                  widget.properties.client1_email.toString(),
                                   style: TextStyle(
                                       color: Colors.grey,
                                       fontWeight: FontWeight.w700,
@@ -70,7 +96,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                                   height: 1.h,
                                 ),
                                 Text(
-                                  "+9876543210",
+                                  // "+9876543210",
+
+                                  widget.properties.client1_phone.toString(),
                                   style: TextStyle(
                                       color: Colors.grey,
                                       fontWeight: FontWeight.w700,
@@ -84,7 +112,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                       right: 8.w,
                       top: 18.h,
                       child: Text(
-                        "1-12-2001",
+                        //"1-12-2001",
+                        widget.properties.client1_dob.toString(),
                         style: TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.bold,
@@ -146,7 +175,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Yes",
+                          //"Yes",
+                          widget.properties.client1_childrenAges.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -165,7 +195,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Resident",
+                          // "Resident",
+
+                          widget.properties.client1_residentStatus.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -184,7 +216,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "ADC523453",
+                          //"ADC523453",
+                          widget.properties.client1_passportNumber.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -237,7 +270,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Mortgage",
+                          //"Mortgage",
+                          widget.properties.mortgage_purpose.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -256,7 +290,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          r"$25000",
+                          // r"$25000",
+
+                          r"$" + widget.properties.purchase_price.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -275,7 +311,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          r"$25000",
+                          //r"$25000",
+                          r"$" + widget.properties.property_value.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -294,7 +331,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          r"$20000",
+                          //r"$20000",
+                          r"$" + widget.properties.deposite_require.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -313,7 +351,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          r"$22000",
+                          //r"$22000",
+                          r"$" + widget.properties.amount_requested.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -332,7 +371,7 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "3",
+                          widget.properties.terms_of_year.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -367,7 +406,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Aldgate, London",
+                          //"Aldgate, London",
+                          widget.properties.mortgage_address.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -387,7 +427,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Rented",
+                          //"Rented",
+
+                          widget.properties.property_type.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -406,7 +448,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "22-08-2019",
+                          //"22-08-2019",
+                          widget.properties.living_since.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -425,7 +468,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          r"$1000",
+                          //r"$1000",
+                          r"$" + widget.properties.monthly_cost.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -441,103 +485,243 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                 width: double.infinity,
                 color: Colors.grey,
               ),
+
+              SizedBox(height: 3.h),
+
               Container(
-                height: 40.h,
-                width: 90.w,
-                decoration: BoxDecoration(color: Colors.white),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 15.w),
-                      child: Text(
-                        "Details of other loans/ liabilities\n"
-                        "mortgages",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.sp),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "LOAN TYPE",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp),
-                        ),
-                        Text(
-                          r"$5000",
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10.sp),
-                        )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "LENDER",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp),
-                        ),
-                        Text(
-                          r"$250",
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10.sp),
-                        )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "AMOUNT",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp),
-                        ),
-                        Text(
-                          r"$5000",
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10.sp),
-                        )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "MONTHLY PAYMNET",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp),
-                        ),
-                        Text(
-                          r"$200",
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10.sp),
-                        )
-                      ],
-                    ),
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.only(right: 15.w),
+                  child: Text(
+                    "Details of other loans/ liabilities\n"
+                    "mortgages",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp),
+                  ),
                 ),
               ),
+
+              SizedBox(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  controller: _controller,
+                  itemCount: widget.properties.c_loan.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 5.w),
+                      width: 90.w,
+                      height: 24.h,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+
+                           Container(
+                            height: 0.1.h,
+                            width: double.infinity,
+                            color: Colors.grey.shade300,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "LOAN TYPE",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12.sp),
+                              ),
+                              Text(
+                                //r"$5000",
+
+                                widget.properties.c_loan[index].loan_type
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.sp),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "LENDER",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12.sp),
+                              ),
+                              Text(
+                                // r"$250",
+                                r"$" +
+                                    widget.properties.c_loan[index].lender
+                                        .toString(),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.sp),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "AMOUNT",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12.sp),
+                              ),
+                              Text(
+                                //r"$5000",
+                                r"$" +
+                                    widget.properties.c_loan[index].amount
+                                        .toString(),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.sp),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "MONTHLY PAYMNET",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12.sp),
+                              ),
+                              Text(
+                                //r"$200",
+
+                                r"$" +
+                                    widget.properties.c_loan[index]
+                                        .monthly_payment
+                                        .toString(),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.sp),
+                              )
+                            ],
+                          ),
+                         
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Container(
+              //   height: 40.h,
+              //   width: 90.w,
+              //   decoration: BoxDecoration(color: Colors.white),
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //     children: [
+              //       Padding(
+              //         padding: EdgeInsets.only(right: 15.w),
+              //         child: Text(
+              //           "Details of other loans/ liabilities\n"
+              //           "mortgages",
+              //           style: TextStyle(
+              //               color: Colors.black,
+              //               fontWeight: FontWeight.bold,
+              //               fontSize: 14.sp),
+              //         ),
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             "LOAN TYPE",
+              //             style: TextStyle(
+              //                 color: Colors.black,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 12.sp),
+              //           ),
+              //           Text(
+              //             //r"$5000",
+
+              //             widget.properties.c_loan[index].loan_type.toString(),
+              //             style: TextStyle(
+              //                 color: Colors.grey,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 10.sp),
+              //           )
+              //         ],
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             "LENDER",
+              //             style: TextStyle(
+              //                 color: Colors.black,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 12.sp),
+              //           ),
+              //           Text(
+              //            // r"$250",
+              //            r"$"+widget.properties.c_loan[index].lender.toString(),
+              //             style: TextStyle(
+              //                 color: Colors.grey,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 10.sp),
+              //           )
+              //         ],
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             "AMOUNT",
+              //             style: TextStyle(
+              //                 color: Colors.black,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 12.sp),
+              //           ),
+              //           Text(
+              //             //r"$5000",
+              //             r"$"+widget.properties.c_loan[index].amount.toString(),
+              //             style: TextStyle(
+              //                 color: Colors.grey,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 10.sp),
+              //           )
+              //         ],
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             "MONTHLY PAYMNET",
+              //             style: TextStyle(
+              //                 color: Colors.black,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 12.sp),
+              //           ),
+              //           Text(
+              //             //r"$200",
+
+              //             r"$"+widget.properties.c_loan[index].monthly_payment.toString(),
+              //             style: TextStyle(
+              //                 color: Colors.grey,
+              //                 fontWeight: FontWeight.w600,
+              //                 fontSize: 10.sp),
+              //           )
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Container(
                 height: 0.1.h,
                 width: double.infinity,
@@ -571,7 +755,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Yes",
+                          //"Yes",
+                          widget.properties.client1_employed.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -590,7 +775,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "No",
+                          // "No",
+
+                          widget.properties.client1_self_employed.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -609,7 +796,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "ABC",
+                          // "ABC",
+
+                          widget.properties.client1_emp_name.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -628,7 +817,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "London",
+                          //"London",
+                          widget.properties.client1_emp_address.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -647,7 +837,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Acbn",
+                          //"Acbn",
+                          widget.properties.client1_contact_name.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -666,7 +857,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Held",
+                          //"Held",
+                          widget.properties.client1_position.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -685,7 +877,7 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          r"$4000",
+                          r"$" + widget.properties.client1_income.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -757,7 +949,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "alicant, Spain",
+                          //"alicant, Spain",
+                          widget.properties.mortgage_address.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -776,7 +969,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Apartment",
+                          //"Apartment",
+                          widget.properties.property_type.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -795,7 +989,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "4",
+                          //"4",
+                          widget.properties.bedroom.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -814,7 +1009,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "4",
+                          //"4",
+                          widget.properties.bathroom.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -833,7 +1029,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "2+",
+                          // "2+",
+
+                          widget.properties.garage.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -852,7 +1050,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "2+",
+                          // "2+",
+                          widget.properties.store.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -871,7 +1070,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "50",
+                          //"50",
+                          widget.properties.m_plot.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -890,7 +1090,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "50",
+                          //"50",
+
+                          widget.properties.m_constructed.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -934,7 +1136,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Jammy",
+                          // "Jammy",
+                          widget.properties.client_lawyer_name.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -953,7 +1156,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "98765433210",
+                          //"98765433210",
+                          widget.properties.client_lawyer_phone.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -972,7 +1176,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "5566776",
+                          //"5566776",
+                          widget.properties.client_lawyer_fax.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -991,7 +1196,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "jammy@gmail.com",
+                          //"jammy@gmail.com",
+                          widget.properties.client_lawyer_email.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1035,7 +1241,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Sammy",
+                          // "Sammy",
+                          widget.properties.vendor_lawyer_name.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1054,7 +1261,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "98765433210",
+                          //"98765433210",
+                          widget.properties.vendor_lawyer_phone.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1073,7 +1281,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "5566776",
+                          // "5566776",
+                          widget.properties.vendor_lawyer_fax.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1092,7 +1301,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "sammy@gmail.com",
+                          //"sammy@gmail.com",
+
+                          widget.properties.vendor_lawyer_email.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1136,7 +1347,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "Rammy",
+                          //"Rammy",
+
+                          widget.properties.agent_promoter_name.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1155,7 +1368,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "98765433210",
+                          // "98765433210",
+
+                          widget.properties.agent_promoter_phone.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1174,7 +1389,8 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "5566776",
+                          // "5566776",
+                          widget.properties.agent_promoter_fax.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1193,7 +1409,9 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                               fontSize: 12.sp),
                         ),
                         Text(
-                          "rammy@gmail.com",
+                          //"rammy@gmail.com",
+
+                          widget.properties.agent_promoter_email.toString(),
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w600,
@@ -1211,9 +1429,11 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                 color: Colors.grey,
               ),
 
-              SizedBox(height: 2.h,),
+              SizedBox(
+                height: 2.h,
+              ),
               Container(
-                height: 29.h,
+                
                 width: 90.w,
                 decoration: BoxDecoration(color: Colors.white),
                 child: Column(
@@ -1230,12 +1450,17 @@ class _MortgagesDetailsState extends State<MortgagesDetails> {
                       height: 1.h,
                     ),
                     Text(
-                      "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.",
+                      widget.properties.notes.toString(),
+                      //"In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.",
                       style: TextStyle(color: Colors.grey, fontSize: 11.sp),
                     ),
+
+                    SizedBox(height: 5.h,)
                   ],
                 ),
               ),
+
+             
             ],
           )
         ],
