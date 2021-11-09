@@ -100,7 +100,8 @@ class _EnquiryState extends State<Enquiry> {
                     onChanged: (val) {
                       setState(() {
                         selected = "first";
-                      });
+                      }
+                      );
                       Navigator.pop(context);
                     }),
                 title: Text(
