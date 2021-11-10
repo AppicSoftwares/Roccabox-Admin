@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:roccabox_admin/screens/banners.dart';
 import 'package:roccabox_admin/screens/changePassword.dart';
-import 'package:roccabox_admin/screens/dashboard.dart';
+
 import 'package:roccabox_admin/screens/editProfile.dart';
 import 'package:roccabox_admin/screens/login.dart';
 import 'package:roccabox_admin/screens/mortgageList.dart';
-import 'package:roccabox_admin/screens/mortgagesDetails.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';

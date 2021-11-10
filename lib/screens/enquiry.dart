@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:roccabox_admin/screens/agentSearchBar.dart';
+
 import 'package:roccabox_admin/screens/enquiryDetail.dart';
-import 'package:roccabox_admin/screens/totalAgentList.dart';
+
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:roccabox_admin/theme/constant.dart';
 import 'package:select_dialog/select_dialog.dart';

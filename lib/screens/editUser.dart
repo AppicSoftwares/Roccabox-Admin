@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:email_validator/email_validator.dart';
+
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -15,9 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class EditUser extends StatefulWidget {
-  var  name, phone, email, country_code, id, customers;
+  var  name, phone, email, country_code, id, customers, image;
   EditUser({required this.name,  required this.phone,  
-  required this.email, required this.country_code, required this.id, required this.customers});
+  required this.email, required this.country_code, required this.id, required this.customers, required this.image});
 
  
 
@@ -48,7 +48,7 @@ void initState() {
   String? uptemail;
   String? uptoPhone;
 
-  String? code = "44";
+  String? code = "91";
   bool isloading = false;
   String image = "";
     String base64Image = "";
@@ -65,6 +65,7 @@ void initState() {
 
     print("phone: "+widget.phone.toString());
     print("id: "+widget.id.toString());
+    print("countrycode: "+ widget.country_code.toString());
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -106,7 +107,10 @@ void initState() {
 
                             child: file == null
                             ? 
-                            Image.asset("assets/Avatar.png")
+                            CircleAvatar(
+                             backgroundImage: NetworkImage(widget.image.toString()),
+                            )
+                            
                             : CircleAvatar(
                               backgroundImage: 
                               FileImage(File(file!.path)),
@@ -196,10 +200,12 @@ void initState() {
 
 
                         prefixIcon: CountryCodePicker(
-                          // showFlag: false,
+                          
+                           showFlag: true,
+                          
                           onChanged: print,
                           // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                          initialSelection: 'gb',
+                          initialSelection: "+"+widget.country_code.toString(),
                           // favorite: ['+91', 'FR'],
                           // optional. Shows only country name and flag
                           showCountryOnly: false,

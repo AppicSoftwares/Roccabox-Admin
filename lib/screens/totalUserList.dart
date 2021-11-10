@@ -130,7 +130,7 @@ ScrollController _controller = new ScrollController();
                     height: 3.h,
                   ),
                   Text(
-                    "Total User: " + widget.customers,
+                    "Total User: " + apiList.length.toString(),
                     style: TextStyle(
                         fontSize: 15.sp, fontWeight: FontWeight.bold),
                   ),
@@ -242,6 +242,7 @@ ScrollController _controller = new ScrollController();
                                             email: apiList[index].email.toString(),
                                             country_code: apiList[index].country_code.toString(),
                                             id: apiList[index].id.toString(),
+                                            image: apiList[index].image.toString(),
                                             customers: widget.customers,
                                             
                                             )));
@@ -272,7 +273,7 @@ ScrollController _controller = new ScrollController();
                                 ),
 
                                 SizedBox(height: 0.5.h,),
-                               customSwitch()
+                               customSwitch(index)
                               ],
                     ),
                   ),
@@ -308,7 +309,7 @@ ScrollController _controller = new ScrollController();
     );
   }
 
-  customSwitch() {
+  customSwitch(int index) {
     return Expanded(
       child: Container(
         height: 3.2.h,
@@ -322,7 +323,7 @@ ScrollController _controller = new ScrollController();
               activeColor: kGreenColor,
               inactiveColor: Colors.grey.shade300,
               toggleSize: 20.0,
-              value: status,
+              value: apiList[index].status ==  1.toString() ? true  : false  ,
               borderRadius: 2.0,
               activeText: "Active",
               inactiveText: "Deactive",
@@ -332,9 +333,21 @@ ScrollController _controller = new ScrollController();
               
               
               showOnOff: true,
-              onToggle: (val) {
+              onToggle: (val)  {
                 setState(() {
-                  status = val;
+
+                  
+
+                  //bannerList[index].status = val.toString();
+                  if (apiList[index].status == 1.toString()) {
+                    true;
+                    
+                  } else {
+                    false;
+                  }
+
+                  //sliderStatus(index);
+                 // status1 = val;
                 });
               },
             ),
@@ -390,6 +403,7 @@ ScrollController _controller = new ScrollController();
         modelSearch.phone = jsonArray[i]["phone"].toString();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
+        modelSearch.status = jsonArray[i]["status"].toString();
 
         print("id: "+modelSearch.id.toString());
 
@@ -607,6 +621,7 @@ ScrollController _controller = new ScrollController();
         modelSearch.phone = jsonArray[i]["phone"].toString();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
+        modelSearch.status = jsonArray[i]["status"].toString();
 
         print("id: "+modelSearch.id.toString());
 
@@ -650,5 +665,6 @@ class TotalUserListApi {
   var phone = "";
   var image = "";
   var country_code = "";
+  var status = "";
   
 }

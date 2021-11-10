@@ -312,7 +312,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                               SizedBox(
                                 height: 0.5.h,
                               ),
-                              customSwitch()
+                              customSwitch(index)
                             ],
                           ),
                         ),
@@ -417,7 +417,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
 
 }
 
-  customSwitch() {
+  customSwitch(int index) {
     return Expanded(
       child: Container(
         height: 3.1.h,
@@ -429,7 +429,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
           activeColor: kGreenColor,
           inactiveColor: Colors.grey.shade300,
           toggleSize: 20.0,
-          value: status,
+          value: apiList[index].status ==  1.toString() ? true  : false  ,
           borderRadius: 2.0,
           activeText: "Active",
           inactiveText: "Deactive",
@@ -437,10 +437,22 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
 
           showOnOff: true,
           onToggle: (val) {
-            setState(() {
-              status = val;
-            });
-          },
+                setState(() {
+
+                  
+
+                  //bannerList[index].status = val.toString();
+                  if (apiList[index].status == 1.toString()) {
+                    true;
+                    
+                  } else {
+                    false;
+                  }
+
+                  //sliderStatus(index);
+                 // status1 = val;
+                });
+              },
         ),
       ),
     );
@@ -487,6 +499,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
           modelSearch.phone = jsonArray[i]["phone"].toString();
           modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
+          modelSearch.status = jsonArray[i]["status"].toString();
 
           print("id: " + modelSearch.id.toString());
 
@@ -632,4 +645,5 @@ class TotalAgentListApi {
   var phone = "";
   var image = "";
   var country_code = "";
+  var status = "";
 }

@@ -209,7 +209,9 @@ class _AddBannerImageState extends State<AddBannerImage> {
                                 //Color(0xffD5D5D5)
                               ),
                               image: DecorationImage(
-                                  image: FileImage(File(file!.path)))),
+                                  image: FileImage(File(file!.path))
+                                  )
+                                  ),
                         ),
                       )),
 

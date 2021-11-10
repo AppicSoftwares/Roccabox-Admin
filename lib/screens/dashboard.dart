@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:roccabox_admin/screens/agentSearchBar.dart';
-import 'package:roccabox_admin/screens/newRequestAgent.dart';
-import 'package:roccabox_admin/screens/totalAgentList.dart';
+import 'package:roccabox_admin/screens/notification.dart';
+
 import 'package:roccabox_admin/screens/totalUserList.dart';
 import 'package:http/http.dart' as http;
 import 'package:roccabox_admin/services/apiClient.dart';
@@ -45,6 +46,38 @@ class _DashboardState extends State<Dashboard> {
           child: SingleChildScrollView(
         child: Column(
           children: [
+             Padding(
+                padding: EdgeInsets.only(left: 35.h, top: 10),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(100),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NotificationScreen()));
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        height: 46,
+                        width: 46,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white)
+                        ),
+                        child: SvgPicture.asset(
+                          "assets/Bell.svg",
+                          color: Colors.white,
+                        ),
+                      ),
+                     //Count()
+                    ],
+                  ),
+                ),
+              ),
             SizedBox(
               height: 26.h,
               child: Padding(
@@ -52,9 +85,13 @@ class _DashboardState extends State<Dashboard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+                    
+
+
                     InkWell(
                       onTap: () {
-                        //Navigator.push(context, MaterialPageRoute(builder: (context) => NewRequestScreen() ));
+                        // Navigator.push(context, MaterialPageRoute(builder: (context) => NewRequestScreen() ));
                       },
                       child: Text(
                         "Dashboard",
@@ -80,7 +117,7 @@ class _DashboardState extends State<Dashboard> {
             SizerUtil.deviceType == DeviceType.mobile
   ?  Container(
               width: double.infinity,
-              height: 63.1.h,
+              height: 56.3.h,
               
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -372,3 +409,42 @@ class _DashboardState extends State<Dashboard> {
 
 
 }
+
+
+
+
+// class Count extends StatelessWidget {
+//   const Count({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     var count  = '${context.watch!<Counter>().count}';
+
+//     return Visibility(
+//       visible: count.toString()=="0"?false:true,
+//       child: Positioned(
+//         top: -3,
+//         right: 0,
+//         child: Container(
+//           height: 16,
+//           width: 16,
+//           decoration: BoxDecoration(
+//             color: Color(0xFFFF4848),
+//             shape: BoxShape.circle,
+//             border: Border.all(width: 1.5, color: Colors.white),
+//           ),
+//           child: Center(
+//             child: Text(
+//               count.toString(),
+//               style: TextStyle(
+//                 fontSize: 10,
+//                 height: 1,
+//                 fontWeight: FontWeight.w600,
+//                 color: Colors.white,
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     ); }
+// }

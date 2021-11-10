@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:roccabox_admin/screens/homenave.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
-import 'package:sizer/sizer.dart';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

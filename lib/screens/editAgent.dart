@@ -187,7 +187,7 @@ void initState() {
                           // showFlag: false,
                           onChanged: print,
                           // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                          initialSelection: 'gb',
+                          initialSelection: "+"+widget.country_code.toString(),
                           // favorite: ['+91', 'FR'],
                           // optional. Shows only country name and flag
                           showCountryOnly: false,
