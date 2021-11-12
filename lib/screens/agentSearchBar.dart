@@ -449,7 +449,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                     false;
                   }
 
-                  //sliderStatus(index);
+                  userStatus(index);
                  // status1 = val;
                 });
               },
@@ -457,6 +457,81 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
       ),
     );
   }
+
+
+
+        Future<dynamic> userStatus( int index) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.post(
+      Uri.parse(
+        RestDatasource.USERSTATUS_URL,
+      ),
+      body: {
+        "admin_id":id.toString(),
+        "user_id":apiList[index].id.toString()
+      }
+    );
+   
+  
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+    
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        //Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+           agentListApi();
+          // Navigator.pop(context);
+
+         // Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList()));
+        
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+
+
 
   Future<dynamic> agentListApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

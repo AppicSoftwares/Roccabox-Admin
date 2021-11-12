@@ -33,6 +33,7 @@ class RestDatasource {
   static final SLIDERSTATUS_URL = BASE_URL + "agent/sliderStatus";
   static final SEARCHPROPERTY_URL = BASE_URL + "property/search?";
   static final PROPERTYSTATUS_URL = BASE_URL + "property/status";
+  static final USERSTATUS_URL = BASE_URL + "user/status";
 
 
   
