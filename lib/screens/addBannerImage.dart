@@ -162,8 +162,8 @@ class _AddBannerImageState extends State<AddBannerImage> {
                 onTap: () {
                   getImage();
                 },
-                child: file == null
-                    ? Padding(
+                child:file == null
+                    ?  Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 2.h, vertical: 1.h),
                         child: Container(
