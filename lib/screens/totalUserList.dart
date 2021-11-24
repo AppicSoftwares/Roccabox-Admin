@@ -1,10 +1,16 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:roccabox_admin/ChatModule/chatscreen.dart';
+import 'package:roccabox_admin/agora/dialscreen/dialScreeen.dart';
+import 'package:roccabox_admin/agora/videoCall/videoCall.dart';
 import 'package:roccabox_admin/screens/addUser.dart';
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editUser.dart';
@@ -26,7 +32,8 @@ class TotalUserList extends StatefulWidget {
 }
 
 class _TotalState extends State<TotalUserList> {
-
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: true);
   var name = "";
   var email = "";
   var phone = "";
@@ -34,17 +41,46 @@ class _TotalState extends State<TotalUserList> {
   var country_code = "";
 
   bool isloading = false;
-
-
+  var id ;
+  int pageno = 1;
+  bool isRefresh = false;
+  var totalPage  = 0;
+  final firestoreInstance = FirebaseFirestore.instance;
+  FirebaseMessaging? auth;
+  var token;
   @override
   void initState() {
     super.initState();
 
-    userListApi();
-    
-  }
-  
+    userListApi("1");
+    auth = FirebaseMessaging.instance;
+    auth?.getToken().then((value){
+      print("FirebaseTokenHome "+value.toString());
+      token = value.toString();
 
+    });
+  }
+  void _onRefresh() async{
+    isRefresh = true;
+    pageno = 1;
+    userListApi("1");
+
+  }
+  Future<bool> getPassengerData() async {
+    if (isRefresh) {
+      pageno = 1;
+    } else {
+      if (apiList.length >= totalPage) {
+        _refreshController.loadNoData();
+        return false;
+      }
+    }
+
+
+    userListApi(pageno.toString());
+    setState(() {});
+    return true;
+  }
   List <TotalUserListApi> apiList = [];
 
 
@@ -91,215 +127,236 @@ ScrollController _controller = new ScrollController();
         ],
       ),
       body: SizerUtil.deviceType == DeviceType.mobile
-          ? ListView(
-            shrinkWrap: true,
-            controller: _controller,
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      width: double.infinity,
-                      height: 7.h,
-                      child: TextFormField(
-                        onChanged: (value){
-                          searchData(value.toString());
-                        },
-                        validator: (val) {
-                          
-                        },
-                        decoration: InputDecoration(
-                            suffixIcon: Icon(
-                              Icons.search,
-                              size: 8.w,
-                            ),
-                            hintText: 'Search',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(3.w),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            labelStyle: TextStyle(
-                                fontSize: 15, color: Color(0xff000000))),
+          ? SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        onLoading: (){
+          if(apiList.length<totalPage){
+            pageno = pageno+1;
+            getPassengerData();
+          }else{
+            _refreshController.loadNoData();
+          }
+        },
+            child: ListView(
+              shrinkWrap: true,
+              controller: _controller,
+              children: [
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 3.h,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        width: double.infinity,
+                        height: 7.h,
+                        child: TextFormField(
+                          onChanged: (value){
+                            searchData(value.toString());
+                          },
+                          validator: (val) {
+
+                          },
+                          decoration: InputDecoration(
+                              suffixIcon: Icon(
+                                Icons.search,
+                                size: 8.w,
+                              ),
+                              hintText: 'Search',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(3.w),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              labelStyle: TextStyle(
+                                  fontSize: 15, color: Color(0xff000000))),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Text(
-                    "Total User: " + apiList.length.toString(),
-                    style: TextStyle(
-                        fontSize: 15.sp, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
+                    SizedBox(
+                      height: 3.h,
+                    ),
+                    Text(
+                      "Total User: " + apiList.length.toString(),
+                      style: TextStyle(
+                          fontSize: 15.sp, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+/*
 
-                  isloading 
-                  ? Align(
-                    alignment: Alignment.center,
-                     child: CircularProgressIndicator(),
-                    
-                  )
-                  :
+                    isloading
+                    ? Align(
+                      alignment: Alignment.center,
+                       child: CircularProgressIndicator(),
+
+                    )
+                    :
+*/
 
 
 
-                  ListView.builder(
-                    shrinkWrap: true,
-                     controller: _controller,
-                    itemCount: apiList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        height: 12.h,
-                        child: Column(
-                          children: [
-                            Container(
-                              
-                              child: ListTile(
-                    leading: image == null
-                                      ? Image.asset(
-                                          'assets/Avatar.png',
-                                        )
-                                      : CircleAvatar(
-                                        radius: 30,
-                                          backgroundImage: NetworkImage(apiList[index].image.toString()),
+                    ListView.builder(
+                      shrinkWrap: true,
+                       controller: _controller,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: apiList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        print("Image "+apiList[index].image.toString());
+                        return Container(
+                          height: 13.h,
+                          child: Column(
+                            children: [
+                              Container(
+
+                                child: ListTile(
+                      leading: apiList[index].image == null
+                                        ? Image.asset(
+                                            'assets/Avatar.png',
+                                          )
+                                        : CircleAvatar(
+                                          radius: 30,
+                                            backgroundImage: NetworkImage(apiList[index].image.toString()),
+                                          ),
+                      title: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    apiList[index].name.toString(),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 11.sp,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                   apiList[index].email.toString(),
+
+                                   overflow: TextOverflow.ellipsis,
+                                    style:
+                                        TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                  ),
+                                  Row(
+                                    children: [
+                                       Text(
+                                        apiList[index].country_code.toString(),
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                      ),
+                                      Text(
+                                        apiList[index].phone.toString(),
+                                        style:
+                                            TextStyle(fontSize: 8.sp, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                      ),
+                      trailing: Column(
+                                children: [
+
+                                  Row(
+                                   mainAxisSize: MainAxisSize.min,
+
+
+                                    children: [
+                                       InkWell(
+                                         onTap: () {
+                                           Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatScreen(image: apiList[index].image,name: apiList[index].name,receiverId: apiList[index].id,senderId: id,fcm: apiList[index].firebase_token,userType: "user",)));
+                                         },
+
+                                        child: Image.asset("assets/comment.png",
+                                        width: 6.w,
+
                                         ),
-                    title: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  apiList[index].name.toString(),
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                 apiList[index].email.toString(),
+                                      ),
 
-                                 overflow: TextOverflow.ellipsis,
-                                  style:
-                                      TextStyle(fontSize: 8.sp, color: Colors.grey),
-                                ),
-                                Row(
-                                  children: [
-                                     Text(
-                                      apiList[index].country_code.toString(),
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          TextStyle(fontSize: 8.sp, color: Colors.grey),
-                                    ),
-                                    Text(
-                                      apiList[index].phone.toString(),
-                                      style:
-                                          TextStyle(fontSize: 8.sp, color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                    ),
-                    trailing: Column(
-                              children: [
-                                
-                                Row(
-                                 mainAxisSize: MainAxisSize.min,
-                                 
-                                 
-                                  children: [
+                                       SizedBox(width: 1.w,),
+                                      InkWell(
+                                         onTap: () {
+                                           getAccessToken(apiList[index].id, "VOICE");
+
+                                         },
+
+                                        child: Image.asset("assets/callicon.png",
+                                        width: 6.w,
+
+                                        ),
+                                      ),
+
+                                       SizedBox(width: 1.w,),
                                      InkWell(
-                                       onTap: () {
-                                         Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatDemo()));
-                                       },
+                                         onTap: () {
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditUser(
+                                              name: apiList[index].name.toString(),
+                                              phone: apiList[index].phone.toString(),
+                                              email: apiList[index].email.toString(),
+                                              country_code: apiList[index].country_code.toString(),
+                                              id: apiList[index].id.toString(),
+                                              image: apiList[index].image.toString(),
+                                              customers: widget.customers,
 
-                                      child: Image.asset("assets/comment.png",
-                                      width: 6.w,
-                                      
+                                              )));
+                                         },
+
+                                        child: Image.asset("assets/edit.png",
+                                        width: 6.w,
+
+                                        ),
                                       ),
-                                    ),
-                                     
-                                     SizedBox(width: 1.w,),
-                                    InkWell(
-                                       onTap: () {},
 
-                                      child: Image.asset("assets/callicon.png",
-                                      width: 6.w,
-                                      
+                                       SizedBox(width: 1.w,),
+                                      InkWell(
+                                         onTap: () {
+
+                                           customDialog(index);
+
+                                         },
+
+                                        child: Image.asset("assets/delete.png",
+                                        width: 6.w,
+
+                                        ),
                                       ),
-                                    ),
-                                     
-                                     SizedBox(width: 1.w,),
-                                   InkWell(
-                                       onTap: () {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditUser(
-                                            name: apiList[index].name.toString(),
-                                            phone: apiList[index].phone.toString(),
-                                            email: apiList[index].email.toString(),
-                                            country_code: apiList[index].country_code.toString(),
-                                            id: apiList[index].id.toString(),
-                                            image: apiList[index].image.toString(),
-                                            customers: widget.customers,
-                                            
-                                            )));
-                                       },
 
-                                      child: Image.asset("assets/edit.png",
-                                      width: 6.w,
-                                      
-                                      ),
-                                    ),
-                                     
-                                     SizedBox(width: 1.w,),
-                                    InkWell(
-                                       onTap: () {
+                                       SizedBox(width: 1.w,),
+                                    ],
+                                  ),
 
-                                         customDialog(index);
-                                        
-                                       },
-
-                                      child: Image.asset("assets/delete.png",
-                                      width: 6.w,
-                                      
-                                      ),
-                                    ),
-                                     
-                                     SizedBox(width: 1.w,),
-                                  ],
-                                ),
-
-                                SizedBox(height: 0.5.h,),
-                               customSwitch(index)
-                              ],
+                                  SizedBox(height: 0.5.h,),
+                                 customSwitch(index)
+                                ],
+                      ),
                     ),
-                  ),
-                            ),
+                              ),
 
-                  SizedBox(height: 1.5.h,),
+                    SizedBox(height: 1.5.h,),
 
-                  Container(
-                    width: double.infinity,
-                    height: 0.1.h,
-                    color: Colors.grey,
-                  ),
+                    Container(
+                      width: double.infinity,
+                      height: 0.1.h,
+                      color: Colors.grey,
+                    ),
 
-                  SizedBox(height: 1.5.h,),
+                    SizedBox(height: 1.5.h,),
 
 
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  
-                ],
-              ),
-            ],
-            
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+                  ],
+                ),
+              ],
+
+            ),
           )
           : Container(
               // Widget for Tablet
@@ -346,7 +403,7 @@ ScrollController _controller = new ScrollController();
                     false;
                   }
 
-                  userStatus(index);
+                  userStatus(index, pageno.toString());
                  // status1 = val;
                 });
               },
@@ -355,10 +412,114 @@ ScrollController _controller = new ScrollController();
     );
   }
 
-  
+
+  Future<dynamic> getAccessToken(String id, String type) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var userid = pref.getString("id");
+
+    print("user_id "+userid.toString());
+    // print(email)
+        ;
+    var jsonRes;
+    http.Response? res;
+    var request = http.post(Uri.parse(RestDatasource.AGORATOKEN),
+        body: {
+
+          "type": type,
+          "user_id": userid.toString(),
+          "receiver_id": id,
+          "time":DateTime.now().millisecondsSinceEpoch.toString()
 
 
-      Future<dynamic> userStatus( int index) async {
+        });
+
+    await request.then((http.Response response) {
+      res = response;
+
+      // msg = jsonRes["message"].toString();
+      // getotp = jsonRes["otp"];
+      // print(getotp.toString() + '123');t
+    });
+    if (res!.statusCode == 200) {
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(res!.body.toString());
+      print("Response: " + res!.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+
+
+      if(jsonRes["status"]==true){
+        var agoraToken = jsonRes["agora_token"].toString();
+        var channel = jsonRes["channelName"].toString();
+        var name = jsonRes["receiver"]["name"].toString();
+        var image = jsonRes["receiver"]["image"].toString();
+        var time = jsonRes["time"].toString();
+        var fcm = jsonRes["receiver"]["firebase_token"].toString();
+        registerCall(userid.toString(),name, image, type, fcm, id, "Calling", agoraToken, channel, time);
+
+      }
+
+    } else {
+
+    }
+  }
+  void registerCall(String userid, String nm, String img, String type, String fcmToken,String idd, String status, String agoraToken, String channel, String time) async {
+
+    var documentReference = FirebaseFirestore.instance
+        .collection('call_master')
+        .doc("call_head")
+        .collection(userid)
+        .doc(time);
+
+
+    firestoreInstance.runTransaction((transaction) async {
+      transaction.set(
+        documentReference,
+        {
+          'fcmToken': fcmToken,
+          'id': idd,
+          'image': img,
+          'name': nm,
+          'timestamp': time,
+          'type': type,
+          'callType':"incoming",
+          'status': status
+
+        },
+      );
+    }).then((value) {
+      var documentReference = FirebaseFirestore.instance
+          .collection('call_master')
+          .doc("call_head")
+          .collection(idd)
+          .doc(time);
+
+      firestoreInstance.runTransaction((transaction) async {
+        transaction.set(
+          documentReference,
+          {
+            'fcmToken': token,
+            'id': userid,
+            'image': image,
+            'name': name,
+            'timestamp': time,
+            'type': type,
+            'callType':"outgoing",
+            'status':status
+          },
+        );
+      });
+    });
+    if(type=="VIDEO"){
+      Navigator.push(context, new MaterialPageRoute(builder: (context)=> VideoCall(name:nm ,image:img, channel: channel, token: agoraToken, myId: userid.toString(),time: time,senderId: idd)));
+
+    }else{
+      Navigator.push(context, new MaterialPageRoute(builder: (context)=> DialScreen(name:nm ,image:img, channel: channel, agoraToken: agoraToken,myId: userid.toString(),time: time, receiverId: idd, )));
+
+    }
+  }
+
+
+      Future<dynamic> userStatus( int index, String pageno) async {
 
      SharedPreferences prefs = await SharedPreferences.getInstance();
        var id = prefs.getString("id");
@@ -402,7 +563,7 @@ ScrollController _controller = new ScrollController();
         //Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-           userListApi();
+           userListApi(pageno);
            //Navigator.pop(context);
 
         //  Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList(
@@ -429,12 +590,13 @@ ScrollController _controller = new ScrollController();
 
 
 
-    Future<dynamic> userListApi() async {
+    Future<dynamic> userListApi(String pageno) async {
        SharedPreferences prefs = await SharedPreferences.getInstance();
-       var id = prefs.getString("id");
-       print(id.toString());
+       id = prefs.getString("id");
+       print("Id "+id.toString()+"");
     setState(() {
        isloading = true;
+
     });
     // print(email);
     // print(password);
@@ -445,7 +607,7 @@ ScrollController _controller = new ScrollController();
     var request = http.get(
         Uri.parse(
 
-          RestDatasource.TOTALUSERLIST_URL + "admin_id=" + id.toString()
+          RestDatasource.TOTALUSERLIST_URL + "admin_id=" + id.toString()+"&PageNumber=$pageno&PageSize=10"
           
         ),
        );
@@ -464,7 +626,11 @@ ScrollController _controller = new ScrollController();
     if (res!.statusCode == 200) {
 
       if (jsonRes["status"] == true) {
+        if (isRefresh) {
           apiList.clear();
+        }
+
+        totalPage = jsonRes["total"];
     
 
 
@@ -477,10 +643,12 @@ ScrollController _controller = new ScrollController();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
         modelSearch.status = jsonArray[i]["status"].toString();
+        modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
         print("id: "+modelSearch.id.toString());
 
-        apiList.add(modelSearch);
+          apiList.add(modelSearch);
+
         
       }
 
@@ -488,6 +656,9 @@ ScrollController _controller = new ScrollController();
 
         setState(() {
           isloading = false;
+          _refreshController.refreshCompleted();
+          _refreshController.loadComplete();
+          isRefresh = false;
         });
       }
     } else {
@@ -496,6 +667,9 @@ ScrollController _controller = new ScrollController();
 
       setState(() {
         isloading = false;
+        _refreshController.refreshCompleted();
+        _refreshController.loadComplete();
+        isRefresh = false;
       });
     }
   }
@@ -548,7 +722,7 @@ ScrollController _controller = new ScrollController();
                   :
                   GestureDetector(
                     onTap: () {
-                      deleteData(index);
+                      deleteData(index, pageno.toString());
                      
                     },
                     child: Container(
@@ -581,7 +755,7 @@ ScrollController _controller = new ScrollController();
 
 
 
-   Future<dynamic> deleteData( int index) async {
+   Future<dynamic> deleteData( int index, String pageno) async {
 
      SharedPreferences prefs = await SharedPreferences.getInstance();
        var id = prefs.getString("id");
@@ -625,7 +799,7 @@ ScrollController _controller = new ScrollController();
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-            userListApi();
+            userListApi(pageno);
         
       } else {
         setState(() {
@@ -695,6 +869,7 @@ ScrollController _controller = new ScrollController();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
         modelSearch.status = jsonArray[i]["status"].toString();
+        modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
         print("id: "+modelSearch.id.toString());
 
@@ -739,5 +914,6 @@ class TotalUserListApi {
   var image = "";
   var country_code = "";
   var status = "";
-  
+  var firebase_token = "";
+
 }

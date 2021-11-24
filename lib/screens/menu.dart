@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roccabox_admin/ChatModule/chat.dart';
 import 'package:roccabox_admin/screens/banners.dart';
 import 'package:roccabox_admin/screens/changePassword.dart';
 
@@ -24,8 +25,8 @@ class _SettingState extends State<Menu> {
   var name, email, image;
   @override
   void initState() {
-    getData();
     super.initState();
+    getData();
   }
 
   LanguageChange languageChange = new LanguageChange();
@@ -147,7 +148,80 @@ class _SettingState extends State<Menu> {
             Divider(
               color: Color(0xff707070),
             ),
+            ListTile(
+              tileColor: Color(0xffF3F3F3),
+              title: Text(
+                // settings
+                "Chat",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff000000),
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+                onTap: () {
 
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Chat("user")));
+                        // PropertyList()
+                },
+
+                //tileColor: Color(0xffF3F3F3),
+                title: Text(
+                  // 'Property Listing ',
+                  "User Chat",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff000000),
+                      fontWeight: FontWeight.w500),
+                ),
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                )),
+            Divider(
+              color: Color(0xff707070),
+            ),
+            ListTile(
+                onTap: () {
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Chat("agent")));
+                  // PropertyList()
+                },
+
+                //tileColor: Color(0xffF3F3F3),
+                title: Text(
+                  // 'Property Listing ',
+                  "Agent Chat",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff000000),
+                      fontWeight: FontWeight.w500),
+                ),
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                )),
+            Divider(
+              color: Color(0xff707070),
+            ),
+            ListTile(
+              tileColor: Color(0xffF3F3F3),
+              title: Text(
+                // settings
+                "Setting",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff000000),
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
              ListTile(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePaasword()));
@@ -205,8 +279,8 @@ class _SettingState extends State<Menu> {
     name = pref.getString("name");
     email = pref.getString("email");
     image = pref.getString("image");
-    print("name " + name + "");
-    print("email " + email + "");
+    print("name " + name.toString() + "");
+    print("email " + email.toString() + "");
     setState(() {});
   }
 }

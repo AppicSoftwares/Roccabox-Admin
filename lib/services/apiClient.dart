@@ -34,7 +34,8 @@ class RestDatasource {
   static final SEARCHPROPERTY_URL = BASE_URL + "property/search?";
   static final PROPERTYSTATUS_URL = BASE_URL + "property/status";
   static final USERSTATUS_URL = BASE_URL + "user/status";
-
+  static final AGORATOKEN = BASE_URL + "agora-token";
+  static final UPDATE_TOKEN = BASE_URL + "updateToken";
 
   
 

@@ -1,8 +1,13 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:roccabox_admin/ChatModule/chatscreen.dart';
+import 'package:roccabox_admin/agora/dialscreen/dialScreeen.dart';
+import 'package:roccabox_admin/agora/videoCall/videoCall.dart';
 import 'package:roccabox_admin/screens/addAgent.dart';
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editAgent.dart';
@@ -25,13 +30,21 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
   var phone = "";
   var image = "";
   var country_code = "";
-
+  var id;
   bool isloading = false;
-
+  var total = "10";
+  final firestoreInstance = FirebaseFirestore.instance;
+  FirebaseMessaging? auth;
+  var token;
   @override
   void initState() {
     super.initState();
+    auth = FirebaseMessaging.instance;
+    auth?.getToken().then((value){
+      print("FirebaseTokenHome "+value.toString());
+      token = value.toString();
 
+    });
     agentListApi();
   }
 
@@ -186,7 +199,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                 itemCount: apiList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
-                    height: 12.h,
+                    height: 13.h,
                     child: Column(
                       children: [
                         ListTile(
@@ -240,11 +253,8 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (Context) =>
-                                                  ChatDemo()));
+                                      Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatScreen(image: apiList[index].image,name: apiList[index].name,receiverId: apiList[index].id,senderId: id,fcm: apiList[index].firebase_token,userType: "agent",)));
+
                                     },
                                     child: Image.asset(
                                       "assets/comment.png",
@@ -255,7 +265,10 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                                     width: 1.w,
                                   ),
                                   InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      getAccessToken(apiList[index].id, "VOICE");
+
+                                    },
                                     child: Image.asset(
                                       "assets/callicon.png",
                                       width: 6.w,
@@ -338,7 +351,113 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
       ),
     );
   }
-    Future<dynamic> searchData(String key ) async {
+
+  Future<dynamic> getAccessToken(String id, String type) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var userid = pref.getString("id");
+
+    print("user_id "+userid.toString());
+    // print(email)
+        ;
+    var jsonRes;
+    http.Response? res;
+    var request = http.post(Uri.parse(RestDatasource.AGORATOKEN),
+        body: {
+
+          "type": type,
+          "user_id": userid.toString(),
+          "receiver_id": id,
+          "time":DateTime.now().millisecondsSinceEpoch.toString()
+
+
+        });
+
+    await request.then((http.Response response) {
+      res = response;
+
+      // msg = jsonRes["message"].toString();
+      // getotp = jsonRes["otp"];
+      // print(getotp.toString() + '123');t
+    });
+    if (res!.statusCode == 200) {
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(res!.body.toString());
+      print("Response: " + res!.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+
+
+      if(jsonRes["status"]==true){
+        var agoraToken = jsonRes["agora_token"].toString();
+        var channel = jsonRes["channelName"].toString();
+        var name = jsonRes["receiver"]["name"].toString();
+        var image = jsonRes["receiver"]["image"].toString();
+        var time = jsonRes["time"].toString();
+        var fcm = jsonRes["receiver"]["firebase_token"].toString();
+        registerCall(userid.toString(),name, image, type, fcm, id, "Calling", agoraToken, channel, time);
+
+      }
+
+    } else {
+
+    }
+  }
+  void registerCall(String userid, String nm, String img, String type, String fcmToken,String idd, String status, String agoraToken, String channel, String time) async {
+
+    var documentReference = FirebaseFirestore.instance
+        .collection('call_master')
+        .doc("call_head")
+        .collection(userid)
+        .doc(time);
+
+
+    firestoreInstance.runTransaction((transaction) async {
+      transaction.set(
+        documentReference,
+        {
+          'fcmToken': fcmToken,
+          'id': idd,
+          'image': img,
+          'name': nm,
+          'timestamp': time,
+          'type': type,
+          'callType':"incoming",
+          'status': status
+
+        },
+      );
+    }).then((value) {
+      var documentReference = FirebaseFirestore.instance
+          .collection('call_master')
+          .doc("call_head")
+          .collection(idd)
+          .doc(time);
+
+      firestoreInstance.runTransaction((transaction) async {
+        transaction.set(
+          documentReference,
+          {
+            'fcmToken': token,
+            'id': userid,
+            'image': image,
+            'name': name,
+            'timestamp': time,
+            'type': type,
+            'callType':"outgoing",
+            'status':status
+          },
+        );
+      });
+    });
+    if(type=="VIDEO"){
+      Navigator.push(context, new MaterialPageRoute(builder: (context)=> VideoCall(name:nm ,image:img, channel: channel, token: agoraToken, myId: userid.toString(),time: time,senderId: idd)));
+
+    }else{
+      Navigator.push(context, new MaterialPageRoute(builder: (context)=> DialScreen(name:nm ,image:img, channel: channel, agoraToken: agoraToken,myId: userid.toString(),time: time, receiverId: idd, )));
+
+    }
+  }
+
+  Future<dynamic> searchData(String key ) async {
 
      SharedPreferences prefs = await SharedPreferences.getInstance();
        var id = prefs.getString("id");
@@ -385,6 +504,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
         modelSearch.phone = jsonArray[i]["phone"].toString();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
+        modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
         print("id: "+modelSearch.id.toString());
 
@@ -535,7 +655,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
 
   Future<dynamic> agentListApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.getString("id");
+    id = prefs.getString("id");
     print(id.toString());
     setState(() {
       isloading = true;
@@ -548,7 +668,68 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
     var jsonArray;
     var request = http.get(
       Uri.parse(
-          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()),
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize=$total"),
+    );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+        apiList.clear();
+        total = jsonRes["total"].toString();
+        agentListApi2();
+        for (var i = 0; i < jsonArray.length; i++) {
+          TotalAgentListApi modelSearch = new TotalAgentListApi();
+          modelSearch.name = jsonArray[i]["name"];
+          modelSearch.id = jsonArray[i]["id"].toString();
+          modelSearch.email = jsonArray[i]["email"].toString();
+          modelSearch.phone = jsonArray[i]["phone"].toString();
+          modelSearch.image = jsonArray[i]["image"].toString();
+          modelSearch.country_code = jsonArray[i]["country_code"].toString();
+          modelSearch.status = jsonArray[i]["status"].toString();
+          modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
+
+          print("id: " + modelSearch.id.toString());
+
+          apiList.add(modelSearch);
+        }
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(this.context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+  Future<dynamic> agentListApi2() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = prefs.getString("id");
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+      Uri.parse(
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize=$total"),
     );
 
     await request.then((http.Response response) {
@@ -575,6 +756,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
           modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
           modelSearch.status = jsonArray[i]["status"].toString();
+          modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
           print("id: " + modelSearch.id.toString());
 
@@ -721,4 +903,5 @@ class TotalAgentListApi {
   var image = "";
   var country_code = "";
   var status = "";
+  var firebase_token = "";
 }

@@ -204,7 +204,8 @@ class _TotalState extends State<Banners> {
                                               url: bannerList[index].url.toString(), 
                                               redirect: bannerList[index].redirect.toString(),
                                               id:  bannerList[index].id.toString(),
-
+                                              refId: bannerList[index].refId,
+                                              filter_id: bannerList[index].filter_id,
                                               )));
                                           },
                                           child: Image.asset(
@@ -313,6 +314,8 @@ class _TotalState extends State<Banners> {
         modelSearch.url = jsonArray[i]["url"].toString();
         modelSearch.redirect = jsonArray[i]["redirect"].toString();
         modelSearch.status = jsonArray[i]["status"].toString();
+        modelSearch.refId = jsonArray[i]["rf_id"].toString();
+        modelSearch.filter_id = jsonArray[i]["filter_id"].toString();
         modelSearch.created_at = jsonArray[i]["created_at"].toString();
         modelSearch.updated_at = jsonArray[i]["updated_at"].toString();
 
@@ -381,6 +384,9 @@ class _TotalState extends State<Banners> {
         modelSearch.id = jsonArray[i]["id"].toString();
         modelSearch.name = jsonArray[i]["name"];
         modelSearch.url = jsonArray[i]["url"].toString();
+        modelSearch.refId = jsonArray[i]["rf_id"].toString();
+        modelSearch.filter_id = jsonArray[i]["filter_id"].toString();
+        modelSearch.redirect = jsonArray[i]["redirect"].toString();
         modelSearch.created_at = jsonArray[i]["created_at"].toString();
        
 
@@ -697,6 +703,8 @@ class BannerProperties {
   var url = "";
   var redirect = "";
   var status = "";
+  var refId = "";
+  var filter_id = "";
   var created_at = "";
   var updated_at = "";
 }

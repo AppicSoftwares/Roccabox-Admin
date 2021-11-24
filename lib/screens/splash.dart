@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -14,9 +16,16 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   String id = "";
-
+  FirebaseMessaging? auth;
+  var token;
+  final firestoreInstance = FirebaseFirestore.instance;
   @override
   void initState() {
+    auth = FirebaseMessaging.instance;
+    auth?.getToken().then((value){
+      print("FirebaseToken "+value.toString());
+      token = value.toString();
+    });
     getLoginStatus();
     super.initState();
   }
@@ -36,7 +45,21 @@ class _SplashState extends State<Splash> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     id = prefs.getString("id").toString();
     print("id :" + id + "^");
+    if(id!=null){
 
+      var documentReference = FirebaseFirestore.instance
+          .collection('token')
+          .doc(id.toString());
+
+      firestoreInstance.runTransaction((transaction) async {
+        transaction.set(
+          documentReference,
+          {
+            'token': token
+          },
+        );
+      });
+    }
     Future.delayed(Duration(seconds: 2), () {
       id.toString() == "" || id.toString() == "null" || id == null
           ? Navigator.pushReplacement(
@@ -44,5 +67,7 @@ class _SplashState extends State<Splash> {
           : Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => HomeNav()));
     });
+
+
   }
 }

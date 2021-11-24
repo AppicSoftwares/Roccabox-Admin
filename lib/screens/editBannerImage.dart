@@ -4,17 +4,19 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:roccabox_admin/screens/languageCheck.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import '../main.dart';
 import 'banners.dart';
 
 class EditBannerImage extends StatefulWidget {
-  var name, url, redirect, id;
+  var name, url, redirect, id, refId,filter_id;
 
   EditBannerImage({required this.name, required this.url, 
-  required this.redirect, required this.id});
+  required this.redirect, required this.id, this.refId, this.filter_id});
 
   @override
   _EditBannerImageState createState() => _EditBannerImageState();
@@ -22,7 +24,7 @@ class EditBannerImage extends StatefulWidget {
 
 class _EditBannerImageState extends State<EditBannerImage> {
 
-  String? _chosenValue;
+  String? _chosenValue = "List your property";
 
  
   String image = "";
@@ -32,12 +34,15 @@ class _EditBannerImageState extends State<EditBannerImage> {
   bool isLoading = false;
   final picker = ImagePicker();
   get kPrimaryColor => null;
+  List svgs = ['forsale', 'develop', 'svg1', 'apartment'];
 
-  
-  
+  String selected = "For Sale";
+
+
 
   bool isloading = false;
    final formkey = GlobalKey<FormState>();
+  LanguageChange languageChange = new LanguageChange();
 
 
 
@@ -48,7 +53,20 @@ class _EditBannerImageState extends State<EditBannerImage> {
 void initState() {
   super.initState();
   nameController.text = widget.name;
-  redirectController.text = widget.redirect;
+  if(widget.refId!="" || widget.refId!=null) {
+    redirectController.text = widget.refId;
+  }
+  if(widget.filter_id!="" || widget.filter_id!=null) {
+    if(widget.filter_id=="1"){
+      selected = "For Sale";
+    }else if(widget.filter_id=="3"){
+      selected = "Long-term Rental";
+    }else if(widget.filter_id=="2"){
+      selected = "Holiday Rental";
+    }else{
+      selected = "New Developments";
+    }
+  }
   
 }
 
@@ -164,7 +182,7 @@ String? uptchosenValue;
               
                    controller: redirectController,
                   decoration: InputDecoration(
-                    hintText: "Type refference Id",
+                    hintText: "Enter reference Id of Property",
                     hintStyle: TextStyle(color: Colors.black),
                     
                   
@@ -181,7 +199,221 @@ String? uptchosenValue;
             SizedBox(
               height: 3.h,
             ),
+                    Visibility(
+                      visible:  _chosenValue == "List your property" ? true : false,
+                      child: Text(
+                        'Select Category of Property',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff000000)),
+                      ),
+                    ),
+                    Visibility(
+                      visible:  _chosenValue == "List your property" ? true : false,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 15.0, bottom: 20),
+                        child:  Container(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
 
+                                      setState(() {
+                                        selected = "For Sale";
+                                      });
+
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 5),
+                                      height: 105,
+                                      width: MediaQuery.of(context).size.width * .42,
+                                      decoration: BoxDecoration(
+                                          color: selected == 'For Sale' ? Color(0xffF0EBE7) : Colors.white,
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: Color(0xffD5D5D5))),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/${svgs.elementAt(0)}.svg',
+                                            width: 40,
+                                          ), //for sale
+                                          SizedBox(height: 12),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                                            child: Text(languageChange.FORSALE[langCount],
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 12,
+                                                    color: Color(0xff111111))),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+
+                                      setState(() {
+                                        selected = "New Developments";
+                                      });
+
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 5),
+                                      height: 105,
+                                      width: MediaQuery.of(context).size.width * .42,
+                                      decoration: BoxDecoration(
+                                          color: selected == 'New Developments' ? Color(0xffF0EBE7) : Colors.white,
+                                          //Color(0xffF0EBE7),
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: Color(0xffD5D5D5))),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/${svgs.elementAt(3)}.svg',
+                                            width: 35, //new developers
+                                            color: Color(0xffFFBA00),
+                                          ),
+                                          SizedBox(height: 12),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                                            child: Text(languageChange.DEVELOP[langCount],
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 12,
+                                                    color: Color(0xff111111))),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selected = "Long-term Rental";
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 5),
+                                        height: 105,
+                                        width: MediaQuery.of(context).size.width * .42,
+                                        decoration: BoxDecoration(
+                                            color: selected == "Long-term Rental" ? Color(0xffF0EBE7) : Colors.white,
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(color: Color(0xffD5D5D5))),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                              'assets/${svgs.elementAt(1)}.svg',
+                                              width: 32,
+                                            ), // long term rental,
+                                            SizedBox(height: 12),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                                              child: Text(languageChange.LONGTERM[langCount],
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 12,
+                                                      color: Color(0xff111111))),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+
+                                        setState(() {
+                                          selected = "Holiday Rental";
+                                        });
+
+
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 5),
+                                        height: 105,
+                                        width: MediaQuery.of(context).size.width * .42,
+                                        decoration: BoxDecoration(
+                                            color: selected == 'Holiday Rental' ? Color(0xffF0EBE7) : Colors.white,
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(color: Color(0xffD5D5D5))),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                              'assets/${svgs.elementAt(2)}.svg',
+                                              width: 45,
+                                              color: Color(0xffFFBA00),
+                                            ),
+                                            SizedBox(height: 12),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                                              child: Text(languageChange.HOLIDAY[langCount],
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 12,
+                                                      color: Color(0xff111111))),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // child: DropdownButtonFormField(
+                        //     decoration: InputDecoration(
+                        //         isDense: true,
+                        //         border: OutlineInputBorder(
+                        //             borderRadius: BorderRadius.circular(10))),
+                        //     hint: Text(
+                        //       '---Select---',
+                        //       style: TextStyle(fontSize: 16, color: Color(0xff666666)),
+                        //     ),
+                        //     value: listing,
+                        //     onChanged: (String? newvalue) {
+                        //       setState(() {
+                        //         listing = newvalue.toString();
+                        //       });
+                        //     },
+                        //     items: name.map((e) {
+                        //       return DropdownMenuItem(
+                        //         child: Text(e),
+                        //         value: e,
+                        //       );
+                        //     }).toList()),
+                      ),
+                    ),
 
 
 
@@ -248,15 +480,6 @@ String? uptchosenValue;
                         ),
                       )),
 
-
-
-
-
-
-
-
-
-
            
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 5.h),
@@ -284,31 +507,12 @@ String? uptchosenValue;
 
                             
                           }
-                        
-                            
-                              
+
                               print("email : " +uptredirect.toString());
-                            
 
-                            
-
-                          
-                            uploadData(
-                               nameController.text.toString(),
-
-                           
-
-
-
-                          
-
-                         
-
+                            uploadData(nameController.text.toString(),
                           _chosenValue.toString(),
-
-                          
-
-                          redirectController.text.toString());
+                          redirectController.text.toString(),selected);
 
                             // userRegister(email.toString(), phone.toString(),
                             //     firstname.toString() + ' ' + lastname.toString());
@@ -345,7 +549,8 @@ String? uptchosenValue;
     );
   }
 
-   Future<dynamic> uploadData(String name, String _chosenValue, String redirect, ) async {
+   Future<dynamic> uploadData(String name, String _chosenValue, String redirect,String filterId ) async {
+     var P_Agency_FilterId = "1";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("id");
     print("id Print: " + id.toString());
@@ -370,10 +575,29 @@ String? uptchosenValue;
       request.fields["redirect"] = _chosenValue.toString();
        print("choosenValue: "+_chosenValue.toString());
     }
+    if(_chosenValue == "List your property") {
 
-    if (redirect.toString() != "null" || redirect.toString() != "") {
-      request.fields["refid"] = redirect.toString();
-       print("redirect: "+redirect.toString());
+      if (redirect.toString() != "null" || redirect.toString() != "") {
+        request.fields["refId"] = redirect.toString();
+        print("redirect: " + redirect.toString());
+      }
+      if (filterId.toString() != "null" || filterId.toString() != "") {
+        if (filterId.toString() == "For Sale") {
+          P_Agency_FilterId = "1";
+        } else if (filterId.toString() == "Long-term Rental") {
+          P_Agency_FilterId = "3";
+        } else if (filterId.toString() == "Holiday Rental") {
+          P_Agency_FilterId = "2";
+        }
+        // else if (widget.title == "New Developments") {
+        //   P_Agency_FilterId = "5";
+        // }
+        else {
+          P_Agency_FilterId = "5";
+        }
+        request.fields["filter_id"] = P_Agency_FilterId.toString();
+        print("redirect: " + redirect.toString());
+      }
     }
 
     request.fields["admin_id"] = id.toString();

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -7,10 +7,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:roccabox_admin/screens/agentSearchBar.dart';
 import 'package:roccabox_admin/screens/notification.dart';
+import 'package:roccabox_admin/screens/notifications.dart';
 
 import 'package:roccabox_admin/screens/totalUserList.dart';
 import 'package:http/http.dart' as http;
 import 'package:roccabox_admin/services/apiClient.dart';
+import 'package:roccabox_admin/services/provider.dart';
 import 'package:roccabox_admin/theme/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -54,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => NotificationScreen()));
+                            builder: (context) => Notifications()));
                   },
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -73,7 +75,7 @@ class _DashboardState extends State<Dashboard> {
                           color: Colors.white,
                         ),
                       ),
-                     //Count()
+                     Count()
                     ],
                   ),
                 ),
@@ -381,11 +383,9 @@ class _DashboardState extends State<Dashboard> {
       if (jsonRes["status"] == true) {
 
       customers = jsonRes["data"]["customers"].toString();
-      print(customers.toString());
 
       agents = jsonRes["data"]["agents"].toString();
-      print(agents.toString());
-      
+
         // Navigator.pushAndRemoveUntil(
         //     context,
         //     MaterialPageRoute(builder: (context) => HomeNav()),
@@ -448,3 +448,38 @@ class _DashboardState extends State<Dashboard> {
 //       ),
 //     ); }
 // }
+class Count extends StatelessWidget {
+  const Count({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var count  = '${context.watch<Counter>().count}';
+
+    return Visibility(
+      visible: count.toString()=="0"?false:true,
+      child: Positioned(
+        top: -3,
+        right: 0,
+        child: Container(
+          height: 16,
+          width: 16,
+          decoration: BoxDecoration(
+            color: Color(0xFFFF4848),
+            shape: BoxShape.circle,
+            border: Border.all(width: 1.5, color: Colors.white),
+          ),
+          child: Center(
+            child: Text(
+              count.toString(),
+              style: TextStyle(
+                fontSize: 10,
+                height: 1,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ); }
+}

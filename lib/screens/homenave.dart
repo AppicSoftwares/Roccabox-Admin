@@ -1,4 +1,8 @@
 
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:roccabox_admin/screens/dashboard.dart';
@@ -6,8 +10,10 @@ import 'package:roccabox_admin/screens/enquiry.dart';
 import 'package:roccabox_admin/screens/languageCheck.dart';
 import 'package:roccabox_admin/screens/menu.dart';
 import 'package:roccabox_admin/screens/property.dart';
+import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:sizer/sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 
 import '../main.dart';
@@ -27,8 +33,24 @@ class _HomeNavState extends State<HomeNav> {
     LanguageChange languageChange = new LanguageChange();
     GlobalKey globalKey = new GlobalKey(debugLabel: 'btm_app_bar');
 
+  String id = "";
+  FirebaseMessaging? auth;
+  var token;
+  final firestoreInstance = FirebaseFirestore.instance;
+  final FocusNode focusNode = FocusNode();
 
-   
+  @override
+  void initState() {
+    super.initState();
+    focusNode.unfocus();
+    focusNode.dispose();
+    auth = FirebaseMessaging.instance;
+    auth?.getToken().then((value){
+      print("FirebaseToken "+value.toString());
+      token = value.toString();
+      updateToken(token);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,9 +121,59 @@ class _HomeNavState extends State<HomeNav> {
     navigationBar!.onTap!(1);
   }
 
+  Future<dynamic> updateToken(String token) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var userid = pref.getString("id");
 
-   
+    var documentReference = FirebaseFirestore.instance
+        .collection('token')
+        .doc(userid.toString());
+    firestoreInstance.runTransaction((transaction) async {
+      transaction.set(
+        documentReference,
+        {
+          'token': token
+        },
+      );
+    });
 
-    
+    print("user_id "+userid.toString());
+    print("token "+token.toString());
+    // print(email);
+    var jsonRes;
+    http.Response? res;
+    var request = http.post(Uri.parse(RestDatasource.UPDATE_TOKEN),
+        body: {
+
+          "token": token.toString(),
+          "user_id": userid.toString()
+
+
+        });
+
+    await request.then((http.Response response) {
+      res = response;
+
+      // msg = jsonRes["message"].toString();
+      // getotp = jsonRes["otp"];
+      // print(getotp.toString() + '123');t
+    });
+    if (res!.statusCode == 200) {
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(res!.body.toString());
+      print("Response: " + res!.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+
+
+    } else {
+
+    }
+  }
+
+
+
+
+
+
 
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:roccabox_admin/ChatModule/chatscreen.dart';
 import 'package:roccabox_admin/screens/addAgent.dart';
 import 'package:roccabox_admin/screens/agentSearchBar.dart';
 
@@ -35,6 +36,7 @@ class _TotalState extends State<TotalAgentList> {
   var phone = "";
   var image = "";
   var country_code = "";
+  var id = "";
 
   bool isloading = false;
 
@@ -42,7 +44,6 @@ class _TotalState extends State<TotalAgentList> {
   @override
   void initState() {
     super.initState();
-
    // agentListApi();
     
   }
@@ -141,17 +142,17 @@ class _TotalState extends State<TotalAgentList> {
 
                             ],),
                           )
-                           
 
-                          
+
+
                           // TextFormField(
                           //    onChanged: (value){
                           //   searchData(value.toString());
                           // },
                           // validator: (val) {
-                            
+
                           // },
-                            
+
                           //   decoration: InputDecoration(
                           //       suffixIcon: Icon(
                           //         Icons.search,
@@ -242,8 +243,8 @@ class _TotalState extends State<TotalAgentList> {
                     SizedBox(
                       height: 3.h,
                     ),
-                    
-                    selected == "second" ? AgentList() : NewRequest() 
+
+                    selected == "second" ? AgentList() : NewRequest()
                   ],
                 ),
               ],
@@ -313,7 +314,7 @@ class _TotalState extends State<TotalAgentList> {
 
       if (jsonRes["status"] == true) {
           apiList.clear();
-    
+
 
 
       for (var i = 0; i < jsonArray.length; i++) {
@@ -324,6 +325,7 @@ class _TotalState extends State<TotalAgentList> {
         modelSearch.phone = jsonArray[i]["phone"].toString();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
+        modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
         print("id: "+modelSearch.id.toString());
 
@@ -355,6 +357,12 @@ class _TotalState extends State<TotalAgentList> {
 
 
 }
+
+  void getId() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = prefs.getString("id").toString();
+    print("id Print: " +id.toString());
+  }
 
 
 
@@ -877,7 +885,7 @@ newAgentListApi();
 }
 
 class AgentList extends StatefulWidget {
-  
+
 
   @override
   _AgentListState createState() => _AgentListState();
@@ -891,7 +899,8 @@ class _AgentListState extends State<AgentList> {
   var phone = "";
   var image = "";
   var country_code = "";
-
+  var id = "";
+  var total = "36";
   bool isloading = false;
 
 
@@ -921,7 +930,7 @@ class _AgentListState extends State<AgentList> {
       child: CircularProgressIndicator()
     )
     :
-    
+
     ListView(
       shrinkWrap: true,
             controller: _controller,
@@ -995,7 +1004,7 @@ class _AgentListState extends State<AgentList> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatDemo()));
+                            Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatScreen(image: apiList[index].image,name: apiList[index].name,receiverId: apiList[index].id,senderId: id,fcm: apiList[index].firebase_token,userType: "agent",)));
                           },
                           child: Image.asset(
                             "assets/comment.png",
@@ -1023,8 +1032,8 @@ class _AgentListState extends State<AgentList> {
                                             email: apiList[index].email.toString(),
                                             country_code: apiList[index].country_code.toString(),
                                             id: apiList[index].id.toString(),
-                                           
-                                           
+
+
 
                             )));
                           },
@@ -1122,7 +1131,7 @@ class _AgentListState extends State<AgentList> {
 
    Future<dynamic> agentListApi() async {
        SharedPreferences prefs = await SharedPreferences.getInstance();
-       var id = prefs.getString("id");
+       id = prefs.getString("id").toString();
        print(id.toString());
     setState(() {
        isloading = true;
@@ -1136,7 +1145,7 @@ class _AgentListState extends State<AgentList> {
     var request = http.get(
         Uri.parse(
 
-          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize=36"
           
         ),
        );
@@ -1156,7 +1165,7 @@ class _AgentListState extends State<AgentList> {
 
       if (jsonRes["status"] == true) {
           apiList.clear();
-    
+        total = jsonRes["total"].toString();
 
 
       for (var i = 0; i < jsonArray.length; i++) {
@@ -1167,6 +1176,7 @@ class _AgentListState extends State<AgentList> {
         modelSearch.phone = jsonArray[i]["phone"].toString();
         modelSearch.image = jsonArray[i]["image"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
+        modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
         print("id: "+modelSearch.id.toString());
 
@@ -1175,6 +1185,78 @@ class _AgentListState extends State<AgentList> {
       }
 
      
+
+        setState(() {
+          isloading = false;
+
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+  Future<dynamic> agentListApi2() async {
+    print("AgentList2 "+"Running");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = prefs.getString("id").toString();
+    print(id.toString());
+
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+      Uri.parse(
+
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize=$total"
+
+      ),
+    );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+
+      if (jsonRes["status"] == true) {
+        apiList.clear();
+        total = jsonRes["total"].toString();
+
+
+        for (var i = 0; i < jsonArray.length; i++) {
+          TotalAgentListApi modelSearch = new TotalAgentListApi();
+          modelSearch.name = jsonArray[i]["name"];
+          modelSearch.id = jsonArray[i]["id"].toString();
+          modelSearch.email = jsonArray[i]["email"].toString();
+          modelSearch.phone = jsonArray[i]["phone"].toString();
+          modelSearch.image = jsonArray[i]["image"].toString();
+          modelSearch.country_code = jsonArray[i]["country_code"].toString();
+          modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
+
+          print("id: "+modelSearch.id.toString());
+
+          apiList.add(modelSearch);
+
+        }
+
+        print("SizeAgentList2 "+apiList.length.toString());
 
         setState(() {
           isloading = false;
@@ -1189,8 +1271,6 @@ class _AgentListState extends State<AgentList> {
       });
     }
   }
-
-
 
    customDialog(int index) {
     showDialog(
@@ -1343,7 +1423,8 @@ class TotalAgentListApi {
   var phone = "";
   var image = "";
   var country_code = "";
-  
+  var firebase_token = "";
+
 }
 
 class NewRequestAgentList {

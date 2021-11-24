@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:roccabox_admin/screens/homenave.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 
@@ -19,6 +20,15 @@ class _LoginState extends State<Login> {
   bool obscure = true;
   String? password;
   bool isloading = false;
+  late FirebaseAuth mAuth;
+
+
+  @override
+  void initState() {
+    super.initState();
+    mAuth = FirebaseAuth.instance;
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,18 +226,30 @@ class _LoginState extends State<Login> {
     });
     if (res!.statusCode == 200) {
       if (jsonRes["status"] == true) {
+        var mCustomToken = jsonRes["token"];
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('id', jsonRes["data"]["id"].toString());
         prefs.setString('email', jsonRes["data"]["email"].toString());
+        prefs.setString('name', jsonRes["data"]["name"].toString());
+        prefs.setString('image', jsonRes["data"]["image"].toString());
         prefs.commit();
 
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(msg)));
-
+        mAuth.signInWithCustomToken(mCustomToken).then((value) {
+          User? user = value.user;
+          print("FirebaseUSer " + user!.uid.toString());
+        });
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => HomeNav()),
             (route) => false);
+
+        setState(() {
+          isloading = false;
+        });
+      }else{
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(jsonRes["message"])));
 
         setState(() {
           isloading = false;
