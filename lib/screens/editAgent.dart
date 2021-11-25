@@ -12,16 +12,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class EditAgent extends StatefulWidget {
-var  name, phone, email, country_code, id;
+var  name, phone, email, country_code, id, image;
 
   EditAgent({required this.name,  required this.phone,  
-  required this.email, required this.country_code, required this.id, });
+  required this.email, required this.country_code, required this.id, required this.image});
 
   @override
   _AddUserState createState() => _AddUserState();
 }
 
 class _AddUserState extends State<EditAgent> {
+
+  
+
+
   var name, email, phone, id;
   TextEditingController nameController = new TextEditingController();
   TextEditingController emailController = new TextEditingController();
@@ -99,11 +103,14 @@ void initState() {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                         FittedBox(
+                           FittedBox(
 
                             child: file == null
                             ? 
-                            Image.asset("assets/Avatar.png")
+                            CircleAvatar(
+                             backgroundImage: NetworkImage(widget.image.toString()),
+                            )
+                            
                             : CircleAvatar(
                               backgroundImage: 
                               FileImage(File(file!.path)),
@@ -200,6 +207,8 @@ void initState() {
                             borderRadius: BorderRadius.circular(10))),
                   ),
                 ),
+
+
                  GestureDetector(
                         onTap: () {
 
@@ -256,7 +265,7 @@ void initState() {
                           ),
                           child: Center(
                             child: Text(
-                              'Edit Agent',
+                              'Save',
                               style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 14.sp,

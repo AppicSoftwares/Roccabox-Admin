@@ -36,6 +36,7 @@ class RestDatasource {
   static final USERSTATUS_URL = BASE_URL + "user/status";
   static final AGORATOKEN = BASE_URL + "agora-token";
   static final UPDATE_TOKEN = BASE_URL + "updateToken";
+  static final NEWURL1 = BASE_URL + "newsearch1";
 
   
 

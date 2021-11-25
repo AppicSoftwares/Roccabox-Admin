@@ -179,7 +179,7 @@ ScrollController _controller = new ScrollController();
                       height: 3.h,
                     ),
                     Text(
-                      "Total User: " + apiList.length.toString(),
+                      "Total User: " + widget.customers.toString(),
                       style: TextStyle(
                           fontSize: 15.sp, fontWeight: FontWeight.bold),
                     ),
@@ -563,12 +563,17 @@ ScrollController _controller = new ScrollController();
         //Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-           userListApi(pageno);
+           //userListApi(pageno);
            //Navigator.pop(context);
 
-        //  Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList(
-        //     customers: widget.toString(),
-        //   )));
+           //userListApi(pageno);
+
+           
+
+         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalUserList(
+
+            customers: widget.customers.toString(),
+          )));
         
       } else {
         setState(() {
@@ -655,6 +660,7 @@ ScrollController _controller = new ScrollController();
      
 
         setState(() {
+          print("Hello World");
           isloading = false;
           _refreshController.refreshCompleted();
           _refreshController.loadComplete();

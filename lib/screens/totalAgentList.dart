@@ -958,8 +958,16 @@ class _AgentListState extends State<AgentList> {
           child: Column(
             children: [
               ListTile(
-                leading: CircleAvatar(
-                    maxRadius: 9.w, child: Image.asset("assets/Avatar.png")),
+                  leading: apiList[index].image == null
+                                        ? Image.asset(
+                                            'assets/Avatar.png',
+                                          )
+                                        : CircleAvatar(
+                                          radius: 30,
+                                            backgroundImage: NetworkImage(apiList[index].image.toString()),
+                                          ),
+                // leading: CircleAvatar(
+                //     maxRadius: 9.w, child: Image.asset("assets/Avatar.png")),
                 title: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1032,6 +1040,7 @@ class _AgentListState extends State<AgentList> {
                                             email: apiList[index].email.toString(),
                                             country_code: apiList[index].country_code.toString(),
                                             id: apiList[index].id.toString(),
+                                            image: apiList[index].image.toString(),
 
 
 
@@ -1063,7 +1072,7 @@ class _AgentListState extends State<AgentList> {
                       ],
                     ),
                     SizedBox(height: 0.5.h,),
-                    customSwitch()
+                    customSwitch(index)
                   ],
                 ),
               ),
@@ -1095,10 +1104,10 @@ class _AgentListState extends State<AgentList> {
     
   }
 
-   customSwitch() {
+    customSwitch(int index) {
     return Expanded(
       child: Container(
-        height: 3.1.h,
+        height: 3.2.h,
         width: 28.w,
         
             child: FlutterSwitch(
@@ -1109,7 +1118,7 @@ class _AgentListState extends State<AgentList> {
               activeColor: kGreenColor,
               inactiveColor: Colors.grey.shade300,
               toggleSize: 20.0,
-              value: status,
+              value: apiList[index].status ==  1.toString() ? true  : false  ,
               borderRadius: 2.0,
               activeText: "Active",
               inactiveText: "Deactive",
@@ -1119,15 +1128,110 @@ class _AgentListState extends State<AgentList> {
               
               
               showOnOff: true,
-              onToggle: (val) {
+              onToggle: (val)  {
                 setState(() {
-                  status = val;
+
+                  
+
+                  //bannerList[index].status = val.toString();
+                  if (apiList[index].status == 1.toString()) {
+                    true;
+                    
+                  } else {
+                    false;
+                  }
+
+                  userStatus(index);
+                 // status1 = val;
                 });
               },
             ),
           ),
     );
   }
+
+
+        Future<dynamic> userStatus( int index ) async {
+
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("id Print: " +id.toString());
+    setState(() {
+       isloading = true;
+    });
+
+
+
+    var request = http.post(
+      Uri.parse(
+        RestDatasource.USERSTATUS_URL,
+      ),
+      body: {
+        "admin_id":id.toString(),
+        "user_id":apiList[index].id.toString()
+      }
+    );
+   
+  
+    var jsonRes;
+    var res ;
+ await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+    
+      print(jsonRes["status"]);
+      
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        //Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+           //userListApi(pageno);
+           //Navigator.pop(context);
+
+           //userListApi(pageno);
+           agentListApi();
+
+           
+
+        //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalAgentList(
+
+        //     agents: widget.customers.toString(),
+        //   )));
+        
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+         
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+      
+      });
+    }
+  }
+
+
+
+
+
+
+
 
    Future<dynamic> agentListApi() async {
        SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1422,6 +1526,7 @@ class TotalAgentListApi {
   var email = "";
   var phone = "";
   var image = "";
+  var status = "";
   var country_code = "";
   var firebase_token = "";
 

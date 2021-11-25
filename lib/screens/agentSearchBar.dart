@@ -298,6 +298,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                                                     id: apiList[index]
                                                         .id
                                                         .toString(),
+                                                        image: apiList[index].image.toString(),
                                                   )));
                                     },
                                     child: Image.asset(

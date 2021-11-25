@@ -195,7 +195,7 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
   var phone = "";
   var image = "";
   var country_code = "";
-  var user_image = "";
+  var u_image = "";
   var property_Rid = "";
   var message = "";
 
@@ -208,7 +208,7 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
     getEnquiryApi();
   }
 
-  List<GetEnquiry> apiList = [];
+  List<AllEnquiry> apiList = [];
 
   ScrollController _controller = new ScrollController();
 
@@ -252,15 +252,8 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => EnquiryDetails(
+                                      allEnquiryList: apiList[index],
 
-                                         name: apiList[index].name.toString(),
-                                      email: apiList[index].email.toString(),
-                                      phone: apiList[index].phone.toString(),
-                                      country_code: apiList[index].country_code.toString(),
-                                      image: apiList[index].image.toString(),
-                                      message: apiList[index].message.toString(),
-                                      property_Rid: apiList[index].property_Rid.toString(),
-                                      user_image: apiList[index].user_image.toString(),
 
 
                                     )));
@@ -314,14 +307,14 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
                                         ),
                                         height: 10.h,
                                         width: 10.h,
-                                        child: user_image != null
+                                        child: u_image != "null"
                                             ?
                                             //user image
 
                                             CircleAvatar(
                                                 backgroundImage: NetworkImage(
                                                     apiList[index]
-                                                        .user_image
+                                                        .u_image
                                                         .toString()))
                                             : CircleAvatar(
                                                 backgroundImage:
@@ -510,7 +503,7 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
         // apiAgentList.clear();
 
         for (var i = 0; i < jsonArray.length; i++) {
-          GetEnquiry modelAgentSearch = new GetEnquiry();
+          AllEnquiry modelAgentSearch = new AllEnquiry();
           modelAgentSearch.name = jsonArray[i]["name"];
           modelAgentSearch.id = jsonArray[i]["id"].toString();
           modelAgentSearch.email = jsonArray[i]["email"].toString();
@@ -518,10 +511,11 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
           modelAgentSearch.image = jsonArray[i]["image"].toString();
           modelAgentSearch.country_code =
               jsonArray[i]["country_code"].toString();
-          modelAgentSearch.user_image = jsonArray[i]["user_image"].toString();
+          modelAgentSearch.u_image = jsonArray[i]["u_image"].toString();
           modelAgentSearch.message = jsonArray[i]["message"].toString();
           modelAgentSearch.property_Rid =
               jsonArray[i]["property_Rid"].toString();
+          modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();   
 
           print("id: " + modelAgentSearch.id.toString());
 
@@ -551,12 +545,18 @@ class PendingRequest extends StatefulWidget {
 }
 
 class _PendingRequestState extends State<PendingRequest> {
+
+  var agents = "";
+  var customers = "";
+
+
+
   var name = "";
   var email = "";
   var phone = "";
   var image = "";
   var country_code = "";
-  var user_image = "";
+  var u_image = "";
   var property_Rid = "";
   var message = "";
   String? _chosenValue;
@@ -583,12 +583,16 @@ class _PendingRequestState extends State<PendingRequest> {
   @override
   void initState() {
     super.initState();
+    dashBoardApi();
 
     pendingEnquiryApi();
-    agentListApi();
+  
+
+
+    
   }
 
-  List<PendingEnquiry> pendingApiList = [];
+  List<AllEnquiry> pendingApiList = [];
 
   bool remember = false;
 
@@ -596,6 +600,7 @@ class _PendingRequestState extends State<PendingRequest> {
 
   @override
   Widget build(BuildContext context) {
+    print("agents *1*"+agents.toString());
     return 
     
     
@@ -632,14 +637,7 @@ class _PendingRequestState extends State<PendingRequest> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => EnquiryDetails(
-                                      name: pendingApiList[index].name.toString(),
-                                      email: pendingApiList[index].email.toString(),
-                                      phone: pendingApiList[index].phone.toString(),
-                                      country_code: pendingApiList[index].country_code.toString(),
-                                      image: pendingApiList[index].image.toString(),
-                                      message: pendingApiList[index].message.toString(),
-                                      property_Rid: pendingApiList[index].property_Rid.toString(),
-                                      user_image: pendingApiList[index].user_image.toString(),
+                                     allEnquiryList: pendingApiList[index],
                                     )));
                           },
                           child: Card(
@@ -692,14 +690,14 @@ class _PendingRequestState extends State<PendingRequest> {
                                         ),
                                         height: 10.h,
                                         width: 10.h,
-                                        child: user_image != null
+                                        child: u_image != "null"
                                             ?
                                             //user image
 
                                             CircleAvatar(
                                                 backgroundImage: NetworkImage(
                                                     pendingApiList[index]
-                                                        .user_image
+                                                        .u_image
                                                         .toString()))
                                             : CircleAvatar(
                                                 backgroundImage:
@@ -762,18 +760,7 @@ class _PendingRequestState extends State<PendingRequest> {
                                             ],
                                           ),
                                         )),
-                                    // Positioned(
-                                    //     right: 2.w,
-                                    //     bottom: 8.5.h,
-                                    //     child: Text(
-
-                                    //       //phone no
-                                    //      apiList[index].phone.toString(),
-                                    //       style: TextStyle(
-                                    //           color: Colors.black,
-                                    //           fontWeight: FontWeight.w500,
-                                    //           fontSize: 11.sp),
-                                    //     )),
+                        
                                     Positioned(
                                         left: 6.w,
                                         bottom: 1.h,
@@ -911,8 +898,10 @@ class _PendingRequestState extends State<PendingRequest> {
                   InkWell(
 
                       onTap: () {
-                        print("Hello World");
+                        print("Hello: "+apiList.length.toString());
                         SelectDialog.showModal<TotalAgentListApi>(
+                          
+                         
                           context,
                           label: "Please select an agent",
                           items: apiList,
@@ -931,6 +920,7 @@ class _PendingRequestState extends State<PendingRequest> {
                                     ),
                               child: InkWell(
                                 onTap: () {
+                                  print("lendth: "+apiList.length.toString());
                                   selectedAgent = item.id;
 
 
@@ -950,7 +940,7 @@ class _PendingRequestState extends State<PendingRequest> {
                                   });
                                 },
                                 child: ListTile(
-                                  leading: item.name == null
+                                  leading: item.name == "null"
                                       ? null
                                       : Text(
                                           item.name.toString(),
@@ -1145,6 +1135,7 @@ class _PendingRequestState extends State<PendingRequest> {
 
 
   Future<dynamic> agentListApi() async {
+    print("agents **"+agents.toString());
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("id");
     print(id.toString());
@@ -1159,7 +1150,7 @@ class _PendingRequestState extends State<PendingRequest> {
     var jsonArray;
     var request = http.get(
       Uri.parse(
-          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()),
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize="+agents.toString()),
     );
 
     await request.then((http.Response response) {
@@ -1185,8 +1176,9 @@ class _PendingRequestState extends State<PendingRequest> {
           modelSearch.phone = jsonArray[i]["phone"].toString();
           modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
+          
 
-         // print("name: " + modelSearch.id.toString());
+          print("name: " + modelSearch.name.toString());
 
           apiList.add(modelSearch);
         }
@@ -1242,7 +1234,7 @@ class _PendingRequestState extends State<PendingRequest> {
         pendingApiList.clear();
 
         for (var i = 0; i < jsonArray.length; i++) {
-          PendingEnquiry modelAgentSearch = new PendingEnquiry();
+          AllEnquiry modelAgentSearch = new AllEnquiry();
           modelAgentSearch.name = jsonArray[i]["name"];
           modelAgentSearch.id = jsonArray[i]["id"].toString();
           modelAgentSearch.user_id = jsonArray[i]["user_id"].toString();
@@ -1251,10 +1243,11 @@ class _PendingRequestState extends State<PendingRequest> {
           modelAgentSearch.image = jsonArray[i]["image"].toString();
           modelAgentSearch.country_code =
               jsonArray[i]["country_code"].toString();
-          modelAgentSearch.user_image = jsonArray[i]["user_image"].toString();
+          modelAgentSearch.u_image = jsonArray[i]["u_image"].toString();
           modelAgentSearch.message = jsonArray[i]["message"].toString();
           modelAgentSearch.property_Rid =
               jsonArray[i]["property_Rid"].toString();
+          modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();
 
           print("id: " + modelAgentSearch.id.toString());
           print("userId: "+modelAgentSearch.user_id.toString());
@@ -1275,6 +1268,70 @@ class _PendingRequestState extends State<PendingRequest> {
       });
     }
   }
+
+
+
+     Future<dynamic> dashBoardApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("print id: "+id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+
+      customers = jsonRes["data"]["customers"].toString();
+
+      agents = jsonRes["data"]["agents"].toString();
+  agentListApi();
+
+      print("agents no: "+agents.toString());
+
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => HomeNav()),
+          //  (route) => false);
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+
 }
 
 
@@ -1315,7 +1372,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
   var phone = "";
   var image = "";
   var country_code = "";
-  var user_image = "";
+  var u_image = "";
   var property_Rid = "";
   var message = "";
   var q_status = "";
@@ -1324,6 +1381,9 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
   String selectedPhone = "";
   String selectedEnquiryId = "";
   String selectedAgent = "";
+
+  var customers = "";
+  var agents = "";
   
 
   TextEditingController nameController = new TextEditingController();
@@ -1336,9 +1396,12 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
   @override
   void initState() {
     super.initState();
+    dashBoardApi();
     allEnquiryApi();
 
-    agentListApi();
+    
+
+    
 
     
   }
@@ -1397,14 +1460,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                 MaterialPageRoute(
                                     builder: (context) => EnquiryDetails(
 
-                                         name: allApiList[index].name.toString(),
-                                      email: allApiList[index].email.toString(),
-                                      phone: allApiList[index].phone.toString(),
-                                      country_code: allApiList[index].country_code.toString(),
-                                      image: allApiList[index].image.toString(),
-                                      message: allApiList[index].message.toString(),
-                                      property_Rid: allApiList[index].property_Rid.toString(),
-                                      user_image: allApiList[index].user_image.toString(),
+                                        allEnquiryList: allApiList[index],
 
 
 
@@ -1424,7 +1480,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                   children: [
                                     Column(
                                       children: <Widget>[
-                                        image == null
+                                        image == "null"
                                             ? Container(
                                                 height: 19.h,
                                                 decoration: BoxDecoration(
@@ -1461,14 +1517,14 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                         ),
                                         height: 10.h,
                                         width: 10.h,
-                                        child: user_image != null
+                                        child: u_image != "null"
                                             ?
                                             //user image
 
                                             CircleAvatar(
                                                 backgroundImage: NetworkImage(
                                                     allApiList[index]
-                                                        .user_image
+                                                        .u_image
                                                         .toString()))
                                             : CircleAvatar(
                                                 backgroundImage:
@@ -1580,7 +1636,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                               onTap: () {
                                                 if (allApiList[index].q_status ==
                                                     "Pending") {
-                                                  customDialog(index);
+                                                  //customDialog(index);
                                                 }
 
                                                 //customDialog();
@@ -1683,8 +1739,10 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                   InkWell(
 
                       onTap: () {
-                        print("Hello World");
+                        print("Hello: "+apiList.length.toString());
                         SelectDialog.showModal<TotalAgentListApi>(
+                          
+                         
                           context,
                           label: "Please select an agent",
                           items: apiList,
@@ -1703,6 +1761,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                     ),
                               child: InkWell(
                                 onTap: () {
+                                  print("lendth: "+apiList.length.toString());
                                   selectedAgent = item.id;
 
 
@@ -1722,7 +1781,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                   });
                                 },
                                 child: ListTile(
-                                  leading: item.name == null
+                                  leading: item.name == "null"
                                       ? null
                                       : Text(
                                           item.name.toString(),
@@ -1843,17 +1902,6 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     );
   }
 
- 
-
-
-
-
-
-
-
-
-
-
 
    Future<dynamic> assignData() async {
 
@@ -1875,7 +1923,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
           "agent_id": selectedAgent.toString(),
           "enquiry_id": selectedEnquiryId.toString(),
           "admin_id" : id.toString()
-          
+          //"enquiry_id": 
         });
 
     var jsonRes;
@@ -1916,7 +1964,6 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
       });
     }
   }
-
 
 
 
@@ -1968,11 +2015,12 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
           modelAgentSearch.image = jsonArray[i]["image"].toString();
           modelAgentSearch.country_code =
               jsonArray[i]["country_code"].toString();
-          modelAgentSearch.user_image = jsonArray[i]["user_image"].toString();
+          modelAgentSearch.u_image = jsonArray[i]["u_image"].toString();
           modelAgentSearch.message = jsonArray[i]["message"].toString();
           modelAgentSearch.property_Rid =
               jsonArray[i]["property_Rid"].toString();
           modelAgentSearch.q_status = jsonArray[i]["q_status"].toString();
+          modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();
 
           print("status: " + modelAgentSearch.q_status.toString());
 
@@ -2011,6 +2059,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
 
  Future<dynamic> agentListApi() async {
+    print("agents **"+agents.toString());
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("id");
     print(id.toString());
@@ -2025,7 +2074,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     var jsonArray;
     var request = http.get(
       Uri.parse(
-          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()),
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize="+agents.toString()),
     );
 
     await request.then((http.Response response) {
@@ -2051,8 +2100,9 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
           modelSearch.phone = jsonArray[i]["phone"].toString();
           modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
+          
 
-         // print("name: " + modelSearch.id.toString());
+          print("name: " + modelSearch.name.toString());
 
           apiList.add(modelSearch);
         }
@@ -2064,6 +2114,72 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
       }
     } else {
       ScaffoldMessenger.of(this.context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+
+
+
+
+
+
+   
+     Future<dynamic> dashBoardApi() async {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       var id = prefs.getString("id");
+       print("print id: "+id.toString());
+    setState(() {
+       isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var request = http.get(
+        Uri.parse(
+
+          RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
+          
+        ),
+       );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+
+      customers = jsonRes["data"]["customers"].toString();
+
+      agents = jsonRes["data"]["agents"].toString();
+  agentListApi();
+
+      print("agents no: "+agents.toString());
+
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => HomeNav()),
+          //  (route) => false);
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error while fetching data')));
 
       setState(() {
@@ -2092,53 +2208,11 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
  
 }
 
-class GetEnquiry {
-  var user_id = "";
-  var user_image = "";
-  var id = "";
-  var role_id = "";
-  var name = "";
-  var email = "";
-  var country_code = "";
-  var phone = "";
-  var image = "";
-  var email_verified_at = "";
-  var password = "";
-  var firebase_token = "";
-  var status = "";
-  var created_at = "";
-  var updated_at = "";
-  var property_Rid = "";
-  var filter_id = "";
-  var message = "";
-  var q_status = "";
-}
 
-class PendingEnquiry {
-  var user_id = "";
-  var user_image = "";
-  var id = "";
-  var role_id = "";
-  var name = "";
-  var email = "";
-  var country_code = "";
-  var phone = "";
-  var image = "";
-  var email_verified_at = "";
-  var password = "";
-  var firebase_token = "";
-  var status = "";
-  var created_at = "";
-  var updated_at = "";
-  var property_Rid = "";
-  var filter_id = "";
-  var message = "";
-  var q_status = "";
-}
 
 class AllEnquiry {
   var user_id = "";
-  var user_image = "";
+  var u_image = "";
   var id = "";
   var role_id = "";
   var name = "";
