@@ -28,6 +28,10 @@
     <string>Need microphone access for call with users</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Select photos for upload profile image</string>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
+    <key>FirebaseScreenReportingEnabled</key>
+    <true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

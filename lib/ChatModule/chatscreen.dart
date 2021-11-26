@@ -1241,7 +1241,11 @@ void bottomSheet(){
           "type": type,
           "user_id": userid.toString(),
           "receiver_id": id,
-          "time":DateTime.now().millisecondsSinceEpoch.toString()
+          "time":DateTime.now().millisecondsSinceEpoch.toString(),
+          "channelKey": widget.userType=="agent"?"key_agent":"key_user",
+          "chName":widget.userType=="agent"?"agent_channel":"user_channel",
+          "id": "10",
+          "click_action": 'FLUTTER_NOTIFICATION_CLICK',
 
 
         });

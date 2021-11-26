@@ -179,13 +179,26 @@ class _NotificationsState extends State<Notifications> {
   Future<void> getData() async {
     List<String> isRead = [];
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    titleList = preferences.getStringList("titleList")!;
+    if(preferences.containsKey("titleList")) {
+      titleList = preferences.getStringList("titleList")!;
+    }
     bodyList = preferences.getStringList("bodyList")!;
-    isread = preferences.getStringList("isRead")!;
-    imageList = preferences.getStringList("imageList")!;
-    screenList = preferences.getStringList("screenList")!;
-    idList = preferences.getStringList("idList")!;
-    chatTypeList = preferences.getStringList("chatTypeList")!;
+
+    if(preferences.containsKey("isRead")) {
+      isread = preferences.getStringList("isRead")!;
+    }
+    if(preferences.containsKey("imageList")) {
+      imageList = preferences.getStringList("imageList")!;
+    }
+    if(preferences.containsKey("screenList")) {
+      screenList = preferences.getStringList("screenList")!;
+    }
+    if(preferences.containsKey("idList")) {
+      idList = preferences.getStringList("idList")!;
+    }
+    if(preferences.containsKey("chatTypeList")) {
+      chatTypeList = preferences.getStringList("chatTypeList")!;
+    }
     isread.forEach((element) {
       isRead.add("true");
     });

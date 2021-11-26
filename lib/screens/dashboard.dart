@@ -186,9 +186,7 @@ class _DashboardState extends State<Dashboard> {
                  TextButton(
                    onPressed: () {
 
-                     Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar(
-                     
-                     )));
+                     Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar()));
                    },
                    child: Container(
                     

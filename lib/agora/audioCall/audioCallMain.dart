@@ -74,7 +74,7 @@ class _BodyState extends State<Body> {
     _engine.setEventHandler(RtcEngineEventHandler(
         joinChannelSuccess: (String channel, int uid, int elapsed) {
           print('joinChannelSuccess ${channel} ${uid}');
-          Navigator.push(context, new MaterialPageRoute(
+          Navigator.pushReplacement(context, new MaterialPageRoute(
               builder: (context) =>
                   ReceivedCall(channel: channelName,
                     agoraToken: token, image: images,name: name, engine: _engine,)));
@@ -165,7 +165,7 @@ class _BodyState extends State<Body> {
           print("remote user $uid joined");
           setState(() {
             _remoteUid = uid;
-            Navigator.push(context, new MaterialPageRoute(
+            Navigator.pushReplacement(context, new MaterialPageRoute(
                 builder: (context) =>
                     VideoCall(channel:channel,
                         token: token, myId: id,)));
