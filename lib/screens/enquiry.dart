@@ -334,7 +334,7 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
                                     //     )),
                                     Positioned(
                                         left: 29.w,
-                                        bottom: 6.5.h,
+                                        bottom: 4.5.h,
                                         child: Container(
                                           width: 60.w,
                                           child: Column(
@@ -717,7 +717,7 @@ class _PendingRequestState extends State<PendingRequest> {
                                     //     )),
                                     Positioned(
                                         left: 29.w,
-                                        bottom: 6.5.h,
+                                        bottom: 4.5.h,
                                         child: Container(
                                           width: 60.w,
                                           child: Column(
@@ -1535,7 +1535,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                   
                                     Positioned(
                                         left: 29.w,
-                                        bottom: 6.5.h,
+                                        bottom: 4.5.h,
                                         child: Container(
                                           width: 60.w,
                                           child: Column(

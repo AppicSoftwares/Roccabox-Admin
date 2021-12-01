@@ -284,10 +284,11 @@ class _DashboardState extends State<Dashboard> {
         //     context,
         //     MaterialPageRoute(builder: (context) => HomeNav()),
           //  (route) => false);
-
-        setState(() {
-          isloading = false;
-        });
+        if(mounted) {
+          setState(() {
+            isloading = false;
+          });
+        }
       }
     } else {
       ScaffoldMessenger.of(context)

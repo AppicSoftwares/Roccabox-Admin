@@ -1,21 +1,28 @@
 import 'dart:async';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:roccabox_admin/agora/component/dialUser.dart';
 import 'package:roccabox_admin/agora/component/roundedButton.dart';
 import 'package:roccabox_admin/screens/homenave.dart';
+import 'package:roccabox_admin/services/provider.dart';
 
+import '../callModel.dart';
 import '../constants.dart';
 import '../sizeConfig.dart';
+import 'dialButton.dart';
 
 
 class ReceivedCall extends StatefulWidget {
-  var name, image, channel, agoraToken;
+  var name, image, channel, agoraToken, id, time, receiverId;
   RtcEngine engine;
-  ReceivedCall({Key? key, this.name, this.image, this.channel, this.agoraToken, required this.engine}):super(key:key);
+  ReceivedCall({Key? key, this.id,this.time,this.name,this.receiverId, this.image, this.channel, this.agoraToken, required this.engine}):super(key:key);
+
   @override
   State<ReceivedCall> createState() => _ReceivedCallState();
 }
@@ -33,9 +40,10 @@ class _ReceivedCallState extends State<ReceivedCall> {
   bool _joined = false;
   bool _switch = false;
   bool isMute = false;
+  var isLoading = true;
+  final firestoreInstance = FirebaseFirestore.instance;
 
   bool isSpeakerOn = false;
-  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -44,11 +52,12 @@ class _ReceivedCallState extends State<ReceivedCall> {
 
       setState(() {
         isLoading = false;
+
       });
 
     });
     startTimmer();
-   // initPlatformState(widget.agoraToken, widget.channel);
+    // initPlatformState(widget.agoraToken, widget.channel);
 
   }
 
@@ -64,6 +73,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
     _engine.setEventHandler(RtcEngineEventHandler(
         joinChannelSuccess: (String channel, int uid, int elapsed) {
           print('joinChannelSuccess ${channel} ${uid}');
+
           setState(() {
             _joined = true;
           });
@@ -75,6 +85,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
     }, userOffline: (int uid, UserOfflineReason reason) {
       print('userOffline ${uid}');
 
+      _engine.leaveChannel();
       if(_engine!=null) {
         _engine.destroy();
       }
@@ -84,18 +95,19 @@ class _ReceivedCallState extends State<ReceivedCall> {
         _remoteUid = 0;
       });
     },
-      leaveChannel: (RtcStats reason) {
-        print("remote user left channel");
+        leaveChannel: (RtcStats reason) {
+          print("remote user left channel");
 
-        if(_engine!=null) {
-          _engine.destroy();
+          _engine.leaveChannel();
+          if(_engine!=null) {
+            _engine.destroy();
+          }
+          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+
+          //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+
+
         }
-        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
-        //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
-
-      }
     ));
     // Join channel with channel name as 123
     await _engine.joinChannel(token, channelName, null, 0);
@@ -156,141 +168,173 @@ class _ReceivedCallState extends State<ReceivedCall> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-   /* final args = ModalRoute.of(context)!.settings.arguments as CallModel;
+    /* final args = ModalRoute.of(context)!.settings.arguments as CallModel;
     print(args.sender_id.toString());
     print(args.sender_name.toString());
    */
     return Scaffold(
         backgroundColor: kBackgoundColor,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Text(
-                  widget.name!=null?widget.name:"",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4!
-                      .copyWith(color: Colors.white),
-                ),
-                Text(
-                  _timmer==''?"Calling…..":_timmer,
-                  style: TextStyle(color: Colors.white60),
-                ),
-                VerticalSpacing(),
-                DialUserPic(image: widget.image),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        body: isLoading==true?Center(child: CircularProgressIndicator(),):SafeArea(
+        child: Padding(
+        padding: const EdgeInsets.all(20.0),
+    child:widget.id!=null? StreamBuilder<DocumentSnapshot>(
+    stream: firestoreInstance
+        .collection("call_master")
+        .doc("call_head")
+        .collection(widget.id)
+        .doc(widget.time)
+        .snapshots(),
+    builder: (BuildContext context,
+    AsyncSnapshot<DocumentSnapshot> snapshot) {
+    if(snapshot.hasData){
+    var status = snapshot.data!.get("status").toString();
+    if(status.toString()!="null"){
+    if(status.toString()!="Calling"){
+    _engine.leaveChannel();
+    _engine.destroy();
+    updateChatHead();
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context)=> HomeNav()));
+
+    });
+    }
+    }
+    }
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
                   children: [
-                    GestureDetector(
-                        onTap: (){
-
-                          if(isMute==true){
-                            _engine.enableLocalAudio(true);
-                            isMute = false;
-                          }else{
-                            _engine.enableLocalAudio(false);
-                            isMute = true;
-                          }
-                        },
-                        child: SvgPicture.asset(
-                          "assets/mute.svg",
-                          color: !isMute? Colors.white:Colors.blueAccent,
-                          width: 25,
-                          height: 25,)),
-
-                    RoundedButton(
-                      press: () {
-                        if(_engine!=null) {
-                          _engine.leaveChannel();
-                          _engine.destroy();
-                        }
-                        pickCall = false;
-                        _timmerInstance.cancel();
-
-                        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
-                      },
-                      color: kRedColor,
-                      iconColor: Colors.white,
-                      iconSrc: "assets/call_end.svg",
+                    Text(
+                      widget.name!=null?widget.name:"",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4!
+                          .copyWith(color: Colors.white),
                     ),
-                    GestureDetector(
-                        onTap: (){
-                          _engine.isSpeakerphoneEnabled().then((value){
-                            print(value.toString());
-                            setState(() {
-                              if(value.toString()=="true"){
-                                _engine.setEnableSpeakerphone(false);
-                                isSpeakerOn = false;
-                              }else{
-                                _engine.setEnableSpeakerphone(true);
-                                isSpeakerOn = true;
-                              }
-                            });
+                    Text(
+                      _timmer==''?"Calling…..":_timmer,
+                      style: TextStyle(color: Colors.white60),
+                    ),
+                    VerticalSpacing(),
+                    DialUserPic(image: widget.image.toString()),
+                    Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                            onTap: (){
 
-                          });
-                        },
-                        child: SvgPicture.asset(
-                          "assets/Icon_Volume.svg",
-                          color: !isSpeakerOn? Colors.white:Colors.blueAccent,
-                          width: 25,
-                          height: 25,)),
+                              if(isMute==true){
+                                _engine.enableLocalAudio(true);
+                                isMute = false;
+                              }else{
+                                _engine.enableLocalAudio(false);
+                                isMute = true;
+                              }
+                            },
+                            child: SvgPicture.asset(
+                              "assets/mute.svg",
+                              color: !isMute? Colors.white:Colors.blueAccent,
+                              width: 25,
+                              height: 25,
+                            )),
+
+                        RoundedButton(
+                          press: () {
+                            if(_engine!=null) {
+                              _engine.leaveChannel();
+                              _engine.destroy();
+                            }
+                            pickCall = false;
+                            _timmerInstance.cancel();
+
+                            Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+
+                          },
+                          color: kRedColor,
+                          iconColor: Colors.white,
+                          iconSrc: "assets/call_end.svg",
+                        ),
+                        GestureDetector(
+                            onTap: (){
+                              _engine.isSpeakerphoneEnabled().then((value){
+                                print(value.toString());
+                                setState(() {
+                                  if(value.toString()=="true"){
+                                    _engine.setEnableSpeakerphone(false);
+                                    isSpeakerOn = false;
+                                  }else{
+                                    _engine.setEnableSpeakerphone(true);
+                                    isSpeakerOn = true;
+                                  }
+                                });
+
+                              });
+                            },
+                            child: SvgPicture.asset(
+                              "assets/Icon_Volume.svg",
+                              color: !isSpeakerOn? Colors.white:Colors.blueAccent,
+                              width: 25,
+                              height: 25,)),
+                      ],
+                    ),
+                    /*    Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  children: [
+                    DialButton(
+                      iconSrc: "assets/Icon Mic.svg",
+                      text: "Audio",
+                      press: () {},
+                    ),
+                    DialButton(
+                      iconSrc: "assets/Icon Volume.svg",
+                      text: "Microphone",
+                      press: () {},
+                    ),
+                    DialButton(
+                      iconSrc: "assets/Icon Video.svg",
+                      text: "Video",
+                      press: () {},
+                    ),
+                    DialButton(
+                      iconSrc: "assets/Icon Message.svg",
+                      text: "Message",
+                      press: () {},
+                    ),
+                    DialButton(
+                      iconSrc: "assets/Icon User.svg",
+                      text: "Add contact",
+                      press: () {},
+                    ),
+                    DialButton(
+                      iconSrc: "assets/Icon Voicemail.svg",
+                      text: "Voice mail",
+                      press: () {},
+                    ),
                   ],
                 ),
-                /*    Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              children: [
-                DialButton(
-                  iconSrc: "assets/Icon Mic.svg",
-                  text: "Audio",
-                  press: () {},
+                VerticalSpacing(),
+                Visibility(
+                  visible: true,
+                  child: RoundedButton(
+                    iconSrc: "assets/call_end.svg",
+                    press: () {
+                    },
+                    color: kRedColor,
+                    iconColor: Colors.white,
+                  ),
+                )*/
+                  ],
                 ),
-                DialButton(
-                  iconSrc: "assets/Icon Volume.svg",
-                  text: "Microphone",
-                  press: () {},
-                ),
-                DialButton(
-                  iconSrc: "assets/Icon Video.svg",
-                  text: "Video",
-                  press: () {},
-                ),
-                DialButton(
-                  iconSrc: "assets/Icon Message.svg",
-                  text: "Message",
-                  press: () {},
-                ),
-                DialButton(
-                  iconSrc: "assets/Icon User.svg",
-                  text: "Add contact",
-                  press: () {},
-                ),
-                DialButton(
-                  iconSrc: "assets/Icon Voicemail.svg",
-                  text: "Voice mail",
-                  press: () {},
-                ),
-              ],
-            ),
-            VerticalSpacing(),
-            Visibility(
-              visible: true,
-              child: RoundedButton(
-                iconSrc: "assets/call_end.svg",
-                press: () {
-                },
-                color: kRedColor,
-                iconColor: Colors.white,
               ),
-            )*/
-              ],
-            ),
-          ),
-        )
-    );
+            );
+          }
+        ):Center(child:Text("Please Register first"),),
+
+        ),
+    ));
   }
 
 
@@ -316,6 +360,25 @@ class _ReceivedCallState extends State<ReceivedCall> {
         }));
   }
 
+  void updateChatHead() async {
+    Map<String, String> map = new Map();
+    map["status"] = "end";
+    FirebaseFirestore.instance
+        .collection('call_master')
+        .doc("call_head")
+        .collection(widget.id.toString())
+        .doc(widget.time).update(map).then((value) {
+      FirebaseFirestore.instance
+          .collection("call_master")
+          .doc("call_head")
+          .collection(widget.receiverId)
+          .doc(widget.time)
+          .update(map);
+    });
+
+
+
+  }
 
 
   String getTimerTime(int start) {
@@ -384,7 +447,7 @@ class _BodyState extends State<Body> {
               children: [
                 RoundedButton(
                   press: () {},
-                  iconSrc: "assets/Icon_Mic.svg",
+                  iconSrc: "assets/Icon Mic.svg",
                 ),
 
                 RoundedButton(
@@ -403,7 +466,7 @@ class _BodyState extends State<Body> {
                   press: () {
 
                   },
-                  iconSrc: "assets/Icon_Volume.svg",
+                  iconSrc: "assets/Icon Volume.svg",
                 ),
               ],
             ),

@@ -91,7 +91,7 @@ class _DialScreenState extends State<DialScreen> {
         _engine.leaveChannel();
         _engine.destroy();
         _stopFile();
-        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context)=> HomeNav()));
+        Navigator.of(context).pop();
 
       }
 
@@ -117,22 +117,25 @@ class _DialScreenState extends State<DialScreen> {
     }, userOffline: (int uid, UserOfflineReason reason) {
       print('userOffline ${uid}');
 
+
+      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
       if(_engine!=null) {
         _engine.destroy();
       }
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
       setState(() {
         _remoteUid = 0;
       });
     },
       leaveChannel: (RtcStats reason) {
         print("remote user left channel");
+
+        if(mounted) {
+          Navigator.pushReplacement(
+              context, new MaterialPageRoute(builder: (context) => HomeNav()));
+        }
         if(_engine!=null) {
           _engine.destroy();
         }
-        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
         //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
 
 
@@ -169,6 +172,7 @@ class _DialScreenState extends State<DialScreen> {
                     if(status.toString()=="end"){
                       _engine.leaveChannel();
                       updateChatHead();
+                      _engine.destroy();
                       Navigator.of(context).pop();
                     }
                   }
@@ -223,9 +227,11 @@ class _DialScreenState extends State<DialScreen> {
                         press: () {
                           pickCall = false;
                           _engine.leaveChannel();
+                          _engine.destroy();
                           updateChatHead();
-                          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-                        },
+                          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
+
+                          },
                         color: kRedColor,
                         iconColor: Colors.white,
                         iconSrc: "assets/call_end.svg",

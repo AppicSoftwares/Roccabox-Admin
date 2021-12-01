@@ -7,6 +7,7 @@ class Counter with ChangeNotifier {
   int countt = 0;
   int get count => countt;
   String screen = "";
+
   void getNotify() async{
     countt = notificationCount;
 

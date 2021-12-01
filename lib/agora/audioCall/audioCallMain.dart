@@ -8,10 +8,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:roccabox_admin/agora/component/roundedButton.dart';
 import 'package:roccabox_admin/agora/dialscreen/dialScreen.dart';
 import 'package:roccabox_admin/agora/videoCall/videoCall.dart';
 import 'package:roccabox_admin/screens/homenave.dart';
+import 'package:roccabox_admin/services/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../callModel.dart';
@@ -62,7 +64,7 @@ class _BodyState extends State<Body> {
   bool _switch = false;
   int? _remoteUid;
 
-  Future<void> initPlatformStateVoice(var token, var channelName, var images, var name) async {
+  Future<void> initPlatformStateVoice(var token, var channelName, var images, var name, var time, var receiverId) async {
     // Get microphone permission
     print("AgoraToken "+token.toString());
     await [Permission.microphone].request();
@@ -74,10 +76,11 @@ class _BodyState extends State<Body> {
     _engine.setEventHandler(RtcEngineEventHandler(
         joinChannelSuccess: (String channel, int uid, int elapsed) {
           print('joinChannelSuccess ${channel} ${uid}');
+
           Navigator.pushReplacement(context, new MaterialPageRoute(
               builder: (context) =>
-                  ReceivedCall(channel: channelName,
-                    agoraToken: token, image: images,name: name, engine: _engine,)));
+                  ReceivedCall(id:id, time:time,channel: channelName,
+                    agoraToken: token, image: images,name: name, engine: _engine,receiverId: receiverId,)));
         }, userJoined: (int uid, int elapsed) {
       print('userJoined ${uid}');
       setState(() {
@@ -89,11 +92,10 @@ class _BodyState extends State<Body> {
       if(_engine!=null) {
         _engine.destroy();
       }
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
-      setState(() {
-        _remoteUid = 0;
-      });
+      if(mounted) {
+        Navigator.pushAndRemoveUntil(
+            context, new MaterialPageRoute(builder: (context) => HomeNav()), (r)=> false);
+      }
     },
         leaveChannel: (RtcStats reason) {
           print("remote user left channel");
@@ -181,11 +183,9 @@ class _BodyState extends State<Body> {
         },
         leaveChannel: (RtcStats reason) {
           print("remote user left channel");
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
-
           _engine.destroy();
-          //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
 
+          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
 
         },
       ),
@@ -240,6 +240,7 @@ class _BodyState extends State<Body> {
     print(args.sender_name.toString());
 
     return  Scaffold(
+      backgroundColor: kBackgoundColor,
       body: isLoading==true?Center(child: CircularProgressIndicator(),):id!=null? StreamBuilder<DocumentSnapshot>(
           stream: firestoreInstance
               .collection("call_master")
@@ -250,16 +251,18 @@ class _BodyState extends State<Body> {
           builder: (BuildContext context,
               AsyncSnapshot<DocumentSnapshot> snapshot) {
             if(snapshot.hasData){
-             String status = snapshot.data!.get("status").toString();
-              if(status.toString()!="null"){
-                if(status.toString()=="end"){
-                  WidgetsBinding.instance!.addPostFrameCallback((_){
-                    FlutterRingtonePlayer.stop();
-                    Navigator.of(context).pushReplacement(
-                        new MaterialPageRoute(builder: (context) => HomeNav()));
+              if(snapshot.data!.exists) {
+                String status = snapshot.data!.get("status").toString();
+                if (status.toString() != "null") {
+                  if (status.toString() == "end") {
+                    WidgetsBinding.instance!.addPostFrameCallback((_) {
+                      FlutterRingtonePlayer.stop();
 
-                  });
-
+                      Navigator.of(context).pushReplacement(
+                          new MaterialPageRoute(
+                              builder: (context) => HomeNav()));
+                    });
+                  }
                 }
               }
             }
@@ -359,7 +362,7 @@ class _BodyState extends State<Body> {
                                       _joined = true;
                                       //startTimmer();
                                       if(args.type=="VOICE"){
-                                        initPlatformStateVoice(args.agoraToken, args.channelName, args.sender_image, args.sender_name);
+                                        initPlatformStateVoice(args.agoraToken, args.channelName, args.sender_image, args.sender_name, args.time, args.sender_id);
                                       }else{
                                         Navigator.pushReplacement(context, new MaterialPageRoute(
                                             builder: (context) =>

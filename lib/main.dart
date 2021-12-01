@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,6 +32,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin
 = FlutterLocalNotificationsPlugin();
+
 Future<void> backgroundMessagehandler(RemoteMessage message) async {
   Map<String, dynamic>map = message.data;
   print("MapBackground "+map.toString());
@@ -41,7 +41,7 @@ Future<void> backgroundMessagehandler(RemoteMessage message) async {
 
   if(screeen=="VIDEO_SCREEN"|| screeen == "VOICE_SCREEN"){
 
-    Future.delayed(Duration(seconds: 15), () async{
+    Future.delayed(Duration(seconds: 15), () async {
       await flutterLocalNotificationsPlugin.cancelAll();
     });
 
@@ -176,6 +176,7 @@ Future<void> backgroundMessagehandler(RemoteMessage message) async {
 */
 
 }
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -184,12 +185,22 @@ Future main() async {
 
   await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
 
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      IOSFlutterLocalNotificationsPlugin>()
+      ?.requestPermissions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true
   );
   FirebaseMessaging.onBackgroundMessage(backgroundMessagehandler);
+
+  // FirebaseMessaging.onBackgroundMessage(backgroundMessagehandler);
 /*
 
   AwesomeNotifications().initialize(
@@ -221,6 +232,7 @@ Future main() async {
   ),);
 }
 
+/*
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Notification " + message.notification.toString() + "");
   print("data " + message.data.toString() + "");
@@ -237,6 +249,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   ) {
     print('message also contained a notification: ${message.notification}');
 
+*/
 /*    String? imageUrl;
     imageUrl ??= message.notification!.android?.imageUrl;
     imageUrl ??= message.notification!.apple?.imageUrl;
@@ -256,7 +269,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       NOTIFICATION_LAYOUT:
       StringUtils.isNullOrEmpty(imageUrl) ? 'Default' : 'BigPicture',
       NOTIFICATION_BIG_PICTURE: imageUrl
-    };*/
+    };*//*
+
     if (message.data != null) {
       Map<String, dynamic> map = message.data;
       print("MapBackground " + map.toString());
@@ -324,6 +338,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 
 }
+*/
 
 
 class RoccoBoxAdminApp extends StatefulWidget {
@@ -577,10 +592,14 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
 
 
     var initializationSettingsAndroid =
-    new AndroidInitializationSettings('@mipmap/launcher_icon');
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
     final IOSInitializationSettings initializationSettingsIOS =
     IOSInitializationSettings(
-        onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+      requestAlertPermission: false,
+      onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+    );
     final InitializationSettings initializationSettings = InitializationSettings(
         iOS: initializationSettingsIOS, android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
@@ -595,13 +614,16 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
 
       Map<String, dynamic>map;
       if (message.notification == null) {
+        print("cnd1");
         if (message.data != null) {
+          print("cnd2");
           map = message.data;
 
           //  print("Message "+map["title"]);
           //print("id "+map["id"]);
           if (map["screen"] == "VIDEO_SCREEN" ||
               map['screen'] == "VOICE_SCREEN") {
+            print("cnd3");
             Future.delayed(Duration(seconds: 15), () async {
               await flutterLocalNotificationsPlugin.cancelAll();
             });
@@ -616,7 +638,9 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                     map["sender_name"],
                     map["token"]));
           } else {
+            print("cnd4");
             if (chatUser == "") {
+              print("cnd5");
               createListMap(map);
               flutterLocalNotificationsPlugin.show(
                   message.hashCode,
@@ -629,12 +653,13 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                         channel.description,
                         color: Colors.blue,
                         playSound: true,
-                        icon: '@mipmap/launcher_icon',
+                        icon: '@mipmap/ic_launcher',
                         largeIcon: DrawableResourceAndroidBitmap(
-                            '@mipmap/launcher_icon'),
+                            '@mipmap/ic_launcher'),
                       )
                   ));
             } else if (chatUser != map["id"]) {
+              print("cnd6");
               createListMap(map);
               flutterLocalNotificationsPlugin.show(
                   message.hashCode,
@@ -647,29 +672,33 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                         channel.description,
                         color: Colors.blue,
                         playSound: true,
-                        icon: '@mipmap/launcher_icon',
+                        icon: '@mipmap/ic_launcher',
                         largeIcon: DrawableResourceAndroidBitmap(
-                            '@mipmap/launcher_icon'),
+                            '@mipmap/ic_launcher'),
                       )
                   ));
             }
           }
         }
       } else {
+        print("cnd7");
         RemoteNotification? notification = message.notification;
 
         AndroidNotification? android = message.notification?.android;
 
-        if (notification != null && android != null) {
+        if (notification != null) {
+          print("cnd8");
           Map<String, dynamic>map = new Map();
           var screen = "";
           if (message.data != null) {
+            print("cnd9");
             map = message.data;
             screen = map["screen"];
             print("Screennnnn " + map.toString());
           }
           if (map["screen"] == "VIDEO_SCREEN" ||
               map['screen'] == "VOICE_SCREEN") {
+            print("cnd10");
             Future.delayed(Duration(seconds: 15), () async {
               await flutterLocalNotificationsPlugin.cancelAll();
             });
@@ -684,10 +713,12 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                     map["sender_name"],
                     map["token"]));
           } else {
+            print("cnd11");
             print("Else pasrt");
             if (chatUser == null || chatUser == "") {
+              print("cnd12");
               createListMap(map);
-              flutterLocalNotificationsPlugin.show(
+           /*   flutterLocalNotificationsPlugin.show(
                   notification.hashCode,
                   notification.title,
                   notification.body,
@@ -698,14 +729,14 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                         channel.description,
                         color: Colors.blue,
                         playSound: true,
-                        icon: '@mipmap/launcher_icon',
+                        icon: '@mipmap/ic_launcher',
                         largeIcon: DrawableResourceAndroidBitmap(
-                            '@mipmap/launcher_icon'),
+                            '@mipmap/ic_launcher'),
                       )
-                  ));
+                  ));*/
             } else if (chatUser != map["id"]) {
               print("Else pasrt1");
-
+              print("cnd13");
               createListMap(map);
               flutterLocalNotificationsPlugin.show(
                   notification.hashCode,
@@ -718,9 +749,9 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                         channel.description,
                         color: Colors.blue,
                         playSound: true,
-                        icon: '@mipmap/launcher_icon',
+                        icon: '@mipmap/ic_launcher',
                         largeIcon: DrawableResourceAndroidBitmap(
-                            '@mipmap/launcher_icon'),
+                            '@mipmap/ic_launcher'),
                       )
                   ));
             }
@@ -735,7 +766,7 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
       RemoteNotification? notification = message.notification;
       AndroidNotification? androidNotification = message.notification!.android;
 
-      if (notification != null && androidNotification != null) {
+      if (notification != null) {
         Map<String, dynamic> map = message.data;
         if (message.data != null) {
           map = message.data;
@@ -756,6 +787,8 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
                     map["token"]));
           } else {
             createListMap(map);
+            navigatorKey.currentState!.pushReplacementNamed('/notification');
+
           }
         }
 
@@ -795,7 +828,13 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
       }
     });
   }
+  Future selectNotification(String? payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: $payload');
+    }
+    navigatorKey.currentState!.pushNamed('/notification');
 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -851,7 +890,7 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
         }
       }
     }
-    navigatorKey.currentContext!.read<Counter>().getNotify();
+    context.read<Counter>().getNotify();
     print("countsplash " + notificationCount.toString());
     preferences.setString("notify", notificationCount.toString());
     preferences.commit();
@@ -1044,13 +1083,6 @@ class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
   }
 */
 
-  Future selectNotification(String? payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: $payload');
-    }
-    navigatorKey.currentState!.pushNamed('/notification');
-
-  }
   Future onDidReceiveLocalNotification(
       int? id, String? title, String? body, String? payload) async {
     // display a dialog with the notification details, tap ok to go to another page

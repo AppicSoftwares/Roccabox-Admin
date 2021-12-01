@@ -392,7 +392,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 29.w,
-                                  bottom: 6.h,
+                                  bottom: 4.5.h,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -1170,7 +1170,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 29.w,
-                                  bottom: 6.h,
+                                  bottom: 4.5.h,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -1801,7 +1801,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 29.w,
-                                  bottom: 6.h,
+                                  bottom: 4.5.h,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
