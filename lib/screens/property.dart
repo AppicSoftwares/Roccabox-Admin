@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -1654,10 +1656,13 @@ void initState() {
   Widget build(BuildContext context) {
     return 
                   isloading 
-                  ? Align(
-                    alignment: Alignment.center,
-                     child: CircularProgressIndicator(),
-                    
+                  ? Padding(
+                    padding: const EdgeInsets.only(top:8.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                       child: Platform.isIOS?CupertinoActivityIndicator():CircularProgressIndicator(),
+
+                    ),
                   )
                   :
     Container(
@@ -1710,7 +1715,6 @@ void initState() {
              ListView.builder(
                     controller: _controller,
                     shrinkWrap: true,
-              
                     itemCount: allPropertyList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return 
@@ -1861,15 +1865,19 @@ void initState() {
                               //           fontSize: 11.sp),
                               //     )),
                               Positioned(
-                                  left: 6.w,
+                                  left: 4.w,
                                   bottom: 1.h,
-                                  child: Text(
-                                    //"New York",
-                                    allPropertyList[index].address.toString(),
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 11.sp),
+                                  child: Container(
+                                    width: 80.w,
+                                    child: Text(
+                                      //"New York",
+                                      allPropertyList[index].address.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11.sp),
+                                    ),
                                   )),
                               Positioned(
                                   top: 1.h,
@@ -1997,7 +2005,8 @@ void initState() {
                   GestureDetector(
                     onTap: () {
                       statusData(index);
-                     
+                      Navigator.of(context,rootNavigator: false).pop();
+
                     },
                     child: Container(
                       width: 40.w,
@@ -2008,7 +2017,7 @@ void initState() {
                       ),
                       child: Center(
                         child: Text(
-                          'Attend this Property',
+                          'Yes',
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 11.sp,
@@ -2070,7 +2079,6 @@ void initState() {
         setState(() {
           isloading = false;
         });
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             allPropertyApi();
@@ -2127,9 +2135,9 @@ void initState() {
     });
     if (res!.statusCode == 200) {
       if (jsonRes["status"] == true) {
-         allPropertyList.clear();
+        allPropertyList.clear();
 
- print("picfgf: "+jsonRes["status"].toString()+"^");
+        print("picfgf: " + jsonRes["status"].toString() + "^");
         for (var i = 0; i < jsonArray.length; i++) {
           AllPropertyProperties modelAgentSearch = new AllPropertyProperties();
           modelAgentSearch.id = jsonArray[i]["id"].toString();
@@ -2197,41 +2205,41 @@ void initState() {
           modelAgentSearch.price1 = jsonArray[i]["price1"].toString();
           modelAgentSearch.price2 = jsonArray[i]["price2"].toString();
           modelAgentSearch.description = jsonArray[i]["description"].toString();
-          modelAgentSearch.catastral_reference = jsonArray[i]["catastral_reference"].toString();
+          modelAgentSearch.catastral_reference =
+              jsonArray[i]["catastral_reference"].toString();
           modelAgentSearch.status = jsonArray[i]["status"].toString();
           modelAgentSearch.is_approved = jsonArray[i]["is_approved"].toString();
           modelAgentSearch.created_at = jsonArray[i]["created_at"].toString();
           modelAgentSearch.updated_at = jsonArray[i]["updated_at"].toString();
-         // modelAgentSearch.p_images = jsonArray[i]["p_images"].toString();
+          // modelAgentSearch.p_images = jsonArray[i]["p_images"].toString();
           modelAgentSearch.p_documents = jsonArray[i]["p_documents"].toString();
-
 
 
           var jsonnArray;
 
           try {
-          var picArray = jsonArray[i]["p_images"];
-          print("picArray: "+picArray.toString()+"^");
-          List<PImages> rim = [];
-          for (var item in picArray) {
-            print("items"+item['images'].toString());
-            PImages images = PImages();
-            images.images = item['images'].toString();
-            rim.add(images);
+            var picArray = jsonArray[i]["p_images"];
+            print("picArray: " + picArray.toString() + "^");
+            List<PImages> rim = [];
+            for (var item in picArray) {
+              print("items" + item['images'].toString());
+              PImages images = PImages();
+              images.images = item['images'].toString();
+              rim.add(images);
+            }
+            modelAgentSearch.p_images = rim;
+          } catch (e) {
+            print(e.toString());
           }
-          modelAgentSearch.p_images = rim;
-        
-        } catch (e) {
-          print(e.toString());
-        }
-         
+
 
           allPropertyList.add(modelAgentSearch);
         }
-
-        setState(() {
-          isloading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isloading = false;
+          });
+        }
       }
     } else {
       ScaffoldMessenger.of(context)

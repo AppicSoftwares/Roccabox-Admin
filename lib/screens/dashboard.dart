@@ -48,38 +48,42 @@ class _DashboardState extends State<Dashboard> {
           child: SingleChildScrollView(
         child: Column(
           children: [
-             Padding(
-                padding: EdgeInsets.only(left: 35.h, top: 10),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(100),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Notifications()));
-                  },
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        height: 46,
-                        width: 46,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white)
-                        ),
-                        child: SvgPicture.asset(
-                          "assets/Bell.svg",
-                          color: Colors.white,
-                        ),
-                      ),
-                     Count()
-                    ],
-                  ),
-                ),
-              ),
+             Row(
+               mainAxisAlignment: MainAxisAlignment.end,
+               children: [
+                 Padding(
+                   padding: const EdgeInsets.all(12.0),
+                   child: GestureDetector(
+                     onTap: () {
+                       Navigator.push(
+                           context,
+                           MaterialPageRoute(
+                               builder: (context) => Notifications()));
+                     },
+                     child: Stack(
+                       clipBehavior: Clip.none,
+                       children: [
+                         Container(
+                           padding: EdgeInsets.all(12),
+                           height: 46,
+                           width: 46,
+                           decoration: BoxDecoration(
+                             color: Colors.grey.withOpacity(0.1),
+                             shape: BoxShape.circle,
+                             border: Border.all(color: Colors.white)
+                           ),
+                           child: SvgPicture.asset(
+                             "assets/Bell.svg",
+                             color: Colors.white,
+                           ),
+                         ),
+                        Count()
+                       ],
+                     ),
+                   ),
+                 ),
+               ],
+             ),
             SizedBox(
               height: 26.h,
               child: Padding(
@@ -137,7 +141,7 @@ class _DashboardState extends State<Dashboard> {
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList(
                         customers: customers,
-                      )));
+                      ))).then((value) {dashBoardApi();});
                     },
                     child: Container(
                     
@@ -186,7 +190,9 @@ class _DashboardState extends State<Dashboard> {
                  TextButton(
                    onPressed: () {
 
-                     Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar()));
+                     Navigator.push(context, MaterialPageRoute(builder: (context) => AgentSearchbar())).then((value) {
+                       dashBoardApi();
+                     });
                    },
                    child: Container(
                     

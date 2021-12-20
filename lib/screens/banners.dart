@@ -384,6 +384,7 @@ class _TotalState extends State<Banners> {
         modelSearch.id = jsonArray[i]["id"].toString();
         modelSearch.name = jsonArray[i]["name"];
         modelSearch.url = jsonArray[i]["url"].toString();
+        modelSearch.status = jsonArray[i]["status"].toString();
         modelSearch.refId = jsonArray[i]["rf_id"].toString();
         modelSearch.filter_id = jsonArray[i]["filter_id"].toString();
         modelSearch.redirect = jsonArray[i]["redirect"].toString();

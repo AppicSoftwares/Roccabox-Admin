@@ -578,7 +578,7 @@ class _AddBannerImageState extends State<AddBannerImage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Banners()));
       } else {
         setState(() {
@@ -591,7 +591,7 @@ class _AddBannerImageState extends State<AddBannerImage> {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Please try leter")));
+            .showSnackBar(SnackBar(content: Text("Please try later")));
       });
     }
   }

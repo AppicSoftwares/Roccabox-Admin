@@ -51,7 +51,7 @@ class _TotalState extends State<TotalUserList> {
   @override
   void initState() {
     super.initState();
-
+    dashBoardApi();
     userListApi("1");
     auth = FirebaseMessaging.instance;
     auth?.getToken().then((value){
@@ -107,9 +107,7 @@ ScrollController _controller = new ScrollController();
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AddUser(
-                customers: widget.customers,
-              )));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AddUser(customers: widget.customers,)));
             },
             child: Container(
               margin: EdgeInsets.only(top: .5.h, right: 1.h, bottom: .5.h),
@@ -196,10 +194,7 @@ ScrollController _controller = new ScrollController();
                     )
                     :
 */
-
-
-
-                    ListView.builder(
+                    apiList.length==0?Center(child: Text("No Users found", style: TextStyle(fontSize: 20),),):ListView.builder(
                       shrinkWrap: true,
                        controller: _controller,
                       physics: NeverScrollableScrollPhysics(),
@@ -213,7 +208,7 @@ ScrollController _controller = new ScrollController();
                               Container(
 
                                 child: ListTile(
-                      leading: apiList[index].image == null
+                      leading: apiList[index].image.toString() == "null"
                                         ? Image.asset(
                                             'assets/Avatar.png',
                                           )
@@ -292,7 +287,7 @@ ScrollController _controller = new ScrollController();
                                        SizedBox(width: 1.w,),
                                      InkWell(
                                          onTap: () {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditUser(
+                                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditUser(
                                               name: apiList[index].name.toString(),
                                               phone: apiList[index].phone.toString(),
                                               email: apiList[index].email.toString(),
@@ -462,6 +457,7 @@ ScrollController _controller = new ScrollController();
 
     }
   }
+
   void registerCall(String userid, String nm, String img, String type, String fcmToken,String idd, String status, String agoraToken, String channel, String time) async {
 
     var documentReference = FirebaseFirestore.instance
@@ -519,7 +515,7 @@ ScrollController _controller = new ScrollController();
   }
 
 
-      Future<dynamic> userStatus( int index, String pageno) async {
+  Future<dynamic> userStatus( int index, String pageno) async {
 
      SharedPreferences prefs = await SharedPreferences.getInstance();
        var id = prefs.getString("id");
@@ -568,12 +564,9 @@ ScrollController _controller = new ScrollController();
 
            //userListApi(pageno);
 
-           
 
-         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalUserList(
 
-            customers: widget.customers.toString(),
-          )));
+
         
       } else {
         setState(() {
@@ -603,8 +596,6 @@ ScrollController _controller = new ScrollController();
        isloading = true;
 
     });
-    // print(email);
-    // print(password);
     String msg = "";
     var jsonRes;
     http.Response? res;
@@ -682,6 +673,61 @@ ScrollController _controller = new ScrollController();
 
 
 
+  Future<dynamic> dashBoardApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+    print("print id: "+id.toString());
+    setState(() {
+      isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var request = http.get(
+      Uri.parse(
+
+          RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
+
+      ),
+    );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+
+        widget.customers = jsonRes["data"]["customers"].toString();
+
+
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => HomeNav()),
+        //  (route) => false);
+        if(mounted) {
+          setState(() {
+            isloading = false;
+          });
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
 
 
 
@@ -740,7 +786,7 @@ ScrollController _controller = new ScrollController();
                       ),
                       child: Center(
                         child: Text(
-                          'Delete',
+                          'Yes',
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 11.sp,
@@ -798,14 +844,14 @@ ScrollController _controller = new ScrollController();
       print(jsonRes["status"]);
       
       if (jsonRes["status"].toString() == "true") {
-
+        dashBoardApi();
         setState(() {
           isloading = false;
         });
-        Navigator.pop(context);
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-            userListApi(pageno);
+        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> TotalUserList(customers: widget.customers)));
         
       } else {
         setState(() {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,7 +41,7 @@ class _AddUserState extends State<AddUser> {
 
 
 
-  String? code = "44";
+  String? code = "34";
 
   
   String image = "";
@@ -121,7 +122,8 @@ class _AddUserState extends State<AddUser> {
                   padding: EdgeInsets.only(top: 10.h, bottom: 1.h),
                   child: TextFormField(
                     controller: nameController,
-                    
+                    inputFormatters: [WhitelistingTextInputFormatter(RegExp(r"[a-zA-Z]+|\s"))],
+
                     decoration: InputDecoration(
                       hintText: "Enter Name",
 
@@ -135,10 +137,8 @@ class _AddUserState extends State<AddUser> {
                   padding:  EdgeInsets.only(top: 1.h, ),
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
+                    inputFormatters: [BlacklistingTextInputFormatter(RegExp(r"\s")), FilteringTextInputFormatter.deny(RegExp('[ ]')),],
                     controller: emailController,
-                    
-                    
-                    
                     // controller: uptemail,
                     decoration: InputDecoration(
                       hintText: "Enter Email",
@@ -151,6 +151,9 @@ class _AddUserState extends State<AddUser> {
                       margin: EdgeInsets.symmetric(vertical: 2.h),
                       child: TextFormField(
                         controller: phoneNumberController,
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+
                         onChanged: (val) {
                           phone = val;
                         },
@@ -161,10 +164,6 @@ class _AddUserState extends State<AddUser> {
                           return null;
                         },
                         maxLength: 10,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
                         decoration: InputDecoration(
                             prefixIcon: CountryCodePicker(
                               // showFlag: false,
@@ -176,7 +175,7 @@ class _AddUserState extends State<AddUser> {
 
                               },
                               // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                              initialSelection: 'gb',
+                              initialSelection: '+'+code.toString(),
                               // favorite: ['+91', 'FR'],
                               // optional. Shows only country name and flag
                               showCountryOnly: false,
@@ -203,21 +202,21 @@ class _AddUserState extends State<AddUser> {
                       child: CircularProgressIndicator())
                   : GestureDetector(
                         onTap: () {
+                          FocusScope.of(context).unfocus();
+                          if(!EmailValidator.validate(emailController.text.toString())){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please enter a valid email address")));
+                          }else {
+                            if (formkey.currentState!.validate()) {
+                              uploadData(nameController.text.toString(),
 
-                          if (formkey.currentState!.validate()) {
-                          uploadData(nameController.text.toString(),
 
-                          
-                         
-                          emailController.text.toString(),
-                           phoneNumberController.text.toString(),
-                          );
-                          print("name: " +nameController.text.toString());
-                          print("email: " +emailController.text.toString());
-                          print("phone: " +phoneNumberController.text.toString());
+                                emailController.text.toString(),
+                                phoneNumberController.text.toString(),
+                              );
 
-                         }
-
+                            }
+                          }
 
 
                           
@@ -283,13 +282,13 @@ class _AddUserState extends State<AddUser> {
      SharedPreferences prefs = await SharedPreferences.getInstance();
        var id = prefs.getString("id");
        print("id Print: " +id.toString());
+       print("id name: " +name.toString());
+       print("id email: " +email.toString());
+       print("id phone: " +phone.toString());
+       print("id code: " +code.toString());
     setState(() {
        isloading = true;
     });
-
-
-    
-        print("phone "+ phone.toString() +"");
 
     var request = http.MultipartRequest(
       "POST",
@@ -352,7 +351,7 @@ class _AddUserState extends State<AddUser> {
         
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-            Navigator.push(context, MaterialPageRoute(builder: (context) => TotalUserList(customers: widget.customers)));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalUserList(customers: widget.customers)));
         
       } else {
         setState(() {
@@ -366,7 +365,7 @@ class _AddUserState extends State<AddUser> {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Please try leter")));
+            SnackBar(content: Text("Please try later")));
       
       });
     }

@@ -270,7 +270,7 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
                                   children: [
                                     Column(
                                       children: <Widget>[
-                                        image == null
+                                        apiList[index].image.toString == "null"
                                             ? Container(
                                                 height: 19.h,
                                                 decoration: BoxDecoration(
@@ -307,7 +307,9 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
                                         ),
                                         height: 10.h,
                                         width: 10.h,
-                                        child: u_image != "null"
+                                        child: apiList[index]
+                                            .u_image
+                                            .toString() != "null"
                                             ?
                                             //user image
 
@@ -690,7 +692,9 @@ class _PendingRequestState extends State<PendingRequest> {
                                         ),
                                         height: 10.h,
                                         width: 10.h,
-                                        child: u_image != "null"
+                                        child: pendingApiList[index]
+                                            .u_image
+                                            .toString() != "null"
                                             ?
                                             //user image
 
@@ -850,7 +854,7 @@ class _PendingRequestState extends State<PendingRequest> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.w)),
           title: SingleChildScrollView(
             child: Container(
               //width: MediaQuery.of(context).size.width*.60,
@@ -921,6 +925,8 @@ class _PendingRequestState extends State<PendingRequest> {
                               child: InkWell(
                                 onTap: () {
                                   print("lendth: "+apiList.length.toString());
+                                  print("email: "+item.email.toString()+"^^^");
+                                  print("number: "+item.phone.toString()+"^^^");
                                   selectedAgent = item.id;
 
 
@@ -929,7 +935,7 @@ class _PendingRequestState extends State<PendingRequest> {
 
                                     //   serviceController.text = "";
                                     emailController.text =
-                                        item.email.toString();
+                                        item.email.toString().substring(0,20);
 
                                     phoneController.text =
                                         item.phone.toString();
@@ -998,6 +1004,7 @@ class _PendingRequestState extends State<PendingRequest> {
                       controller: emailController,
                       enabled: false,
                       decoration: InputDecoration(
+                          counterText: "",
                           hintText: "email@gmail.com",
                           hintStyle: TextStyle(fontSize: 9.sp),
                           border: OutlineInputBorder(
@@ -1020,7 +1027,9 @@ class _PendingRequestState extends State<PendingRequest> {
                     child: TextField(
                       controller: phoneController,
                       enabled: false,
+                      maxLength: 10,
                       decoration: InputDecoration(
+                        counterText: "",
                           hintText:"987654321",
                           hintStyle: TextStyle(fontSize: 9.sp),
                           border: OutlineInputBorder(
@@ -1102,7 +1111,7 @@ class _PendingRequestState extends State<PendingRequest> {
         setState(() {
           isloading = false;
         });
-        Navigator.pop(this.context);
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             pendingEnquiryApi();
@@ -1174,15 +1183,14 @@ class _PendingRequestState extends State<PendingRequest> {
           modelSearch.id = jsonArray[i]["id"].toString();
           modelSearch.email = jsonArray[i]["email"].toString();
           modelSearch.phone = jsonArray[i]["phone"].toString();
-          modelSearch.image = jsonArray[i]["image"].toString();
+          //modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
           
 
-          print("name: " + modelSearch.name.toString());
 
           apiList.add(modelSearch);
         }
-        allData();
+        //allData();
 
         setState(() {
           isloading = false;
@@ -1448,6 +1456,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                   controller: _controller,
                   itemCount: allApiList.length,
                   itemBuilder: (BuildContext context, int index) {
+
                     return Column(
                       children: [
                         SizedBox(
@@ -1517,7 +1526,9 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                         ),
                                         height: 10.h,
                                         width: 10.h,
-                                        child: u_image != "null"
+                                        child: allApiList[index]
+                                            .u_image
+                                            .toString() != "null"
                                             ?
                                             //user image
 
@@ -1762,6 +1773,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                               child: InkWell(
                                 onTap: () {
                                   print("lendth: "+apiList.length.toString());
+                                  print("email: "+item.email.toString()+"^");
                                   selectedAgent = item.id;
 
 
@@ -2022,7 +2034,6 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
           modelAgentSearch.q_status = jsonArray[i]["q_status"].toString();
           modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();
 
-          print("status: " + modelAgentSearch.q_status.toString());
 
           allApiList.add(modelAgentSearch);
         }
@@ -2098,11 +2109,9 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
           modelSearch.id = jsonArray[i]["id"].toString();
           modelSearch.email = jsonArray[i]["email"].toString();
           modelSearch.phone = jsonArray[i]["phone"].toString();
-          modelSearch.image = jsonArray[i]["image"].toString();
+         // modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
-          
 
-          print("name: " + modelSearch.name.toString());
 
           apiList.add(modelSearch);
         }

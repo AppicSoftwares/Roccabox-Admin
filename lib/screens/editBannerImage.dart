@@ -532,7 +532,7 @@ String? uptchosenValue;
                   ),
                   child: Center(
                     child: Text(
-                      'Edit Image',
+                      'Update',
                       style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14.sp,
@@ -634,7 +634,7 @@ String? uptchosenValue;
 
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Banners()));
       } else {
         setState(() {

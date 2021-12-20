@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:roccabox_admin/screens/agentSearchBar.dart';
 import 'package:roccabox_admin/screens/totalAgentList.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,15 +35,6 @@ class _AddUserState extends State<AddAgent> {
     super.initState();
   }
   String twodigitnumber = "";
-  
- 
-
-
-
-
-
-
-
   String? code = "44";
   String image = "";
   String base64Image = "";
@@ -121,7 +114,8 @@ class _AddUserState extends State<AddAgent> {
                   padding: EdgeInsets.only(top: 10.h, bottom: 1.h),
                   child: TextFormField(
                     controller: nameController,
-                    
+                    inputFormatters: [WhitelistingTextInputFormatter(RegExp(r"[a-zA-Z]+|\s"))],
+
                     decoration: InputDecoration(
                       hintText: "Enter Name",
                         border: OutlineInputBorder(
@@ -134,9 +128,7 @@ class _AddUserState extends State<AddAgent> {
                   child: TextFormField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    
-                    
-                    // controller: uptemail,
+                    inputFormatters: [BlacklistingTextInputFormatter(RegExp(r"\s")), FilteringTextInputFormatter.deny(RegExp('[ ]')),],
                     decoration: InputDecoration(
                       hintText: "Enter Email",
                         border: OutlineInputBorder(
@@ -158,10 +150,8 @@ class _AddUserState extends State<AddAgent> {
                           return null;
                         },
                         maxLength: 10,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         decoration: InputDecoration(
                             prefixIcon: CountryCodePicker(
                               // showFlag: false,
@@ -169,7 +159,6 @@ class _AddUserState extends State<AddAgent> {
                                 phone = "",
                                 code = val.toString().substring(1),
                                 print(code.toString()),
-
 
                               },
                               // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
@@ -184,8 +173,6 @@ class _AddUserState extends State<AddAgent> {
                             ),
                             counterText: "",
                             hintText: "Enter Phone Number",
-
-                        
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(3.w),
                                 borderSide:
@@ -199,10 +186,8 @@ class _AddUserState extends State<AddAgent> {
                   padding: EdgeInsets.only(top: 2.h),
                   child: TextField(
                     controller: passwordController,
-                    
                     decoration: InputDecoration(
                       hintText: "Enter Password",
-                      
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(3.w))),
                   ),
@@ -219,23 +204,25 @@ class _AddUserState extends State<AddAgent> {
                  GestureDetector(
                         onTap: () {
 
-                              if (formkey.currentState!.validate()) {
-                          uploadData(nameController.text.toString(),
-
-                          
-                         
-                          emailController.text.toString(),
-                           phoneNumberController.text.toString(),
-
-                          passwordController.text.toString()
-
-                          );
-                          print("name: " +nameController.text.toString());
-                          print("email: " +emailController.text.toString());
-                          print("phone: " +phoneNumberController.text.toString());
-                          print("password: " +passwordController.text.toString());
-
-                         }
+                          if(EmailValidator.validate(emailController.text.toString().trim())) {
+                            if (formkey.currentState!.validate()) {
+                              uploadData(nameController.text.toString(),
+                                  emailController.text.toString(),
+                                  phoneNumberController.text.toString(),
+                                  passwordController.text.toString()
+                              );
+                              print("name: " + nameController.text.toString());
+                              print("email: " + emailController.text
+                                  .toString());
+                              print("phone: " + phoneNumberController.text
+                                  .toString());
+                              print("password: " + passwordController.text
+                                  .toString());
+                            }
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please enter a valid email address")));
+                          }
                           
                         },
                         child: Container(
@@ -362,11 +349,6 @@ class _AddUserState extends State<AddAgent> {
       
       if (jsonRes["status"].toString() == "true") {
 
-       
-
-        
-
-
         // prefs.setString('phone', jsonRes["data"]["phone"].toString());
         prefs.commit();
         setState(() {
@@ -375,7 +357,7 @@ class _AddUserState extends State<AddAgent> {
         
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TotalAgentList()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AgentSearchbar()));
         
       } else {
         setState(() {
@@ -389,7 +371,7 @@ class _AddUserState extends State<AddAgent> {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Please try leter")));
+            SnackBar(content: Text("Please try later")));
       
       });
     }

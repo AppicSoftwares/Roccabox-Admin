@@ -257,10 +257,8 @@ class _BodyState extends State<Body> {
                   if (status.toString() == "end") {
                     WidgetsBinding.instance!.addPostFrameCallback((_) {
                       FlutterRingtonePlayer.stop();
+                      Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
-                      Navigator.of(context).pushReplacement(
-                          new MaterialPageRoute(
-                              builder: (context) => HomeNav()));
                     });
                   }
                 }
@@ -309,21 +307,7 @@ class _BodyState extends State<Body> {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: SafeArea(
-                  child: isLoading== true?Center(child: CircularProgressIndicator(),):  StreamBuilder<DocumentSnapshot>(
-                    stream: firestoreInstance
-              .collection("call_master")
-              .doc("call_head")
-              .collection(id.toString())
-                    .doc(args.time)
-              .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if(snapshot.hasData){
-                        var json;
-                       json= snapshot.data!.get("status").toString();
-                      print("Status "+json.toString());
-                      }
-                      return Column(
+                  child:Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -419,9 +403,8 @@ class _BodyState extends State<Body> {
                             ],
                           ),
                         ],
-                      );
-                    }
-                  ),
+                      )
+
                 ),
               ),
             ],

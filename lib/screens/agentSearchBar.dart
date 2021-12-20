@@ -203,11 +203,15 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: CircleAvatar(
+                          leading: apiList[index].image.toString()!="null"?CircleAvatar(
                             backgroundImage: NetworkImage(apiList[index].image.toString()),
                               maxRadius: 9.w,
                              // child: Image.network(apiList[index].image.toString())
-                              ),
+                              ):CircleAvatar(
+                            backgroundImage: AssetImage("assets/Avatar.png"),
+                            maxRadius: 9.w,
+                            // child: Image.network(apiList[index].image.toString())
+                          ),
                           title: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +283,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => EditAgent(
@@ -504,6 +508,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
         modelSearch.email = jsonArray[i]["email"].toString();
         modelSearch.phone = jsonArray[i]["phone"].toString();
         modelSearch.image = jsonArray[i]["image"].toString();
+        modelSearch.status = jsonArray[i]["status"].toString();
         modelSearch.country_code = jsonArray[i]["country_code"].toString();
         modelSearch.firebase_token = jsonArray[i]["firebase_token"].toString();
 
@@ -522,7 +527,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Please try leter")));
+            SnackBar(content: Text("Please try later")));
       
       });
     }
@@ -812,6 +817,7 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
                       : GestureDetector(
                           onTap: () {
                             deleteData(index);
+                            Navigator.of(context,rootNavigator: true).pop();
                           },
                           child: Container(
                             width: 40.w,
@@ -875,7 +881,6 @@ class _AgentSearchbarState extends State<AgentSearchbar> {
         setState(() {
           isloading = false;
         });
-        Navigator.pop(this.context);
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
         agentListApi();

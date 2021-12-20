@@ -157,8 +157,8 @@ String feature30 = "Underfloor heating";
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                    height: 3.4.h,
-                                    width: 3.4.h,
+                                    height: 4.4.h,
+                                    width: 4.4.h,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.white,
@@ -184,59 +184,63 @@ String feature30 = "Underfloor heating";
                       Positioned(
                         bottom: 0.h,
                         left: 5.w,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              //"Urbn Pacific Real Estate...",
-                              widget.allPropertyProperties.category.toString(),
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14.sp),
-                            ),
-                            SizedBox(
-                              height: 1.h,
-                            ),
-                            Text(
-                              //"New York",
-                              widget.allPropertyProperties.address.toString(),
-                              overflow: TextOverflow.ellipsis,
-                              
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 11.sp),
-                            ),
-                            SizedBox(
-                              height: 1.h,
-                            ),
-                            Text(
-                              //"+91 9876543210",
+                        child: Container(
+                          width: 95.w,
+                          margin: EdgeInsets.only(right: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              /*Text(
+                                //"Urbn Pacific Real Estate...",
+                                widget.allPropertyProperties.category.toString(),
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.sp),
+                              ),*/
+                              SizedBox(
+                                height: 1.h,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(right: 8.0),
+                                width: MediaQuery.of(context).size.width*70,
+                                child: Text(
+                                  "New York, jkkjnnvnks, dsjnjknfdsjm,sm v skd v kjn,f,ds jfkndkfns, d vksdn",
+                                  //widget.allPropertyProperties.address.toString(),
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 11.sp),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 1.h,
+                              ),
+                              Text(
+                                //"+91 9876543210",
 
-                              widget.allPropertyProperties.phone.toString(),
+                                widget.allPropertyProperties.phone.toString(),
 
 
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 11.sp),
-                            )
-                          ],
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11.sp),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                       Positioned(
-                        bottom: -1.h,
+                        bottom: 1.h,
                         right: 7.w,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "For Sale",
-                            style: TextStyle(
-                                color: kPrimaryColor,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13.sp),
-                          ),
+                        child: Text(
+                          widget.allPropertyProperties.category,
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13.sp),
                         ),
                       ),
                     ],

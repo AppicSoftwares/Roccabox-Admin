@@ -256,13 +256,8 @@ class _SettingState extends State<Menu> {
                     fontWeight: FontWeight.w500),
               ),
               onTap: () async {
-                var pref = await SharedPreferences.getInstance();
-                pref.clear();
-                pref.commit();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    new MaterialPageRoute(builder: (context) => Login()),
-                        (route) => false);
+                showAlertDialog(context);
+
               },
             ),
 
@@ -283,4 +278,47 @@ class _SettingState extends State<Menu> {
     print("email " + email.toString() + "");
     setState(() {});
   }
+
+
+  showAlertDialog(BuildContext context) {
+
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("No", style: TextStyle(color: Colors.blueAccent),),
+      onPressed:  () {
+        Navigator.of(context, rootNavigator: true).pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Yes", style: TextStyle(color: Colors.blueAccent),),
+      onPressed:  () async {
+        var pref = await SharedPreferences.getInstance();
+        pref.clear();
+        pref.commit();
+        var result  = new MaterialPageRoute(builder: (context) => Login());
+        Navigator.of(context,rootNavigator: true).pushAndRemoveUntil(result, (route) => false);
+
+
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Logout", style: TextStyle(fontWeight: FontWeight.bold),),
+      content: Text("Are you sure you want to logout?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
 }

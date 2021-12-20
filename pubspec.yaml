@@ -54,8 +54,8 @@ dependencies:
   permission_handler:
   provider: ^6.0.1
   pull_to_refresh: ^2.0.0
-  flutter_local_notifications: ^6.0.0
-
+  rxdart: ^0.26.0
+  flutter_local_notifications: ^9.1.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

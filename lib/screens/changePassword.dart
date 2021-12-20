@@ -215,9 +215,8 @@ class _EditProfileState extends State<ChangePaasword> {
                           ),
                           child: Center(
                             child: Text(
-
                               //Update Password
-                              languageChange.UPDATEPROFILE[langCount],
+                              languageChange.PASSWORDUPDATE[langCount],
                               style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 14.sp,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:roccabox_admin/screens/homenave.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 
@@ -69,6 +70,9 @@ class _LoginState extends State<Login> {
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 10),
                       child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                        inputFormatters: [FilteringTextInputFormatter.deny(
+                            RegExp(r'\s'))],
                         validator: (val) {
                           if (val == null || val.isEmpty) {
                             return 'Please Enter your Email Id';

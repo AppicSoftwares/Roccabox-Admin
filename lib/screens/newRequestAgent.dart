@@ -527,7 +527,8 @@ newAgentListApi();
                   GestureDetector(
                     onTap: () {
                       approveData(index);
-                      
+                      Navigator.of(context,rootNavigator: true).pop();
+
                     },
                     child: Container(
                       height: 40,
@@ -616,7 +617,7 @@ newAgentListApi();
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context).showSnackBar(
-            SnackBar(content: Text("Please try leter")));
+            SnackBar(content: Text("Please try later")));
       
       });
     }
@@ -657,7 +658,8 @@ newAgentListApi();
                   GestureDetector(
                     onTap: () {
                       rejectData(index);
-                      
+                      Navigator.of(context,rootNavigator: true).pop();
+
                     },
                     child: Container(
                       height: 40,
@@ -728,7 +730,6 @@ newAgentListApi();
         setState(() {
           isloading = false;
         });
-        Navigator.pop(this.context);
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             newAgentListApi();
@@ -745,7 +746,7 @@ newAgentListApi();
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context).showSnackBar(
-            SnackBar(content: Text("Please try leter")));
+            SnackBar(content: Text("Please try later")));
       
       });
     }

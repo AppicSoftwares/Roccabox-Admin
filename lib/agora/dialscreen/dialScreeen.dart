@@ -91,7 +91,8 @@ class _DialScreenState extends State<DialScreen> {
         _engine.leaveChannel();
         _engine.destroy();
         _stopFile();
-        Navigator.of(context).pop();
+        Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
+
 
       }
 
@@ -118,7 +119,7 @@ class _DialScreenState extends State<DialScreen> {
       print('userOffline ${uid}');
 
 
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+      Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
       if(_engine!=null) {
         _engine.destroy();
       }
@@ -130,8 +131,8 @@ class _DialScreenState extends State<DialScreen> {
         print("remote user left channel");
 
         if(mounted) {
-          Navigator.pushReplacement(
-              context, new MaterialPageRoute(builder: (context) => HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
+
         }
         if(_engine!=null) {
           _engine.destroy();
@@ -173,7 +174,8 @@ class _DialScreenState extends State<DialScreen> {
                       _engine.leaveChannel();
                       updateChatHead();
                       _engine.destroy();
-                      Navigator.of(context).pop();
+                      Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
+
                     }
                   }
               }

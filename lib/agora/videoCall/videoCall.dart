@@ -56,7 +56,8 @@ class _MyAppState extends State<VideoCall> {
       if(_localUserJoined==false){
         _engine.leaveChannel();
         _engine.destroy();
-        Navigator.of(context).pop();
+        Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()),(r)=> false);
+
       }
 
     });
@@ -85,7 +86,7 @@ class _MyAppState extends State<VideoCall> {
         },
         userOffline: (int uid, UserOfflineReason reason) {
           print("remote user $uid left channel");
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()),(r)=> false);
           _engine.destroy();
           setState(() {
             _remoteUid = null;
@@ -94,7 +95,7 @@ class _MyAppState extends State<VideoCall> {
         },
         leaveChannel: (RtcStats reason) {
           print("remote user left channel");
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()),(r)=> false);
 
           _engine.destroy();
           //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
@@ -150,7 +151,8 @@ class _MyAppState extends State<VideoCall> {
               if(status.toString()=="end"){
                 _engine.leaveChannel();
                 _engine.destroy();
-                Navigator.of(context).pop();
+                Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()),(r)=> false);
+
               }
             }
           }
@@ -204,7 +206,7 @@ class _MyAppState extends State<VideoCall> {
                             _engine.leaveChannel();
                             _engine.destroy();
                             updateChatHead(widget.senderId,widget.time, "end");
-                            Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+                            Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()),(r)=> false);
 
                           });
                         },

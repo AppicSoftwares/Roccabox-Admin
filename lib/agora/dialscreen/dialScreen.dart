@@ -40,7 +40,6 @@ class _ReceivedCallState extends State<ReceivedCall> {
   bool _joined = false;
   bool _switch = false;
   bool isMute = false;
-  var isLoading = true;
   final firestoreInstance = FirebaseFirestore.instance;
 
   bool isSpeakerOn = false;
@@ -48,14 +47,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
   void initState() {
     super.initState();
     _engine = widget.engine;
-    Future.delayed(Duration(seconds: 2), () async{
 
-      setState(() {
-        isLoading = false;
-
-      });
-
-    });
     startTimmer();
     // initPlatformState(widget.agoraToken, widget.channel);
 
@@ -89,7 +81,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
       if(_engine!=null) {
         _engine.destroy();
       }
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+      Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
       setState(() {
         _remoteUid = 0;
@@ -102,7 +94,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
           if(_engine!=null) {
             _engine.destroy();
           }
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
           //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
 
@@ -132,7 +124,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
           setState(() {
             _remoteUid = uid;
           });
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
         },
         userOffline: (int uid, UserOfflineReason reason) {
@@ -140,7 +132,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
           if(_engine!=null) {
             _engine.destroy();
           }
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
           setState(() {
             _remoteUid = null;
@@ -152,7 +144,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
           if(_engine!=null) {
             _engine.destroy();
           }
-          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+          Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
           //Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
 
@@ -174,7 +166,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
    */
     return Scaffold(
         backgroundColor: kBackgoundColor,
-        body: isLoading==true?Center(child: CircularProgressIndicator(),):SafeArea(
+        body:SafeArea(
         child: Padding(
         padding: const EdgeInsets.all(20.0),
     child:widget.id!=null? StreamBuilder<DocumentSnapshot>(
@@ -189,12 +181,12 @@ class _ReceivedCallState extends State<ReceivedCall> {
     if(snapshot.hasData){
     var status = snapshot.data!.get("status").toString();
     if(status.toString()!="null"){
-    if(status.toString()!="Calling"){
+    if(status.toString()=="end"){
     _engine.leaveChannel();
     _engine.destroy();
     updateChatHead();
     SchedulerBinding.instance!.addPostFrameCallback((_) {
-      Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context)=> HomeNav()));
+      Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
     });
     }
@@ -250,7 +242,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
                             pickCall = false;
                             _timmerInstance.cancel();
 
-                            Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context)=> HomeNav()));
+                            Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
                           },
                           color: kRedColor,
@@ -342,15 +334,17 @@ class _ReceivedCallState extends State<ReceivedCall> {
 
   @override
   void dispose() {
-    _timmerInstance.cancel();
-    _engine.destroy();
     super.dispose();
+    _timmerInstance.cancel();
+
   }
   void startTimmer() {
     var oneSec = Duration(seconds: 1);
     _timmerInstance = Timer.periodic(
         oneSec,
-            (Timer timer) => setState(() {
+            (Timer timer) =>
+
+                setState(() {
           if (_start < 0) {
             _timmerInstance.cancel();
           } else {
