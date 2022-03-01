@@ -1,4 +1,5 @@
 
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -124,6 +125,9 @@ class _HomeNavState extends State<HomeNav> {
   Future<dynamic> updateToken(String token) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var userid = pref.getString("id");
+    authToken = pref.getString("auth_token").toString();
+    print("AUTH_TOKEN "+authToken.toString());
+    mapheaders["Authorization"] = authToken.toString();
 
     var documentReference = FirebaseFirestore.instance
         .collection('token')

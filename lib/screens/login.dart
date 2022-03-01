@@ -237,6 +237,8 @@ class _LoginState extends State<Login> {
         prefs.setString('email', jsonRes["data"]["email"].toString());
         prefs.setString('name', jsonRes["data"]["name"].toString());
         prefs.setString('image', jsonRes["data"]["image"].toString());
+        prefs.setString('auth_token', jsonRes["auth_token"].toString());
+
         prefs.commit();
 
         mAuth.signInWithCustomToken(mCustomToken).then((value) {

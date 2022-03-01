@@ -17,6 +17,8 @@ import 'package:roccabox_admin/theme/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import '../main.dart';
+
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
 
@@ -285,7 +287,8 @@ class _DashboardState extends State<Dashboard> {
       customers = jsonRes["data"]["customers"].toString();
 
       agents = jsonRes["data"]["agents"].toString();
-
+      totalAgent = int.parse(jsonRes["data"]["agents"].toString());
+      totalUser = int.parse(jsonRes["data"]["customers"].toString());
         // Navigator.pushAndRemoveUntil(
         //     context,
         //     MaterialPageRoute(builder: (context) => HomeNav()),

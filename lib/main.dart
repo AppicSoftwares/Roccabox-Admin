@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
@@ -37,7 +38,8 @@ int? _remoteUid;
 late RtcEngine _engine;
 bool _joined = false;
 FirebaseMessaging? messaging;
-
+var totalAgent = 0;
+var totalUser = 0;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin
 = FlutterLocalNotificationsPlugin();
@@ -53,6 +55,9 @@ MethodChannel platform = MethodChannel('user_channel');
 
 String? selectedNotificationPayload;
 
+var authToken;
+Map<String, String> mapheaders = new HashMap();
+bool isPressed = false;
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -404,6 +409,7 @@ class RoccoBoxAdminApp extends StatefulWidget {
   @override
   State<RoccoBoxAdminApp> createState() => _RoccoBoxAdminAppState();
 }
+
 class _RoccoBoxAdminAppState extends State<RoccoBoxAdminApp> {
 
   var initialRoute = "/splash";

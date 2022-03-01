@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:roccabox_admin/main.dart';
 
 import 'package:roccabox_admin/screens/enquiryDetail.dart';
 
@@ -180,6 +181,7 @@ class _EnquiryState extends State<Enquiry> {
           );
         });
   }
+
 }
 
 class AssignEnquiry extends StatefulWidget {
@@ -935,7 +937,7 @@ class _PendingRequestState extends State<PendingRequest> {
 
                                     //   serviceController.text = "";
                                     emailController.text =
-                                        item.email.toString().substring(0,20);
+                                        item.email.toString();
 
                                     phoneController.text =
                                         item.phone.toString();
@@ -970,6 +972,8 @@ class _PendingRequestState extends State<PendingRequest> {
                           enabled: false,
                           controller: nameController,
                           decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                               suffixIcon: Icon(
                                 Icons.arrow_drop_down,
                                 size: 8.w,
@@ -1001,9 +1005,12 @@ class _PendingRequestState extends State<PendingRequest> {
                   Container(
                     height: 5.h,
                     child: TextField(
+
                       controller: emailController,
                       enabled: false,
                       decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                           counterText: "",
                           hintText: "email@gmail.com",
                           hintStyle: TextStyle(fontSize: 9.sp),
@@ -1029,8 +1036,10 @@ class _PendingRequestState extends State<PendingRequest> {
                       enabled: false,
                       maxLength: 10,
                       decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                         counterText: "",
-                          hintText:"987654321",
+                          hintText:"9876543210",
                           hintStyle: TextStyle(fontSize: 9.sp),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(3.w))),
@@ -1128,7 +1137,7 @@ class _PendingRequestState extends State<PendingRequest> {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context)
-            .showSnackBar(SnackBar(content: Text("Please try leter")));
+            .showSnackBar(SnackBar(content: Text("Please try later")));
       });
     }
   }
@@ -1647,7 +1656,8 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                               onTap: () {
                                                 if (allApiList[index].q_status ==
                                                     "Pending") {
-                                                  //customDialog(index);
+                                                  selectedEnquiryId = allApiList[index].id;
+                                                  customDialog(index);
                                                 }
 
                                                 //customDialog();
@@ -1817,6 +1827,8 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                           enabled: false,
                           controller: nameController,
                           decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                               suffixIcon: Icon(
                                 Icons.arrow_drop_down,
                                 size: 8.w,
@@ -1851,6 +1863,8 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                       controller: emailController,
                       enabled: false,
                       decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                           hintText: "email@gmail.com",
                           hintStyle: TextStyle(fontSize: 9.sp),
                           border: OutlineInputBorder(
@@ -1874,7 +1888,9 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                       controller: phoneController,
                       enabled: false,
                       decoration: InputDecoration(
-                          hintText:"987654321",
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                          hintText:"9876543210",
                           hintStyle: TextStyle(fontSize: 9.sp),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(3.w))),
@@ -1923,6 +1939,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     print("id Print: " + id.toString());
     print("agentId: " +selectedAgent.toString());
     print("enquiryId: "+ selectedEnquiryId.toString());
+
     setState(() {
       isloading = true;
     });
@@ -1931,6 +1948,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
         Uri.parse(
           RestDatasource.ENQUIRYASSIGN_URL,
         ),
+        headers: mapheaders,
         body: {
           "agent_id": selectedAgent.toString(),
           "enquiry_id": selectedEnquiryId.toString(),
@@ -1949,13 +1967,14 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     });
 
     if (res.statusCode == 200) {
+      Navigator.of(context, rootNavigator: true).pop();
       print(jsonRes["status"]);
 
       if (jsonRes["status"].toString() == "true") {
         setState(() {
           isloading = false;
         });
-        Navigator.pop(this.context);
+
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             allEnquiryApi();
@@ -1972,7 +1991,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context)
-            .showSnackBar(SnackBar(content: Text("Please try leter")));
+            .showSnackBar(SnackBar(content: Text("Please try later")));
       });
     }
   }

@@ -134,7 +134,7 @@ class _AddUserState extends State<EditUser> {
                       Padding(
                         padding: EdgeInsets.only(top: 10.h, bottom: 1.h),
                         child: TextFormField(
-                          inputFormatters: [WhitelistingTextInputFormatter(RegExp(r"[a-zA-Z]+|\s"))],
+                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z]+|\s"))],
                           controller: nameController,
                           onChanged: (val) {
                             uptname = val;
@@ -159,7 +159,7 @@ class _AddUserState extends State<EditUser> {
 
                           keyboardType: TextInputType.emailAddress,
                           inputFormatters: [
-                            BlacklistingTextInputFormatter(RegExp(r"\s")),
+                            FilteringTextInputFormatter.deny(RegExp(r"\s")),
                             FilteringTextInputFormatter.deny(RegExp('[ ]')),
                           ],
 

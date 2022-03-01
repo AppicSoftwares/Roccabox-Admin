@@ -11,12 +11,15 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:roccabox_admin/ChatModule/chatscreen.dart';
 import 'package:roccabox_admin/agora/dialscreen/dialScreeen.dart';
 import 'package:roccabox_admin/agora/videoCall/videoCall.dart';
+import 'package:roccabox_admin/main.dart';
 import 'package:roccabox_admin/screens/addUser.dart';
 import 'package:roccabox_admin/screens/chatDemo.dart';
 import 'package:roccabox_admin/screens/editUser.dart';
+import 'package:roccabox_admin/screens/enquiry.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:http/http.dart' as http;
 import 'package:roccabox_admin/theme/constant.dart';
+import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -82,6 +85,7 @@ class _TotalState extends State<TotalUserList> {
     return true;
   }
   List <TotalUserListApi> apiList = [];
+  List<TotalAgentListApi> agentList = [];
 
 
 
@@ -260,6 +264,19 @@ ScrollController _controller = new ScrollController();
 
 
                                     children: [
+                                      InkWell(
+                                        onTap: () {
+                                         // print(apiList[index].id.toString());
+                                          assignAgentDialoge(apiList[index].id.toString());
+                                        },
+
+                                        child: Image.asset("assets/assign_agent.png",
+                                          width: 6.w,
+
+                                        ),
+                                      ),
+
+                                      SizedBox(width: 1.w,),
                                        InkWell(
                                          onTap: () {
                                            Navigator.push(context, MaterialPageRoute(builder: (Context) => ChatScreen(image: apiList[index].image,name: apiList[index].name,receiverId: apiList[index].id,senderId: id,fcm: apiList[index].firebase_token,userType: "user",)));
@@ -274,8 +291,10 @@ ScrollController _controller = new ScrollController();
                                        SizedBox(width: 1.w,),
                                       InkWell(
                                          onTap: () {
-                                           getAccessToken(apiList[index].id, "VOICE");
-
+                                           if(!isPressed) {
+                                             getAccessToken(
+                                                 apiList[index].id, "VOICE");
+                                           }
                                          },
 
                                         child: Image.asset("assets/callicon.png",
@@ -287,6 +306,7 @@ ScrollController _controller = new ScrollController();
                                        SizedBox(width: 1.w,),
                                      InkWell(
                                          onTap: () {
+                                           print("Iddd "+apiList[index].name.toString()+"^");
                                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditUser(
                                               name: apiList[index].name.toString(),
                                               phone: apiList[index].phone.toString(),
@@ -361,11 +381,244 @@ ScrollController _controller = new ScrollController();
     );
   }
 
+
+  assignAgentDialoge(String user_id) {
+    var selectedAgent = "";
+    TextEditingController nameController = new TextEditingController();
+    TextEditingController emailController = new TextEditingController();
+    TextEditingController phoneController = new TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.w)),
+          title: SingleChildScrollView(
+            child: Container(
+              //width: MediaQuery.of(context).size.width*.60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Assign Lead',
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                      ),
+                      IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            size: 7.w,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                    ],
+                  ),
+                  Container(
+                    color: Colors.grey,
+                    height: 0.1.h,
+                    width: double.infinity,
+                  ),
+                  SizedBox(height: 1.h),
+                  Text(
+                    'Name',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff000000)),
+                  ),
+                  InkWell(
+
+                      onTap: () {
+                        print("Hello: "+apiList.length.toString());
+                        SelectDialog.showModal<TotalAgentListApi>(
+
+
+                          context,
+                          label: "Please select an agent",
+                          items: agentList,
+                          showSearchBox: false,
+                          itemBuilder: (BuildContext context,
+                              TotalAgentListApi item, bool isSelected) {
+                            return Container(
+                              decoration: !isSelected
+                                  ? null
+                                  : BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Colors.white,
+                                border: Border.all(
+                                    color:
+                                    Theme.of(context).primaryColor),
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  print("lendth: "+apiList.length.toString());
+                                  print("email: "+item.email.toString()+"^^^");
+                                  print("number: "+item.phone.toString()+"^^^");
+                                  selectedAgent = item.id;
+
+
+                                  setState(() {
+                                    nameController.text = item.name.toString();
+
+                                    //   serviceController.text = "";
+                                    emailController.text =
+                                        item.email.toString();
+
+                                    phoneController.text =
+                                        item.phone.toString();
+
+                                    // isLoading = true;
+                                    //  personalInfoPresenter.getSubCat(catId.toString());
+                                    Navigator.of(context).pop();
+                                  });
+                                },
+                                child: ListTile(
+                                  leading: item.name == "null"
+                                      ? null
+                                      : Text(
+                                    item.name.toString(),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+
+
+                                  selected: isSelected,
+                                ),
+                              ),
+                            );
+                          },
+
+                        );
+                      },
+                      child: Container(
+                        height: 5.h,
+                        child: TextField(
+                          enabled: false,
+                          controller: nameController,
+                          decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                              suffixIcon: Icon(
+                                Icons.arrow_drop_down,
+                                size: 8.w,
+                              ),
+                              hintText: "Agent's Name",
+                              hintStyle: TextStyle(fontSize: 9.sp),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10))),
+                        ),
+                      )),
+
+
+
+
+
+                  SizedBox(
+                    height: 1.h,
+                  ),
+
+                  Text(
+                    'Email Address',
+                    style: TextStyle(
+
+                        fontFamily: 'Poppins',
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff000000)),
+                  ),
+                  Container(
+                    height: 5.h,
+                    child: TextField(
+                      controller: emailController,
+                      enabled: false,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                          counterText: "",
+                          hintText: "email@gmail.com",
+                          hintStyle: TextStyle(fontSize: 9.sp),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  Text(
+                    'Mobile Number',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff000000)),
+                  ),
+                  Container(
+                    height: 5.h,
+                    child: TextField(
+                      controller: phoneController,
+                      enabled: false,
+                      maxLength: 10,
+                      decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                          counterText: "",
+                          hintText:"9876543210",
+                          hintStyle: TextStyle(fontSize: 9.sp),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(3.w))),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      assignAgentApi(user_id, selectedAgent);
+                    },
+                    child: Container(
+                      height: 5.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFFBA00),
+                        borderRadius: BorderRadius.circular(3.w),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Assign Agent',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   customSwitch(int index) {
     return Expanded(
       child: Container(
         height: 3.2.h,
-        width: 28.w,
+        width: 33.w,
         
             child: FlutterSwitch(
                width: 125
@@ -392,10 +645,11 @@ ScrollController _controller = new ScrollController();
 
                   //bannerList[index].status = val.toString();
                   if (apiList[index].status == 1.toString()) {
-                    true;
-                    
+
+                    apiList[index].status = "0";
                   } else {
-                    false;
+
+                    apiList[index].status = "1";
                   }
 
                   userStatus(index, pageno.toString());
@@ -409,6 +663,7 @@ ScrollController _controller = new ScrollController();
 
 
   Future<dynamic> getAccessToken(String id, String type) async {
+   isPressed = true;
     SharedPreferences pref = await SharedPreferences.getInstance();
     var userid = pref.getString("id");
 
@@ -426,11 +681,11 @@ ScrollController _controller = new ScrollController();
           "time":DateTime.now().millisecondsSinceEpoch.toString()
 
 
-        });
+        }, headers: mapheaders);
 
     await request.then((http.Response response) {
       res = response;
-
+      isPressed = false;
       // msg = jsonRes["message"].toString();
       // getotp = jsonRes["otp"];
       // print(getotp.toString() + '123');t
@@ -586,7 +841,65 @@ ScrollController _controller = new ScrollController();
     }
   }
 
+  Future<dynamic> assignAgentApi(String userId, String selectedAgent) async {
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+
+    print("id Print: " + id.toString());
+    print("agentId: " +selectedAgent.toString());
+    print("userId: " +userId.toString());
+    setState(() {
+      isloading = true;
+    });
+
+    var request = http.post(
+        Uri.parse(
+          RestDatasource.ENQUIRYASSIGN_URL,
+        ),
+        body: {
+          "agent_id": selectedAgent.toString(),
+          "user_id": userId.toString(),
+          "admin_id" : id.toString()
+          //"enquiry_id":
+        });
+
+    var jsonRes;
+    var res;
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+      print(jsonRes["status"]);
+
+      if (jsonRes["status"].toString() == "true") {
+        setState(() {
+          isloading = false;
+        });
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(this.context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(this.context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(this.context)
+            .showSnackBar(SnackBar(content: Text("Please try later")));
+      });
+    }
+  }
 
     Future<dynamic> userListApi(String pageno) async {
        SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -657,6 +970,7 @@ ScrollController _controller = new ScrollController();
           _refreshController.loadComplete();
           isRefresh = false;
         });
+        agentListApi();
       }
     } else {
       ScaffoldMessenger.of(context)
@@ -671,7 +985,66 @@ ScrollController _controller = new ScrollController();
     }
   }
 
+  Future<dynamic> agentListApi() async {
 
+    print("Total Agent "+totalAgent.toString());
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+    print(id.toString());
+
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+      Uri.parse(
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize="+totalAgent.toString()),
+    );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+        agentList.clear();
+
+        for (var i = 0; i < jsonArray.length; i++) {
+          TotalAgentListApi modelSearch = new TotalAgentListApi();
+          modelSearch.name = jsonArray[i]["name"];
+          modelSearch.id = jsonArray[i]["id"].toString();
+          modelSearch.email = jsonArray[i]["email"].toString();
+          modelSearch.phone = jsonArray[i]["phone"].toString();
+          //modelSearch.image = jsonArray[i]["image"].toString();
+          modelSearch.country_code = jsonArray[i]["country_code"].toString();
+
+
+
+          agentList.add(modelSearch);
+        }
+        //allData();
+
+
+      }
+    } else {
+      ScaffoldMessenger.of(this.context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
 
   Future<dynamic> dashBoardApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

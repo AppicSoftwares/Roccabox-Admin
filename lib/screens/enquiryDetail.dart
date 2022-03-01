@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:roccabox_admin/main.dart';
 import 'package:roccabox_admin/screens/enquiry.dart';
 import 'package:roccabox_admin/services/apiClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -382,6 +383,7 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
   Future<dynamic> getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var id = pref.getString("id").toString();
+
     print("Idd " + id.toString() + "");
     String uri = "https://webapi.resales-online.com/V6/PropertyDetails?" +
         "P_Agency_FilterId=" +
@@ -397,7 +399,7 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
     print("print: " + uri.toString());
 
     var request =
-        http.post(Uri.parse(RestDatasource.NEWURL1), body: {"url": uri});
+        http.post(Uri.parse(RestDatasource.NEWURL1), body: {"url": uri}, headers: mapheaders);
 
     var jsonRes;
     var res;
@@ -413,7 +415,6 @@ class _NotificationDetailsState extends State<EnquiryDetails> {
 
     if (res.statusCode == 200) {
       print("Response: " + jsonRes.toString() + "_");
-      print(jsonRes["transaction"]["status"]);
       if (jsonRes["transaction"]["status"].toString() == "success") {
         modelSearch = new ModelSearchProperty();
 

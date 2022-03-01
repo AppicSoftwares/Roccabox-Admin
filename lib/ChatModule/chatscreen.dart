@@ -1203,7 +1203,8 @@ void bottomSheet(){
     await http.post(Uri.parse(RestDatasource.BASE_URL + 'userProfile'),
         body: {
           "user_id":widget.receiverId.toString()
-        });
+        }, headers: mapheaders);
+    print("ReceiverId "+widget.receiverId.toString()+"^^");
 
     if (response.statusCode == 200) {
       var apiObj = JsonDecoder().convert(response.body.toString());
@@ -1441,7 +1442,11 @@ void bottomSheet(){
 
     print("user_id "+userid.toString());
     // print(email)
-        ;
+    var authToken = pref.getString("auth_token").toString();
+    print("AUTH_TOKEN "+authToken.toString());
+    Map<String, String> mapheaders = new HashMap();
+    mapheaders["Authorization"] = authToken.toString();
+
     var jsonRes;
     http.Response? res;
     var request = http.post(Uri.parse(RestDatasource.AGORATOKEN),
@@ -1457,7 +1462,8 @@ void bottomSheet(){
           "click_action": 'FLUTTER_NOTIFICATION_CLICK',
 
 
-        });
+        },
+    headers: mapheaders);
 
     await request.then((http.Response response) {
       res = response;

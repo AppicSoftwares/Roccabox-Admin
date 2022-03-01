@@ -114,7 +114,7 @@ class _AddUserState extends State<AddAgent> {
                   padding: EdgeInsets.only(top: 10.h, bottom: 1.h),
                   child: TextFormField(
                     controller: nameController,
-                    inputFormatters: [WhitelistingTextInputFormatter(RegExp(r"[a-zA-Z]+|\s"))],
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z]+|\s"))],
 
                     decoration: InputDecoration(
                       hintText: "Enter Name",
@@ -128,7 +128,7 @@ class _AddUserState extends State<AddAgent> {
                   child: TextFormField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    inputFormatters: [BlacklistingTextInputFormatter(RegExp(r"\s")), FilteringTextInputFormatter.deny(RegExp('[ ]')),],
+                    inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s")), FilteringTextInputFormatter.deny(RegExp('[ ]')),],
                     decoration: InputDecoration(
                       hintText: "Enter Email",
                         border: OutlineInputBorder(
