@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -854,10 +856,12 @@ class _PendingRequestState extends State<PendingRequest> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.w)),
-          title: SingleChildScrollView(
+          title:  isloading == true?Center(child: Platform.isIOS?CupertinoActivityIndicator(): CircularProgressIndicator(),):SingleChildScrollView(
             child: Container(
               //width: MediaQuery.of(context).size.width*.60,
               child: Column(
@@ -1049,8 +1053,19 @@ class _PendingRequestState extends State<PendingRequest> {
                     height: 2.h,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      assignData();
+                    onTap: () async{
+                      setState(() {
+                        isloading = true;
+                      });
+
+                      var response = await assignData();
+                      if(response==true){
+                        Navigator.of(context, rootNavigator: true).pop();
+                      }
+                      setState(() {
+                        isloading = false;
+                      });
+
                     },
                     child: Container(
                       height: 5.h,
@@ -1075,6 +1090,7 @@ class _PendingRequestState extends State<PendingRequest> {
             ),
           ),
         );
+            });
       },
     );
   }
@@ -1120,7 +1136,6 @@ class _PendingRequestState extends State<PendingRequest> {
         setState(() {
           isloading = false;
         });
-        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             pendingEnquiryApi();
@@ -1128,17 +1143,19 @@ class _PendingRequestState extends State<PendingRequest> {
        // agentListApi();
       } else {
         setState(() {
-          isloading = false;
+          isloading = true;
           ScaffoldMessenger.of(this.context).showSnackBar(
               SnackBar(content: Text(jsonRes["message"].toString())));
         });
       }
+      return true;
     } else {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context)
             .showSnackBar(SnackBar(content: Text("Please try later")));
       });
+      return false;
     }
   }
 
@@ -1710,10 +1727,12 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
-          title: SingleChildScrollView(
+          title:   isloading == true?Center(child: Platform.isIOS?CupertinoActivityIndicator(): CircularProgressIndicator(),):SingleChildScrollView(
             child: Container(
               //width: MediaQuery.of(context).size.width*.60,
               child: Column(
@@ -1739,7 +1758,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                             size: 7.w,
                           ),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.of(context, rootNavigator: false).pop();
                           }),
                     ],
                   ),
@@ -1900,8 +1919,19 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                     height: 2.h,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      assignData();
+                    onTap: () async{
+                      setState(() {
+                        isloading = true;
+                      });
+
+                      var response = await assignData();
+                      if(response==true){
+                        Navigator.of(context, rootNavigator: true).pop();
+                      }
+                      setState(() {
+                        isloading = false;
+                      });
+
                     },
                     child: Container(
                       height: 5.h,
@@ -1926,6 +1956,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
             ),
           ),
         );
+          });
       },
     );
   }
@@ -1967,7 +1998,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     });
 
     if (res.statusCode == 200) {
-      Navigator.of(context, rootNavigator: true).pop();
+
       print(jsonRes["status"]);
 
       if (jsonRes["status"].toString() == "true") {
@@ -1987,12 +2018,14 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
               SnackBar(content: Text(jsonRes["message"].toString())));
         });
       }
+      return true;
     } else {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context)
             .showSnackBar(SnackBar(content: Text("Please try later")));
       });
+      return false;
     }
   }
 

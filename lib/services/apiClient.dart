@@ -22,6 +22,7 @@ class RestDatasource {
   static final REJECTAGENTLIST_URL = BASE_URL + "agent/reject";
   static final SEARCHNEWAGENTLIST_URL = BASE_URL + "agent/searchNewRequest?";
   static final ENQUIRYASSIGN_URL = BASE_URL + "enquiry/assign";
+  static final USERASSIGN_URL = BASE_URL + "enquiry/assign-to-user";
   static final SLIDERBANNER_URL = BASE_URL + "agent/get-slider?";
   static final SEARCHSLIDER_URL = BASE_URL + "agent/searchSlider?";
   static final ADDBANNER_URL = BASE_URL + "agent/add-slider";

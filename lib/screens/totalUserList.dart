@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -390,225 +391,239 @@ ScrollController _controller = new ScrollController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.w)),
-          title: SingleChildScrollView(
-            child: Container(
-              //width: MediaQuery.of(context).size.width*.60,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.w)),
+              title: isloading == true?Center(child: Platform.isIOS?CupertinoActivityIndicator(): CircularProgressIndicator(),):SingleChildScrollView(
+                child: Container(
+                  //width: MediaQuery.of(context).size.width*.60,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Assign Lead',
-                        style: TextStyle(
-                            fontSize: 14.sp,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                      ),
-                      IconButton(
-                          icon: Icon(
-                            Icons.close,
-                            size: 7.w,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Assign Lead',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold),
                           ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }),
-                    ],
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 0.1.h,
-                    width: double.infinity,
-                  ),
-                  SizedBox(height: 1.h),
-                  Text(
-                    'Name',
-                    style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff000000)),
-                  ),
-                  InkWell(
-
-                      onTap: () {
-                        print("Hello: "+apiList.length.toString());
-                        SelectDialog.showModal<TotalAgentListApi>(
-
-
-                          context,
-                          label: "Please select an agent",
-                          items: agentList,
-                          showSearchBox: false,
-                          itemBuilder: (BuildContext context,
-                              TotalAgentListApi item, bool isSelected) {
-                            return Container(
-                              decoration: !isSelected
-                                  ? null
-                                  : BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: Colors.white,
-                                border: Border.all(
-                                    color:
-                                    Theme.of(context).primaryColor),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                          IconButton(
+                              icon: Icon(
+                                Icons.close,
+                                size: 7.w,
                               ),
-                              child: InkWell(
-                                onTap: () {
-                                  print("lendth: "+apiList.length.toString());
-                                  print("email: "+item.email.toString()+"^^^");
-                                  print("number: "+item.phone.toString()+"^^^");
-                                  selectedAgent = item.id;
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                        ],
+                      ),
+                      Container(
+                        color: Colors.grey,
+                        height: 0.1.h,
+                        width: double.infinity,
+                      ),
+                      SizedBox(height: 1.h),
+                      Text(
+                        'Name',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff000000)),
+                      ),
+                      InkWell(
+
+                          onTap: () {
+                            print("Hello: "+apiList.length.toString());
+                            SelectDialog.showModal<TotalAgentListApi>(
 
 
-                                  setState(() {
-                                    nameController.text = item.name.toString();
-
-                                    //   serviceController.text = "";
-                                    emailController.text =
-                                        item.email.toString();
-
-                                    phoneController.text =
-                                        item.phone.toString();
-
-                                    // isLoading = true;
-                                    //  personalInfoPresenter.getSubCat(catId.toString());
-                                    Navigator.of(context).pop();
-                                  });
-                                },
-                                child: ListTile(
-                                  leading: item.name == "null"
+                              context,
+                              label: "Please select an agent",
+                              items: agentList,
+                              showSearchBox: false,
+                              itemBuilder: (BuildContext context,
+                                  TotalAgentListApi item, bool isSelected) {
+                                return Container(
+                                  decoration: !isSelected
                                       ? null
-                                      : Text(
-                                    item.name.toString(),
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600),
+                                      : BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        color:
+                                        Theme.of(context).primaryColor),
                                   ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      print("lendth: "+apiList.length.toString());
+                                      print("email: "+item.email.toString()+"^^^");
+                                      print("number: "+item.phone.toString()+"^^^");
+                                      selectedAgent = item.id;
 
 
-                                  selected: isSelected,
-                                ),
-                              ),
+                                      setState(() {
+                                        nameController.text = item.name.toString();
+
+                                        //   serviceController.text = "";
+                                        emailController.text =
+                                            item.email.toString();
+
+                                        phoneController.text =
+                                            item.phone.toString();
+
+                                        // isLoading = true;
+                                        //  personalInfoPresenter.getSubCat(catId.toString());
+                                        Navigator.of(context).pop();
+                                      });
+                                    },
+                                    child: ListTile(
+                                      leading: item.name == "null"
+                                          ? null
+                                          : Text(
+                                        item.name.toString(),
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+
+
+                                      selected: isSelected,
+                                    ),
+                                  ),
+                                );
+                              },
+
                             );
                           },
+                          child: Container(
+                            height: 5.h,
+                            child: TextField(
+                              enabled: false,
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                  suffixIcon: Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 8.w,
+                                  ),
+                                  hintText: "Agent's Name",
+                                  hintStyle: TextStyle(fontSize: 9.sp),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10))),
+                            ),
+                          )),
 
-                        );
-                      },
-                      child: Container(
+
+
+
+
+                      SizedBox(
+                        height: 1.h,
+                      ),
+
+                      Text(
+                        'Email Address',
+                        style: TextStyle(
+
+                            fontFamily: 'Poppins',
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff000000)),
+                      ),
+                      Container(
                         height: 5.h,
                         child: TextField(
+                          controller: emailController,
                           enabled: false,
-                          controller: nameController,
                           decoration: InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                              suffixIcon: Icon(
-                                Icons.arrow_drop_down,
-                                size: 8.w,
-                              ),
-                              hintText: "Agent's Name",
+                              counterText: "",
+                              hintText: "email@gmail.com",
                               hintStyle: TextStyle(fontSize: 9.sp),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10))),
                         ),
-                      )),
-
-
-
-
-
-                  SizedBox(
-                    height: 1.h,
-                  ),
-
-                  Text(
-                    'Email Address',
-                    style: TextStyle(
-
-                        fontFamily: 'Poppins',
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff000000)),
-                  ),
-                  Container(
-                    height: 5.h,
-                    child: TextField(
-                      controller: emailController,
-                      enabled: false,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                          counterText: "",
-                          hintText: "email@gmail.com",
-                          hintStyle: TextStyle(fontSize: 9.sp),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  Text(
-                    'Mobile Number',
-                    style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff000000)),
-                  ),
-                  Container(
-                    height: 5.h,
-                    child: TextField(
-                      controller: phoneController,
-                      enabled: false,
-                      maxLength: 10,
-                      decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                          counterText: "",
-                          hintText:"9876543210",
-                          hintStyle: TextStyle(fontSize: 9.sp),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(3.w))),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      assignAgentApi(user_id, selectedAgent);
-                    },
-                    child: Container(
-                      height: 5.h,
-                      decoration: BoxDecoration(
-                        color: Color(0xffFFBA00),
-                        borderRadius: BorderRadius.circular(3.w),
                       ),
-                      child: Center(
-                        child: Text(
-                          'Assign Agent',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white),
+                      SizedBox(
+                        height: 1.h,
+                      ),
+                      Text(
+                        'Mobile Number',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff000000)),
+                      ),
+                      Container(
+                        height: 5.h,
+                        child: TextField(
+                          controller: phoneController,
+                          enabled: false,
+                          maxLength: 10,
+                          decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                              counterText: "",
+                              hintText:"9876543210",
+                              hintStyle: TextStyle(fontSize: 9.sp),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(3.w))),
                         ),
                       ),
-                    ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      GestureDetector(
+                        onTap: () async{
+                          setState(() {
+                            isloading = true;
+                          });
+
+                          var response = await assignAgentApi(user_id, selectedAgent);
+                          if(response==true){
+                            Navigator.of(context, rootNavigator: true).pop();
+                          }
+                          setState(() {
+                            isloading = false;
+                          });
+                        },
+                        child: Container(
+                          height: 5.h,
+                          decoration: BoxDecoration(
+                            color: Color(0xffFFBA00),
+                            borderRadius: BorderRadius.circular(3.w),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Assign Agent',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -855,7 +870,7 @@ ScrollController _controller = new ScrollController();
 
     var request = http.post(
         Uri.parse(
-          RestDatasource.ENQUIRYASSIGN_URL,
+          RestDatasource.USERASSIGN_URL,
         ),
         body: {
           "agent_id": selectedAgent.toString(),
@@ -881,7 +896,7 @@ ScrollController _controller = new ScrollController();
         setState(() {
           isloading = false;
         });
-        Navigator.of(context, rootNavigator: true).pop();
+
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
 
@@ -892,12 +907,14 @@ ScrollController _controller = new ScrollController();
               SnackBar(content: Text(jsonRes["message"].toString())));
         });
       }
+      return true;
     } else {
       setState(() {
         isloading = false;
         ScaffoldMessenger.of(this.context)
             .showSnackBar(SnackBar(content: Text("Please try later")));
       });
+      return false;
     }
   }
 
