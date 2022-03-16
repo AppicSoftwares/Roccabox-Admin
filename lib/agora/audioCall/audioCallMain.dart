@@ -83,9 +83,9 @@ class _BodyState extends State<Body> {
                     agoraToken: token, image: images,name: name, engine: _engine,receiverId: receiverId,)));
         }, userJoined: (int uid, int elapsed) {
       print('userJoined ${uid}');
-      setState(() {
+
         _remoteUid = uid;
-      });
+
     }, userOffline: (int uid, UserOfflineReason reason) {
       print('userOffline ${uid}');
 

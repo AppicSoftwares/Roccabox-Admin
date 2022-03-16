@@ -202,25 +202,84 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
   var u_image = "";
   var property_Rid = "";
   var message = "";
-
+  var agents = "";
   bool isloading = false;
 
   @override
   void initState() {
     super.initState();
-
+    dashBoardApi();
     getEnquiryApi();
+  }
+  Future<dynamic> dashBoardApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+    print("print id: "+id.toString());
+
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var request = http.get(
+      Uri.parse(
+
+          RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
+
+      ),
+    );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+        agents = jsonRes["data"]["agents"].toString();
+        agentListApi();
+
+        print("agents no: "+agents.toString());
+
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => HomeNav()),
+        //  (route) => false);
+
+
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
   }
 
   List<AllEnquiry> apiList = [];
 
   ScrollController _controller = new ScrollController();
+  List<TotalAgentListApi> agentList = [];
+
+  TextEditingController nameController = new TextEditingController();
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController phoneController = new TextEditingController();
 
   bool remember = false;
-
+  String selecteEmail = "";
+  String selectedPhone = "";
+  String selectedEnquiryId = "";
+  String selectedAgent = "";
   @override
   Widget build(BuildContext context) {
-    return 
+    return
      Container(
        child: Column(
          children: [
@@ -515,14 +574,18 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
           modelAgentSearch.email = jsonArray[i]["email"].toString();
           modelAgentSearch.phone = jsonArray[i]["phone"].toString();
           modelAgentSearch.image = jsonArray[i]["image"].toString();
-          modelAgentSearch.country_code =
-              jsonArray[i]["country_code"].toString();
+          modelAgentSearch.country_code = jsonArray[i]["country_code"].toString();
           modelAgentSearch.u_image = jsonArray[i]["u_image"].toString();
           modelAgentSearch.message = jsonArray[i]["message"].toString();
-          modelAgentSearch.property_Rid =
-              jsonArray[i]["property_Rid"].toString();
-          modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();   
+          modelAgentSearch.property_Rid = jsonArray[i]["property_Rid"].toString();
+          modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();
+          modelAgentSearch.q_status = jsonArray[i]["q_status"].toString();
+          if(jsonArray[i]["q_status"].toString()=="Assign"){
 
+            modelAgentSearch.agent_id = jsonArray[i]["agent_id"].toString();
+            modelAgentSearch.agent_name = jsonArray[i]["agent_name"].toString();
+
+          }
           print("id: " + modelAgentSearch.id.toString());
 
           apiList.add(modelAgentSearch);
@@ -541,6 +604,376 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
       });
     }
   }
+
+  customDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.w)),
+                title:  isloading == true?Center(child: Platform.isIOS?CupertinoActivityIndicator(): CircularProgressIndicator(),):SingleChildScrollView(
+                  child: Container(
+                    //width: MediaQuery.of(context).size.width*.60,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Assign Lead',
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: 20.w,
+                            ),
+                            IconButton(
+                                icon: Icon(
+                                  Icons.close,
+                                  size: 7.w,
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
+                          ],
+                        ),
+                        Container(
+                          color: Colors.grey,
+                          height: 0.1.h,
+                          width: double.infinity,
+                        ),
+                        SizedBox(height: 1.h),
+                        Text(
+                          'Name',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff000000)),
+                        ),
+                        InkWell(
+
+                            onTap: () {
+                              print("Hello: "+apiList.length.toString());
+                              SelectDialog.showModal<TotalAgentListApi>(
+
+
+                                context,
+                                label: "Please select an agent",
+                                items: agentList,
+                                showSearchBox: false,
+                                itemBuilder: (BuildContext context,
+                                    TotalAgentListApi item, bool isSelected) {
+                                  return Container(
+                                    decoration: !isSelected
+                                        ? null
+                                        : BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color:
+                                          Theme.of(context).primaryColor),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        print("lendth: "+apiList.length.toString());
+                                        print("email: "+item.email.toString()+"^^^");
+                                        print("number: "+item.phone.toString()+"^^^");
+                                        selectedAgent = item.id;
+
+
+                                        setState(() {
+                                          nameController.text = item.name.toString();
+
+                                          //   serviceController.text = "";
+                                          emailController.text =
+                                              item.email.toString();
+
+                                          phoneController.text =
+                                              item.phone.toString();
+
+                                          // isLoading = true;
+                                          //  personalInfoPresenter.getSubCat(catId.toString());
+                                          Navigator.of(context).pop();
+                                        });
+                                      },
+                                      child: ListTile(
+                                        leading: item.name == "null"
+                                            ? null
+                                            : Text(
+                                          item.name.toString(),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+
+
+                                        selected: isSelected,
+                                      ),
+                                    ),
+                                  );
+                                },
+
+                              );
+                            },
+                            child: Container(
+                              height: 5.h,
+                              child: TextField(
+                                enabled: false,
+                                controller: nameController,
+                                decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                    suffixIcon: Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 8.w,
+                                    ),
+                                    hintText: "Agent's Name",
+                                    hintStyle: TextStyle(fontSize: 9.sp),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10))),
+                              ),
+                            )),
+
+
+
+
+
+                        SizedBox(
+                          height: 1.h,
+                        ),
+
+                        Text(
+                          'Email Address',
+                          style: TextStyle(
+
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff000000)),
+                        ),
+                        Container(
+                          height: 5.h,
+                          child: TextField(
+
+                            controller: emailController,
+                            enabled: false,
+                            decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                counterText: "",
+                                hintText: "email@gmail.com",
+                                hintStyle: TextStyle(fontSize: 9.sp),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10))),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                        Text(
+                          'Mobile Number',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff000000)),
+                        ),
+                        Container(
+                          height: 5.h,
+                          child: TextField(
+                            controller: phoneController,
+                            enabled: false,
+                            maxLength: 10,
+                            decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                counterText: "",
+                                hintText:"9876543210",
+                                hintStyle: TextStyle(fontSize: 9.sp),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(3.w))),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 2.h,
+                        ),
+                        GestureDetector(
+                          onTap: () async{
+                            setState(() {
+                              isloading = true;
+                            });
+
+                            var response = await assignData();
+                            if(response==true){
+                              Navigator.of(context, rootNavigator: true).pop();
+                            }
+                            setState(() {
+                              isloading = false;
+                            });
+
+                          },
+                          child: Container(
+                            height: 5.h,
+                            decoration: BoxDecoration(
+                              color: Color(0xffFFBA00),
+                              borderRadius: BorderRadius.circular(3.w),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Assign Agent',
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            });
+      },
+    );
+  }
+
+  Future<dynamic> agentListApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+    print(id.toString());
+    setState(() {
+      isloading = true;
+    });
+    // print(email);
+    // print(password);
+    String msg = "";
+    var jsonRes;
+    http.Response? res;
+    var jsonArray;
+    var request = http.get(
+      Uri.parse(
+          RestDatasource.TOTALAGENTLIST_URL + "admin_id=" + id.toString()+"&PageNumber=1&PageSize="+agents.toString()),
+    );
+
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+      print("status: " + jsonRes["status"].toString() + "_");
+      print("message: " + jsonRes["message"].toString() + "_");
+      msg = jsonRes["message"].toString();
+      jsonArray = jsonRes['data'];
+    });
+    if (res!.statusCode == 200) {
+      if (jsonRes["status"] == true) {
+        apiList.clear();
+
+        for (var i = 0; i < jsonArray.length; i++) {
+          TotalAgentListApi modelSearch = new TotalAgentListApi();
+          modelSearch.name = jsonArray[i]["name"];
+          modelSearch.id = jsonArray[i]["id"].toString();
+          modelSearch.email = jsonArray[i]["email"].toString();
+          modelSearch.phone = jsonArray[i]["phone"].toString();
+          //modelSearch.image = jsonArray[i]["image"].toString();
+          modelSearch.country_code = jsonArray[i]["country_code"].toString();
+
+
+
+          agentList.add(modelSearch);
+        }
+        //allData();
+
+        setState(() {
+          isloading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(this.context)
+          .showSnackBar(SnackBar(content: Text('Error while fetching data')));
+
+      setState(() {
+        isloading = false;
+      });
+    }
+  }
+
+  Future<dynamic> assignData() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+
+    print("id Print: " + id.toString());
+    print("agentId: " +selectedAgent.toString());
+    print("enquiryId: "+ selectedEnquiryId.toString());
+    setState(() {
+      isloading = true;
+    });
+
+    var request = http.post(
+        Uri.parse(
+          RestDatasource.ENQUIRYASSIGN_URL,
+        ),
+        body: {
+          "agent_id": selectedAgent.toString(),
+          "enquiry_id": selectedEnquiryId.toString(),
+          "admin_id" : id.toString()
+          //"enquiry_id":
+        });
+
+    var jsonRes;
+    var res;
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+      print(jsonRes["status"]);
+
+      if (jsonRes["status"].toString() == "true") {
+        setState(() {
+          isloading = false;
+        });
+        ScaffoldMessenger.of(this.context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+        getEnquiryApi();
+
+        // agentListApi();
+      } else {
+        setState(() {
+          isloading = true;
+          ScaffoldMessenger.of(this.context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+        });
+      }
+      return true;
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(this.context)
+            .showSnackBar(SnackBar(content: Text("Please try later")));
+      });
+      return false;
+    }
+  }
+
+
 }
 
 class PendingRequest extends StatefulWidget {
@@ -592,10 +1025,10 @@ class _PendingRequestState extends State<PendingRequest> {
     dashBoardApi();
 
     pendingEnquiryApi();
-  
 
 
-    
+
+
   }
 
   List<AllEnquiry> pendingApiList = [];
@@ -607,10 +1040,10 @@ class _PendingRequestState extends State<PendingRequest> {
   @override
   Widget build(BuildContext context) {
     print("agents *1*"+agents.toString());
-    return 
-    
-    
-    
+    return
+
+
+
     Container(
       child: Column(
         children: [
@@ -768,7 +1201,7 @@ class _PendingRequestState extends State<PendingRequest> {
                                             ],
                                           ),
                                         )),
-                        
+
                                     Positioned(
                                         left: 6.w,
                                         bottom: 1.h,
@@ -910,8 +1343,8 @@ class _PendingRequestState extends State<PendingRequest> {
                       onTap: () {
                         print("Hello: "+apiList.length.toString());
                         SelectDialog.showModal<TotalAgentListApi>(
-                          
-                         
+
+
                           context,
                           label: "Please select an agent",
                           items: apiList,
@@ -961,13 +1394,13 @@ class _PendingRequestState extends State<PendingRequest> {
                                               fontWeight: FontWeight.w600),
                                         ),
 
-                                
+
                                   selected: isSelected,
                                 ),
                               ),
                             );
                           },
-                         
+
                         );
                       },
                       child: Container(
@@ -1000,7 +1433,7 @@ class _PendingRequestState extends State<PendingRequest> {
                   Text(
                     'Email Address',
                     style: TextStyle(
-                      
+
                         fontFamily: 'Poppins',
                         fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
@@ -1139,7 +1572,7 @@ class _PendingRequestState extends State<PendingRequest> {
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             pendingEnquiryApi();
-            
+
        // agentListApi();
       } else {
         setState(() {
@@ -1211,7 +1644,7 @@ class _PendingRequestState extends State<PendingRequest> {
           modelSearch.phone = jsonArray[i]["phone"].toString();
           //modelSearch.image = jsonArray[i]["image"].toString();
           modelSearch.country_code = jsonArray[i]["country_code"].toString();
-          
+
 
 
           apiList.add(modelSearch);
@@ -1321,7 +1754,7 @@ class _PendingRequestState extends State<PendingRequest> {
         Uri.parse(
 
           RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
-          
+
         ),
        );
 
@@ -1418,7 +1851,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
   var customers = "";
   var agents = "";
-  
+
 
   TextEditingController nameController = new TextEditingController();
   TextEditingController emailController = new TextEditingController();
@@ -1433,11 +1866,11 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     dashBoardApi();
     allEnquiryApi();
 
-    
 
-    
 
-    
+
+
+
   }
 
   List<AllEnquiry> allApiList = [];
@@ -1456,7 +1889,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
   @override
   Widget build(BuildContext context) {
-    return 
+    return
     Container(
       child: Column(
         children: [
@@ -1469,7 +1902,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                   fontSize: 14.sp),
             ),
 
-          
+
 
 
           isloading
@@ -1482,7 +1915,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                   controller: _controller,
                   itemCount: allApiList.length,
                   itemBuilder: (BuildContext context, int index) {
-
+                    print("Building Image "+allApiList[index].image+"^^");
                     return Column(
                       children: [
                         SizedBox(
@@ -1497,10 +1930,6 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
                                         allEnquiryList: allApiList[index],
 
-
-
-
-
                                     )));
                           },
                           child: Card(
@@ -1509,13 +1938,13 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                               borderRadius: BorderRadius.circular(6.w),
                             ),
                             child: Container(
-                                height: 34.h,
+                                height: 38.h,
                                 width: double.infinity,
                                 child: Stack(
                                   children: [
                                     Column(
                                       children: <Widget>[
-                                        image == "null"
+                                        allApiList[index].image == "null"
                                             ? Container(
                                                 height: 19.h,
                                                 decoration: BoxDecoration(
@@ -1544,7 +1973,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                     ),
                                     Positioned(
                                       left: 5.w,
-                                      bottom: 8.h,
+                                      bottom: 12.h,
                                       child: FittedBox(
                                           child: Container(
                                         decoration: BoxDecoration(
@@ -1569,10 +1998,10 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                               ),
                                       )),
                                     ),
-                                  
+
                                     Positioned(
                                         left: 29.w,
-                                        bottom: 4.5.h,
+                                        bottom: 8.5.h,
                                         child: Container(
                                           width: 60.w,
                                           child: Column(
@@ -1611,18 +2040,25 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                             ],
                                           ),
                                         )),
-                                    // Positioned(
-                                    //     right: 2.w,
-                                    //     bottom: 8.5.h,
-                                    //     child: Text(
+                                    Visibility(
+                                      visible: allApiList[index].q_status=="Assign",
+                                      child: Positioned(
+                                          right: 0,
+                                          left: 0,
+                                          bottom: 4.5.h,
+                                          child: Text(
 
-                                    //       //phone no
-                                    //      apiList[index].phone.toString(),
-                                    //       style: TextStyle(
-                                    //           color: Colors.black,
-                                    //           fontWeight: FontWeight.w500,
-                                    //           fontSize: 11.sp),
-                                    //     )),
+                                            //phone no
+                                           "Assigned Agent: "+ allApiList[index].agent_name.toString(),
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.sp),
+                                          )),
+                                    ),
                                     Positioned(
                                         left: 6.w,
                                         bottom: 1.h,
@@ -1673,10 +2109,10 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                               onTap: () {
                                                 if (allApiList[index].q_status ==
                                                     "Pending") {
-                                                  selectedEnquiryId = allApiList[index].id;
-                                                  customDialog(index);
-                                                }
 
+                                                }
+                                                selectedEnquiryId = allApiList[index].id;
+                                                customDialog(index);
                                                 //customDialog();
                                               },
                                               child: Container(
@@ -1781,8 +2217,8 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                       onTap: () {
                         print("Hello: "+apiList.length.toString());
                         SelectDialog.showModal<TotalAgentListApi>(
-                          
-                         
+
+
                           context,
                           label: "Please select an agent",
                           items: apiList,
@@ -1831,13 +2267,13 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                                               fontWeight: FontWeight.w600),
                                         ),
 
-                                
+
                                   selected: isSelected,
                                 ),
                               ),
                             );
                           },
-                         
+
                         );
                       },
                       child: Container(
@@ -1870,7 +2306,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
                   Text(
                     'Email Address',
                     style: TextStyle(
-                      
+
                         fontFamily: 'Poppins',
                         fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
@@ -2009,7 +2445,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
         ScaffoldMessenger.of(this.context).showSnackBar(
             SnackBar(content: Text(jsonRes["message"].toString())));
             allEnquiryApi();
-            
+
        // agentListApi();
       } else {
         setState(() {
@@ -2059,10 +2495,10 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
       res = response;
       final JsonDecoder _decoder = new JsonDecoder();
       jsonRes = _decoder.convert(response.body.toString());
-      print("Response: " + response.body.toString() + "_");
-      print("ResponseJSON: " + jsonRes.toString() + "_");
-      print("status: " + jsonRes["status"].toString() + "_");
-      print("message: " + jsonRes["message"].toString() + "_");
+      print("Response Enquiry: " + response.body.toString() + "_");
+      print("ResponseJSON: Enquiry: " + jsonRes.toString() + "_");
+      print("status: Enquiry: " + jsonRes["status"].toString() + "_");
+      print("message: Enquiry: " + jsonRes["message"].toString() + "_");
       msg = jsonRes["message"].toString();
       jsonArray = jsonRes['data'];
     });
@@ -2085,7 +2521,12 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
               jsonArray[i]["property_Rid"].toString();
           modelAgentSearch.q_status = jsonArray[i]["q_status"].toString();
           modelAgentSearch.filter_id = jsonArray[i]["filter_id"].toString();
+          if(jsonArray[i]["q_status"].toString()=="Assign"){
 
+              modelAgentSearch.agent_id = jsonArray[i]["agent_id"].toString();
+              modelAgentSearch.agent_name = jsonArray[i]["agent_name"].toString();
+
+          }
 
           allApiList.add(modelAgentSearch);
         }
@@ -2167,7 +2608,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
           apiList.add(modelSearch);
         }
-        allData();
+        //allData();
 
         setState(() {
           isloading = false;
@@ -2189,7 +2630,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
 
 
-   
+
      Future<dynamic> dashBoardApi() async {
        SharedPreferences prefs = await SharedPreferences.getInstance();
        var id = prefs.getString("id");
@@ -2206,7 +2647,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
         Uri.parse(
 
           RestDatasource.HOMEPAGE_URL + "admin_id=" + id.toString()
-          
+
         ),
        );
 
@@ -2266,7 +2707,7 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
 
 
 
- 
+
 }
 
 
@@ -2291,6 +2732,8 @@ class AllEnquiry {
   var filter_id = "";
   var message = "";
   var q_status = "";
+  var agent_id = "";
+  var agent_name = "";
 }
 
 
@@ -2301,5 +2744,5 @@ class TotalAgentListApi {
   var phone = "";
   var image = "";
   var country_code = "";
-  
+
 }

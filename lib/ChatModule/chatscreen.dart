@@ -1464,7 +1464,7 @@ void bottomSheet(){
 
         },
     headers: mapheaders);
-
+    print("Headers "+mapheaders.toString()+"^^");
     await request.then((http.Response response) {
       res = response;
 
@@ -1488,6 +1488,9 @@ void bottomSheet(){
         var fcm = jsonRes["receiver"]["firebase_token"].toString();
         registerCall(userid.toString(),name, image, type, fcm, id, "Calling", agoraToken, channel, time);
 
+      }else{
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(jsonRes['message'].toString())));
       }
 
     } else {

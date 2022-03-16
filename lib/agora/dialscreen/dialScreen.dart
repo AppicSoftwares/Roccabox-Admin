@@ -66,14 +66,10 @@ class _ReceivedCallState extends State<ReceivedCall> {
         joinChannelSuccess: (String channel, int uid, int elapsed) {
           print('joinChannelSuccess ${channel} ${uid}');
 
-          setState(() {
-            _joined = true;
-          });
+
         }, userJoined: (int uid, int elapsed) {
       print('userJoined ${uid}');
-      setState(() {
-        _remoteUid = uid;
-      });
+
     }, userOffline: (int uid, UserOfflineReason reason) {
       print('userOffline ${uid}');
 
@@ -83,9 +79,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
       }
       Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
-      setState(() {
-        _remoteUid = 0;
-      });
+
     },
         leaveChannel: (RtcStats reason) {
           print("remote user left channel");
@@ -121,9 +115,7 @@ class _ReceivedCallState extends State<ReceivedCall> {
         },
         userJoined: (int uid, int elapsed) {
           print("remote user $uid joined");
-          setState(() {
-            _remoteUid = uid;
-          });
+
           Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
         },
@@ -134,9 +126,6 @@ class _ReceivedCallState extends State<ReceivedCall> {
           }
           Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context)=> HomeNav()), (r)=> false);
 
-          setState(() {
-            _remoteUid = null;
-          });
         },
         leaveChannel: (RtcStats reason) {
           print("remote user left channel");

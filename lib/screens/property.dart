@@ -326,7 +326,7 @@ void initState() {
                         borderRadius: BorderRadius.circular(6.w),
                       ),
                       child: Container(
-                          height: 34.h,
+                          height: 38.h,
                           width: double.infinity,
                           child: Stack(
                             children: [
@@ -360,7 +360,7 @@ void initState() {
                               ),
                               Positioned(
                                 left: 5.w,
-                                bottom: 8.h,
+                                bottom: 12.h,
                                 child: FittedBox(
                                     child: Container(
                                   decoration: BoxDecoration(
@@ -394,7 +394,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 29.w,
-                                  bottom: 4.5.h,
+                                  bottom: 8.5.h,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -431,7 +431,7 @@ void initState() {
 
                               Positioned(
                                 right: 4.w,
-                              bottom: 15.h,
+                              bottom: 20.h,
                                 child: Text(
                                        // r"$9800",
 
@@ -454,8 +454,8 @@ void initState() {
                               //           fontSize: 11.sp),
                               //     )),
                               Positioned(
-                                  left: 6.w,
-                                  bottom: 1.h,
+                                  left: 4.w,
+                                  bottom: 5.h,
                                   child: Text(
                                     //"New York",
                                     unAttendedPropertyList[index].address.toString(),
@@ -464,6 +464,32 @@ void initState() {
                                         fontWeight: FontWeight.w500,
                                         fontSize: 11.sp),
                                   )),
+                              //Delete button
+                              Positioned(
+                                right: 4.w,
+                                bottom: 1.h,
+                                child:  InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                    height: 4.h,
+                                    width: 30.w,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                        BorderRadius.circular(5.w),
+                                        color: Colors.red,
+                                        border:
+                                        Border.all(color: Colors.red)),
+                                    child: Center(
+                                      child: Text(
+                                        //"12-09-2021",
+                                        "Delete",
+                                        style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ), ),
                               Positioned(
                                   top: 1.h,
                                   left: 3.5.w,
@@ -1104,7 +1130,7 @@ void initState() {
                         borderRadius: BorderRadius.circular(6.w),
                       ),
                       child: Container(
-                          height: 34.h,
+                          height: 38.h,
                           width: double.infinity,
                           child: Stack(
                             children: [
@@ -1138,7 +1164,7 @@ void initState() {
                               ),
                               Positioned(
                                 left: 5.w,
-                                bottom: 8.h,
+                                bottom: 12.h,
                                 child: FittedBox(
                                     child: Container(
                                   decoration: BoxDecoration(
@@ -1172,7 +1198,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 29.w,
-                                  bottom: 4.5.h,
+                                  bottom: 8.5.h,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -1206,10 +1232,36 @@ void initState() {
                                   )
                                     ],
                                   )),
+                              //Delete button
+                              Positioned(
+                                right: 4.w,
+                                bottom: 1.h,
+                                child:  InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                    height: 4.h,
+                                    width: 30.w,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                        BorderRadius.circular(5.w),
+                                        color: Colors.red,
+                                        border:
+                                        Border.all(color: Colors.red)),
+                                    child: Center(
+                                      child: Text(
+                                        //"12-09-2021",
+                                        "Delete",
+                                        style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ), ),
 
                               Positioned(
                                 right: 4.w,
-                              bottom: 15.h,
+                              bottom: 20.h,
                                 child: Text(
                                        // r"$9800",
 
@@ -1232,8 +1284,8 @@ void initState() {
                               //           fontSize: 11.sp),
                               //     )),
                               Positioned(
-                                  left: 6.w,
-                                  bottom: 1.h,
+                                  left: 4.w,
+                                  bottom: 5.h,
                                   child: Text(
                                     //"New York",
                                     attendedPropertyList[index].address.toString(),
@@ -1735,7 +1787,7 @@ void initState() {
                         borderRadius: BorderRadius.circular(6.w),
                       ),
                       child: Container(
-                          height: 34.h,
+                          height: 38.h,
                           width: double.infinity,
                           child: Stack(
                             children: [
@@ -1771,7 +1823,7 @@ void initState() {
                               ),
                               Positioned(
                                 left: 5.w,
-                                bottom: 8.h,
+                                bottom: 12.h,
                                 child: FittedBox(
                                     child: Container(
                                   decoration: BoxDecoration(
@@ -1805,7 +1857,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 29.w,
-                                  bottom: 4.5.h,
+                                  bottom: 8.5.h,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -1842,7 +1894,7 @@ void initState() {
 
                               Positioned(
                                 right: 4.w,
-                              bottom: 15.h,
+                              bottom: 20.h,
                                 child: Text(
                                        // r"$9800",
 
@@ -1866,7 +1918,7 @@ void initState() {
                               //     )),
                               Positioned(
                                   left: 4.w,
-                                  bottom: 1.h,
+                                  bottom: 5.h,
                                   child: Container(
                                     width: 80.w,
                                     child: Text(
@@ -1879,6 +1931,31 @@ void initState() {
                                           fontSize: 11.sp),
                                     ),
                                   )),
+                              Positioned(
+                                  right: 4.w,
+                                  bottom: 1.h,
+                                  child:  InkWell(
+                                    onTap: () {},
+                                    child: Container(
+                                      height: 4.h,
+                                      width: 30.w,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                          BorderRadius.circular(5.w),
+                                          color: Colors.red,
+                                          border:
+                                          Border.all(color: Colors.red)),
+                                      child: Center(
+                                        child: Text(
+                                          //"12-09-2021",
+                                     "Delete",
+                                          style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ), ),
                               Positioned(
                                   top: 1.h,
                                   left: 3.5.w,

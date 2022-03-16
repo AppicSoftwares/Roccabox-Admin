@@ -28,6 +28,8 @@
 	<string>Camera usage allows you to save and share profile image</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Select photos for upload profile image</string>
+    <key>NSMicrophoneUsageDescription</key>
+	<string>Need microphone access for call with users</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
