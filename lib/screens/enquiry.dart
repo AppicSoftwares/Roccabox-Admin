@@ -945,7 +945,13 @@ class _AssignEnquiryState extends State<AssignEnquiry> {
 
     if (res.statusCode == 200) {
       print(jsonRes["status"]);
-
+      selectedAgent = "";
+      selectedEnquiryId = "";
+      selectedPhone = "";
+      selecteEmail = "";
+      nameController.clear();
+      phoneController.clear();
+      emailController.clear();
       if (jsonRes["status"].toString() == "true") {
         setState(() {
           isloading = false;
@@ -1564,7 +1570,13 @@ class _PendingRequestState extends State<PendingRequest> {
 
     if (res.statusCode == 200) {
       print(jsonRes["status"]);
-
+      selectedAgent = "";
+      selectedEnquiryId = "";
+      selectedPhone = "";
+      selecteEmail = "";
+      nameController.clear();
+      phoneController.clear();
+      emailController.clear();
       if (jsonRes["status"].toString() == "true") {
         setState(() {
           isloading = false;
@@ -2434,7 +2446,13 @@ class _AllEnquiryListState extends State<AllEnquiryList> {
     });
 
     if (res.statusCode == 200) {
-
+    selectedAgent = "";
+    selectedEnquiryId = "";
+    selectedPhone = "";
+    selecteEmail = "";
+    nameController.clear();
+    phoneController.clear();
+    emailController.clear();
       print(jsonRes["status"]);
 
       if (jsonRes["status"].toString() == "true") {

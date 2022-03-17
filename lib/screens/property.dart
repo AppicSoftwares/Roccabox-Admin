@@ -469,7 +469,9 @@ void initState() {
                                 right: 4.w,
                                 bottom: 1.h,
                                 child:  InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    customDialogDelete(index);
+                                  },
                                   child: Container(
                                     height: 4.h,
                                     width: 30.w,
@@ -850,6 +852,138 @@ void initState() {
   }
 
 
+      customDialogDelete(int index) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+              title: SingleChildScrollView(
+                child: Container(
+                  //width: MediaQuery.of(context).size.width*.60,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+
+
+                        'Are you Sure you want \n'
+                            "to delete this property",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 12.sp,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold),
+                      ),
+
+                      SizedBox(
+                        height: 2.h,
+                      ),
+
+                      isloading
+                          ?
+                      Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
+                      )
+                          :
+                      GestureDetector(
+                        onTap: () {
+                          delete(index);
+                          Navigator.of(context,rootNavigator: false).pop();
+
+                        },
+                        child: Container(
+                          width: 40.w,
+                          height: 5.h,
+                          decoration: BoxDecoration(
+                            color: Color(0xffFFBA00),
+                            borderRadius: BorderRadius.circular(3.w),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }
+      Future<dynamic> delete( int index, ) async {
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var id = prefs.getString("id");
+        print("id Print: " +id.toString());
+        setState(() {
+          isloading = true;
+        });
+
+
+
+        var request = http.post(
+            Uri.parse(
+              RestDatasource.DELETE_PROPERTY_ID,
+            ),
+            body: {
+              "admin_id":id.toString(),
+              "id":unAttendedPropertyList[index].id.toString()
+            }
+        );
+
+
+        var jsonRes;
+        var res ;
+        await request.then((http.Response response) {
+          res = response;
+          final JsonDecoder _decoder = new JsonDecoder();
+          jsonRes = _decoder.convert(response.body.toString());
+          print("Response: " + response.body.toString() + "_");
+          print("ResponseJSON: " + jsonRes.toString() + "_");
+        });
+
+        if (res.statusCode == 200) {
+
+          print(jsonRes["status"]);
+
+          if (jsonRes["status"].toString() == "true") {
+
+            setState(() {
+              isloading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(jsonRes["message"].toString())));
+            UnAttendedPropertyApi();
+
+          } else {
+            setState(() {
+              isloading = false;
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(jsonRes["message"].toString())));
+
+            });
+          }
+        } else {
+          setState(() {
+            isloading = false;
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Please try leter")));
+
+          });
+        }
+      }
 
 
      Future<dynamic> searchData(String key ) async {
@@ -1237,7 +1371,9 @@ void initState() {
                                 right: 4.w,
                                 bottom: 1.h,
                                 child:  InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    customDialogDelete(index);
+                                  },
                                   child: Container(
                                     height: 4.h,
                                     width: 30.w,
@@ -1369,9 +1505,141 @@ void initState() {
     );
   }
 
-  
 
 
+
+    customDialogDelete(int index) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+            title: SingleChildScrollView(
+              child: Container(
+                //width: MediaQuery.of(context).size.width*.60,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+
+
+                      'Are you Sure you want \n'
+                          "to delete this property",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold),
+                    ),
+
+                    SizedBox(
+                      height: 2.h,
+                    ),
+
+                    isloading
+                        ?
+                    Align(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                        :
+                    GestureDetector(
+                      onTap: () {
+                        delete(index);
+                        Navigator.of(context,rootNavigator: false).pop();
+
+                      },
+                      child: Container(
+                        width: 40.w,
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          color: Color(0xffFFBA00),
+                          borderRadius: BorderRadius.circular(3.w),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Yes',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+    Future<dynamic> delete( int index, ) async {
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var id = prefs.getString("id");
+      print("id Print: " +id.toString());
+      setState(() {
+        isloading = true;
+      });
+
+
+
+      var request = http.post(
+          Uri.parse(
+            RestDatasource.DELETE_PROPERTY_ID,
+          ),
+          body: {
+            "admin_id":id.toString(),
+            "id":attendedPropertyList[index].id.toString()
+          }
+      );
+
+
+      var jsonRes;
+      var res ;
+      await request.then((http.Response response) {
+        res = response;
+        final JsonDecoder _decoder = new JsonDecoder();
+        jsonRes = _decoder.convert(response.body.toString());
+        print("Response: " + response.body.toString() + "_");
+        print("ResponseJSON: " + jsonRes.toString() + "_");
+      });
+
+      if (res.statusCode == 200) {
+
+        print(jsonRes["status"]);
+
+        if (jsonRes["status"].toString() == "true") {
+
+          setState(() {
+            isloading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+          attendedPropertyApi();
+
+        } else {
+          setState(() {
+            isloading = false;
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(jsonRes["message"].toString())));
+
+          });
+        }
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Please try leter")));
+
+        });
+      }
+    }
 
 
 
@@ -1935,7 +2203,9 @@ void initState() {
                                   right: 4.w,
                                   bottom: 1.h,
                                   child:  InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      customDialogDelete(index);
+                                    },
                                     child: Container(
                                       height: 4.h,
                                       width: 30.w,
@@ -2115,6 +2385,8 @@ void initState() {
 
 
 
+
+
    Future<dynamic> statusData( int index) async {
 
      SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2178,6 +2450,138 @@ void initState() {
     }
   }
 
+  customDialogDelete(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+          title: SingleChildScrollView(
+            child: Container(
+              //width: MediaQuery.of(context).size.width*.60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+
+
+                    'Are you Sure you want \n'
+                        "to delete this property",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold),
+                  ),
+
+                  SizedBox(
+                    height: 2.h,
+                  ),
+
+                  isloading
+                      ?
+                  Align(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
+                      :
+                  GestureDetector(
+                    onTap: () {
+                      delete(index);
+                      Navigator.of(context,rootNavigator: false).pop();
+
+                    },
+                    child: Container(
+                      width: 40.w,
+                      height: 5.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFFBA00),
+                        borderRadius: BorderRadius.circular(3.w),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Yes',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  Future<dynamic> delete( int index, ) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("id");
+    print("id Print: " +id.toString());
+    setState(() {
+      isloading = true;
+    });
+
+
+
+    var request = http.post(
+        Uri.parse(
+          RestDatasource.DELETE_PROPERTY_ID,
+        ),
+        body: {
+          "admin_id":id.toString(),
+          "id":allPropertyList[index].id.toString()
+        }
+    );
+
+
+    var jsonRes;
+    var res ;
+    await request.then((http.Response response) {
+      res = response;
+      final JsonDecoder _decoder = new JsonDecoder();
+      jsonRes = _decoder.convert(response.body.toString());
+      print("Response: " + response.body.toString() + "_");
+      print("ResponseJSON: " + jsonRes.toString() + "_");
+    });
+
+    if (res.statusCode == 200) {
+
+      print(jsonRes["status"]);
+
+      if (jsonRes["status"].toString() == "true") {
+
+        setState(() {
+          isloading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonRes["message"].toString())));
+        allPropertyApi();
+
+      } else {
+        setState(() {
+          isloading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(jsonRes["message"].toString())));
+
+        });
+      }
+    } else {
+      setState(() {
+        isloading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Please try leter")));
+
+      });
+    }
+  }
 
 
     Future<dynamic> allPropertyApi() async {
